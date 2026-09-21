@@ -1,0 +1,16 @@
+{
+  "name": "mobile_dev_partial_fit",
+  "description": "Flutter hobby projects versus a mid-level mobile role asking for released apps and CI; several partial matches expected.",
+  "job_title": "Mobile Developer (Flutter)",
+  "job_description": "Mobile Developer (Flutter)\n\nAbout the role\nYou will own features end to end in our Flutter app used by 500k users.\n\nRequirements\n- 2+ years of professional Flutter development with at least one app published on the App Store or Google Play\n- Strong Dart skills and experience with a state management solution (Bloc, Riverpod or Provider)\n- Experience integrating REST APIs and handling authentication tokens securely\n- Familiarity with automated testing in Flutter (widget and integration tests)\n- Experience with CI/CD for mobile (Codemagic, Fastlane or GitHub Actions)\n- Bonus: native iOS or Android experience",
+  "resume": "Ayse Kaya\nComputer Science student\n\nProjects\n- Campus Events: Flutter app using Riverpod for state management and Dio for REST API calls to a Node.js backend; JWT stored with flutter_secure_storage. Published on Google Play with 1,200 installs.\n- Habit Tracker: Flutter app with local SQLite storage; wrote widget tests for the main screens.\n\nExperience\n- Software Intern, LocalTech (summer 2025): Fixed bugs in a Kotlin Android app and wrote release notes.\n\nSkills\n- Dart, Flutter, Riverpod, Dio, SQLite, Git, some Kotlin",
+  "expected_requirement_keywords": ["flutter", "dart", "rest", "test", "ci/cd", "native"],
+  "expected_statuses": [
+    {"keyword": "state management", "status": "matched"},
+    {"keyword": "ci/cd", "status": "missing"},
+    {"keyword": "native", "status": "partial"}
+  ],
+  "expected_importance": [
+    {"keyword": "native", "importance": "nice_to_have"}
+  ]
+}

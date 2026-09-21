@@ -1,0 +1,17 @@
+{
+  "name": "ml_engineer_weak_fit",
+  "description": "Frontend-focused student applying to an ML engineering role; most technical must-haves should be missing, no fabricated ML experience.",
+  "job_title": "Machine Learning Engineer",
+  "job_description": "Machine Learning Engineer\n\nRequirements\n- 3+ years of experience training and deploying machine learning models in production\n- Strong proficiency in Python and PyTorch or TensorFlow\n- Experience with MLOps tooling such as MLflow, Kubeflow or SageMaker\n- Solid understanding of statistics and experiment design\n- Experience with cloud platforms (AWS or GCP)\n- Ability to communicate results to non-technical stakeholders\n\nNice to have\n- Publications or open-source contributions in ML",
+  "resume": "Mehmet Yilmaz\nSoftware Engineering student\n\nExperience\n- Frontend Intern, Bright Apps (2025): Implemented responsive UI components in React and TypeScript, improved Lighthouse performance score from 62 to 91.\n\nProjects\n- Study Planner: Flutter mobile app with Firebase authentication and Firestore, 200+ downloads.\n- Portfolio website: Next.js and Tailwind CSS, deployed on Vercel.\n\nEducation\n- B.Sc. Software Engineering, expected 2027. Coursework: Algorithms, Databases, Introduction to Statistics.\n\nSkills\n- JavaScript, TypeScript, React, Next.js, Flutter, Dart, Firebase, Git",
+  "expected_requirement_keywords": ["machine learning", "python", "mlops", "statistics", "cloud", "communicat"],
+  "expected_statuses": [
+    {"keyword": "pytorch", "status": "missing"},
+    {"keyword": "mlops", "status": "missing"},
+    {"keyword": "production", "status": "missing"}
+  ],
+  "expected_importance": [
+    {"keyword": "publications", "importance": "nice_to_have"}
+  ],
+  "max_expected_score": 40
+}

@@ -13,7 +13,7 @@ from sqlalchemy.orm import sessionmaker  # noqa: E402
 from sqlalchemy.pool import StaticPool  # noqa: E402
 
 from app.db.base import Base  # noqa: E402
-from app.db.session import get_db  # noqa: E402
+from app.db.session import get_db, get_session_factory  # noqa: E402
 from app.main import create_app  # noqa: E402
 
 SAMPLE_RESUME = """
@@ -66,6 +66,7 @@ def client(engine):
 
     app = create_app()
     app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[get_session_factory] = lambda: TestingSession
     with TestClient(app) as test_client:
         yield test_client
 
