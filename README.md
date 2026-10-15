@@ -20,9 +20,13 @@ services/api    FastAPI backend: auth, documents, AI pipeline, persistence
 
 ## Local setup (backend)
 
-Requirements: Python 3.12+, Docker.
+Requirements: Git, Python 3.12+, Docker.
 
 ```bash
+# 0. Clone
+git clone https://github.com/ahmetyasinaltun/ai_career_assistant.git
+cd ai_career_assistant
+
 # 1. Start PostgreSQL (listens on localhost:5434 to avoid clashing with a local install)
 docker compose up -d
 
@@ -34,7 +38,7 @@ python -m venv .venv
 pip install -e ".[dev]"
 
 # 3. Configure environment
-copy .env.example .env            # then set JWT_SECRET_KEY and GEMINI_API_KEY
+cp .env.example .env              # Windows cmd: copy; then set JWT_SECRET_KEY and GEMINI_API_KEY
 
 # 4. Apply migrations and run
 alembic upgrade head
