@@ -1,0 +1,97 @@
+{
+  "meta": {
+    "title": "AI Career Assistant",
+    "description": "See how your CV matches a job posting, with the evidence behind every judgement."
+  },
+  "shell": {
+    "product": "AI Career Assistant",
+    "navLabel": "Main",
+    "nav": {
+      "analyses": "Analyses"
+    },
+    "language": "Language",
+    "skipToContent": "Skip to content"
+  },
+  "notFound": {
+    "title": "This page does not exist yet",
+    "body": "The link may be wrong, or this part of the app has not been built yet.",
+    "back": "Open the sample analysis"
+  },
+  "result": {
+    "sampleNotice": "Sample analysis with a fictional CV and job posting.",
+    "comparedWith": "Compared with {resume}",
+    "fit": {
+      "strong": "Strong fit",
+      "moderate": "Moderate fit",
+      "weak": "Weak fit"
+    },
+    "score": "{score} / 100",
+    "howScored": "How is this scored?",
+    "limitationsTitle": "What this analysis cannot know",
+    "status": {
+      "matched": "Matched",
+      "partial": "Partial",
+      "missing": "Missing"
+    },
+    "statusCount": {
+      "matched": "{count} matched",
+      "partial": "{count} partial",
+      "missing": "{count} missing"
+    },
+    "importance": {
+      "must_have": "Must-have",
+      "nice_to_have": "Nice-to-have"
+    },
+    "requirementsTitle": "Requirements",
+    "requirementsEmpty": "No requirements could be extracted from this job posting. Check that the full posting text was provided, then run the analysis again.",
+    "sheetLines": {
+      "one": "{count} line read from this CV",
+      "other": "{count} lines read from this CV"
+    },
+    "sheetEmpty": "No evidence statements could be extracted from this CV.",
+    "missingNote": "Nothing in this CV supports “{requirement}”.",
+    "otherSection": "Other",
+    "fixesTitle": "What to fix",
+    "fixesEmpty": "No changes are suggested for this posting.",
+    "priority": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "target": {
+      "skill": "Skill",
+      "cv_section": "CV section",
+      "project": "Project",
+      "interview_topic": "Interview topic"
+    },
+    "relatedRequirements": "Related requirements",
+    "questions": {
+      "title": "Interview questions",
+      "intro": "Questions an interviewer is likely to ask, based on this posting and the gaps above.",
+      "jump": "Interview questions",
+      "generate": "Generate interview questions",
+      "generating": "Writing questions…",
+      "error": "The questions could not be generated. The AI service may be busy; try again in a minute.",
+      "retry": "Try again",
+      "why": "Why this question",
+      "empty": "No questions were returned for this posting.",
+      "category": {
+        "technical": "Technical",
+        "behavioral": "Behavioral",
+        "project": "Project",
+        "gap": "Gap"
+      }
+    },
+    "progress": {
+      "pending": "Queued",
+      "running": "Analyzing",
+      "title": "Comparing your CV with this posting",
+      "body": "Requirements are extracted from the posting, matched against your CV and checked for evidence. This usually takes under a minute, and the page updates on its own."
+    },
+    "failed": {
+      "title": "This analysis could not be completed",
+      "body": "The AI service did not answer in time or returned an invalid result. Your CV and the posting are saved, so you can run the analysis again.",
+      "retry": "Run the analysis again"
+    }
+  }
+}

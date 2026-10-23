@@ -1,0 +1,97 @@
+{
+  "meta": {
+    "title": "AI Career Assistant",
+    "description": "CV’nin bir iş ilanına ne kadar uyduğunu, her kararın dayandığı kanıtla birlikte gör."
+  },
+  "shell": {
+    "product": "AI Career Assistant",
+    "navLabel": "Ana menü",
+    "nav": {
+      "analyses": "Analizler"
+    },
+    "language": "Dil",
+    "skipToContent": "İçeriğe geç"
+  },
+  "notFound": {
+    "title": "Bu sayfa henüz yok",
+    "body": "Bağlantı hatalı olabilir ya da uygulamanın bu bölümü henüz yapılmadı.",
+    "back": "Örnek analizi aç"
+  },
+  "result": {
+    "sampleNotice": "Kurgusal bir CV ve iş ilanıyla hazırlanmış örnek analiz.",
+    "comparedWith": "Karşılaştırılan CV: {resume}",
+    "fit": {
+      "strong": "Güçlü uyum",
+      "moderate": "Orta uyum",
+      "weak": "Zayıf uyum"
+    },
+    "score": "{score} / 100",
+    "howScored": "Puan nasıl hesaplanıyor?",
+    "limitationsTitle": "Bu analizin bilemeyecekleri",
+    "status": {
+      "matched": "Eşleşti",
+      "partial": "Kısmi",
+      "missing": "Eksik"
+    },
+    "statusCount": {
+      "matched": "{count} eşleşti",
+      "partial": "{count} kısmi",
+      "missing": "{count} eksik"
+    },
+    "importance": {
+      "must_have": "Zorunlu",
+      "nice_to_have": "Tercih sebebi"
+    },
+    "requirementsTitle": "Şartlar",
+    "requirementsEmpty": "Bu ilandan şart çıkarılamadı. İlan metninin tamamının girildiğini kontrol edip analizi yeniden çalıştır.",
+    "sheetLines": {
+      "one": "Bu CV’den okunan {count} satır",
+      "other": "Bu CV’den okunan {count} satır"
+    },
+    "sheetEmpty": "Bu CV’den kanıt cümlesi çıkarılamadı.",
+    "missingNote": "Bu CV’de “{requirement}” şartını destekleyen bir şey yok.",
+    "otherSection": "Diğer",
+    "fixesTitle": "Neyi düzeltmeli",
+    "fixesEmpty": "Bu ilan için önerilen bir değişiklik yok.",
+    "priority": {
+      "high": "Yüksek",
+      "medium": "Orta",
+      "low": "Düşük"
+    },
+    "target": {
+      "skill": "Beceri",
+      "cv_section": "CV bölümü",
+      "project": "Proje",
+      "interview_topic": "Mülakat konusu"
+    },
+    "relatedRequirements": "İlgili şartlar",
+    "questions": {
+      "title": "Mülakat soruları",
+      "intro": "Bu ilana ve yukarıdaki eksiklere göre mülakatta sorulması muhtemel sorular.",
+      "jump": "Mülakat soruları",
+      "generate": "Mülakat sorularını oluştur",
+      "generating": "Sorular yazılıyor…",
+      "error": "Sorular oluşturulamadı. Yapay zeka servisi meşgul olabilir; bir dakika sonra tekrar dene.",
+      "retry": "Tekrar dene",
+      "why": "Neden bu soru",
+      "empty": "Bu ilan için soru dönmedi.",
+      "category": {
+        "technical": "Teknik",
+        "behavioral": "Davranışsal",
+        "project": "Proje",
+        "gap": "Eksik alan"
+      }
+    },
+    "progress": {
+      "pending": "Sırada",
+      "running": "Analiz ediliyor",
+      "title": "CV’n bu ilanla karşılaştırılıyor",
+      "body": "İlandaki şartlar çıkarılıyor, CV’ndeki kanıtlarla eşleştiriliyor ve kontrol ediliyor. Genellikle bir dakikadan kısa sürer; sayfa kendiliğinden güncellenir."
+    },
+    "failed": {
+      "title": "Bu analiz tamamlanamadı",
+      "body": "Yapay zeka servisi zamanında yanıt vermedi ya da geçersiz bir sonuç döndürdü. CV’n ve ilan kayıtlı; analizi yeniden çalıştırabilirsin.",
+      "retry": "Analizi yeniden çalıştır"
+    }
+  }
+}

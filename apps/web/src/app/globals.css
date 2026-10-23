@@ -1,0 +1,173 @@
+/* Design tokens and global browser-surface styling for the web client ("editor's contact sheet" world). */
+
+@import "tailwindcss";
+
+@theme {
+  /* Shell: the darkroom graphite around the work. */
+  --color-shell: #1c1b19;
+  --color-shell-raised: #2a2926;
+  --color-shell-text: #f2f1ee;
+  --color-shell-mute: #b4b2ac;
+
+  /* Desk, sheet and ink. */
+  --color-desk: #ecece9;
+  --color-desk-deep: #e1e0dc;
+  --color-paper: #ffffff;
+  --color-ink: #1c1b19;
+  --color-ink-soft: #3d3b37;
+  --color-mute: #5f5d58;
+  --color-rule: #d6d5d1;
+  --color-rule-strong: #1c1b19;
+
+  /* The editor's marks. */
+  --color-marker: #b73128;
+  --color-marker-tint: #f7dcd8;
+  --color-edge: #a3500f;
+  --color-partial: #8a6405;
+  --color-partial-tint: #f4e8c8;
+
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+
+  --shadow-sheet: 0 1px 2px rgb(28 27 25 / 0.08), 0 12px 32px -8px rgb(28 27 25 / 0.14);
+
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--color-desk);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.55;
+    font-feature-settings: "kern";
+    text-rendering: optimizeLegibility;
+    overflow-wrap: break-word;
+  }
+
+  a,
+  button,
+  summary {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  ::selection {
+    background: var(--color-marker-tint);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+
+  a {
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-rule) transparent;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+}
+
+@utility edge-number {
+  /* Film edge print: condensed, tabular, small. Used for evidence ids and scores. */
+  font-stretch: 72%;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+@utility label-caps {
+  font-stretch: 85%;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Result page layout: fixes lead on narrow screens, three columns on wide ones. */
+.result-grid {
+  display: grid;
+  gap: 28px;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "fixes" "requirements" "sheet";
+}
+
+@media (min-width: 1024px) {
+  .result-grid {
+    gap: 28px 32px;
+    grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+    grid-template-areas: "fixes fixes" "requirements sheet";
+  }
+}
+
+@media (min-width: 1280px) {
+  .result-grid {
+    grid-template-columns: minmax(280px, 330px) minmax(0, 1fr) minmax(300px, 350px);
+    grid-template-areas: "requirements sheet fixes";
+  }
+}
+
+/* The editor's loop: drawn on once with a fast ease-out, interruptible, instant for keyboard and reduced motion. */
+.loop-reveal {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 260ms var(--ease-out-strong);
+
+  @starting-style {
+    stroke-dashoffset: 1;
+  }
+}
+
+.loop-reveal[data-instant="true"] {
+  transition: none;
+}
+
+/* Indeterminate progress: constant motion, so linear easing. */
+.progress-sweep {
+  animation: progress-sweep 1.4s linear infinite;
+}
+
+@keyframes progress-sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(300%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-sweep {
+    animation: none;
+    transform: translateX(100%);
+  }
+
+  .loop-reveal {
+    transition: none;
+  }
+
+  .loop-layer {
+    opacity: 1;
+    transition: opacity 150ms ease;
+
+    @starting-style {
+      opacity: 0;
+    }
+  }
+}
