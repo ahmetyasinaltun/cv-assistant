@@ -47,11 +47,30 @@ uvicorn app.main:app --reload
 
 API docs: http://localhost:8000/docs
 
+## Local setup (web)
+
+Requirements: Node.js 20+.
+
+```bash
+cd apps/web
+npm install
+npm run dev            # http://localhost:3000 → redirects to /en or /tr
+```
+
+The web client is a Next.js 16 app (App Router, TypeScript, Tailwind CSS 4). The interface is bilingual (English/Turkish): the language lives in the URL (`/en/...`, `/tr/...`) and the first visit picks it from the browser.
+
+Until authentication screens exist, the result screen runs on a fictional sample analysis at `/en/analyses/sample`. Add `?preview=running`, `failed`, `no-questions` or `questions-error` to see the other states.
+
 ## Tests
 
 ```bash
 cd services/api
 pytest
+
+cd apps/web
+npm test               # unit tests (Vitest)
+npm run lint
+npm run build          # also type-checks
 ```
 
-Tests run against an in-memory SQLite database and a deterministic fake AI provider, so they need no network access or API keys.
+Backend tests run against an in-memory SQLite database and a deterministic fake AI provider, so they need no network access or API keys.
