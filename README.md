@@ -77,3 +77,9 @@ npm run build          # also type-checks
 ```
 
 Backend tests run against an in-memory SQLite database and a deterministic fake AI provider, so they need no network access or API keys.
+
+## Known limitations
+
+- **Free AI tier and personal data.** The default provider is Gemini's free tier. Under Google's terms for unpaid services, submitted content may be used to improve Google's products and may be read by human reviewers. Use fictional or anonymized CVs for demos; a paid tier or a self-hosted model would be needed for real personal data.
+- **Speed depends on the free tier.** An analysis takes from a few seconds to a few minutes, depending on which models in the fallback chain are overloaded or out of quota.
+- **Security is portfolio-grade.** Passwords are hashed with bcrypt and the web client keeps the token in an httpOnly cookie, but there are no refresh tokens, rate limits or audit logs.
