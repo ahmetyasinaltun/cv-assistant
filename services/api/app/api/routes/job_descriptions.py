@@ -42,7 +42,7 @@ def create_job_description(
 
 @router.get("", response_model=list[JobDescriptionResponse])
 def list_job_descriptions(current_user: CurrentUser, db: DbSession) -> list[JobDescriptionResponse]:
-    return [_to_response(j) for j in JobDescriptionService(db).list(current_user.id)]
+    return [_to_response(j) for j in JobDescriptionService(db).list_for_user(current_user.id)]
 
 
 @router.get("/{job_id}", response_model=JobDescriptionDetailResponse)

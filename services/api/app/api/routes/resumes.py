@@ -52,7 +52,7 @@ async def upload_resume_pdf(
 
 @router.get("", response_model=list[ResumeResponse])
 def list_resumes(current_user: CurrentUser, db: DbSession) -> list[ResumeResponse]:
-    return [_to_response(r) for r in ResumeService(db).list(current_user.id)]
+    return [_to_response(r) for r in ResumeService(db).list_for_user(current_user.id)]
 
 
 @router.get("/{resume_id}", response_model=ResumeDetailResponse)

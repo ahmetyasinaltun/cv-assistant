@@ -49,7 +49,9 @@ def create_analysis(
 def list_analyses(
     current_user: CurrentUser, db: DbSession, provider: Provider
 ) -> list[AnalysisSummaryResponse]:
-    return [to_summary_response(a) for a in AnalysisService(db, provider).list(current_user.id)]
+    return [
+        to_summary_response(a) for a in AnalysisService(db, provider).list_for_user(current_user.id)
+    ]
 
 
 @router.get("/{analysis_id}", response_model=AnalysisDetailResponse)

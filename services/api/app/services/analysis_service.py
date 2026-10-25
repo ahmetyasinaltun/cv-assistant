@@ -76,7 +76,7 @@ class AnalysisService:
             raise NotFoundError("Analysis not found.", code="analysis_not_found")
         return analysis
 
-    def list(self, user_id: UUID) -> list[Analysis]:
+    def list_for_user(self, user_id: UUID) -> list[Analysis]:
         return self.analyses.list_for_user(user_id)
 
     def generate_interview_questions(

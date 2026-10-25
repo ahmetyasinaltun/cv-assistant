@@ -58,7 +58,7 @@ class ResumeService:
             )
         )
 
-    def list(self, user_id: UUID) -> list[Resume]:
+    def list_for_user(self, user_id: UUID) -> list[Resume]:
         return self.resumes.list_for_user(user_id)
 
     def get(self, resume_id: UUID, user_id: UUID) -> Resume:
@@ -85,7 +85,7 @@ class JobDescriptionService:
             )
         )
 
-    def list(self, user_id: UUID) -> list[JobDescription]:
+    def list_for_user(self, user_id: UUID) -> list[JobDescription]:
         return self.jobs.list_for_user(user_id)
 
     def get(self, job_id: UUID, user_id: UUID) -> JobDescription:
