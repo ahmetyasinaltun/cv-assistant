@@ -1,16 +1,27 @@
 {
   "meta": {
     "title": "AI Career Assistant",
-    "description": "See how your CV matches a job posting, with the evidence behind every judgement."
+    "description": "See how your CV matches a job posting, with the evidence behind every judgement.",
+    "titles": {
+      "signIn": "Sign in",
+      "register": "Create an account",
+      "analyses": "Analyses",
+      "newAnalysis": "New analysis",
+      "analysis": "Analysis"
+    }
   },
   "shell": {
     "product": "AI Career Assistant",
     "navLabel": "Main",
     "nav": {
-      "analyses": "Analyses"
+      "analyses": "Analyses",
+      "sample": "Sample analysis"
     },
     "language": "Language",
-    "skipToContent": "Skip to content"
+    "skipToContent": "Skip to content",
+    "accountLabel": "Account",
+    "signIn": "Sign in",
+    "signOut": "Sign out"
   },
   "notFound": {
     "title": "This page does not exist yet",
@@ -86,12 +97,144 @@
       "pending": "Queued",
       "running": "Analyzing",
       "title": "Comparing your CV with this posting",
-      "body": "Requirements are extracted from the posting, matched against your CV and checked for evidence. This usually takes under a minute, and the page updates on its own."
+      "body": "Requirements are extracted from the posting, matched against your CV and checked for evidence. This usually takes a minute or two, longer when the free AI service is busy. The page updates on its own."
     },
     "failed": {
       "title": "This analysis could not be completed",
       "body": "The AI service did not answer in time or returned an invalid result. Your CV and the posting are saved, so you can run the analysis again.",
-      "retry": "Run the analysis again"
+      "retry": "Run the analysis again",
+      "newAnalysis": "Start a new analysis",
+      "starting": "Starting…",
+      "reasons": {
+        "ai_quota_exhausted": "The free AI quota is used up for now. It renews daily, so try again later; your CV and the posting are saved.",
+        "no_requirements_extracted": "No requirements could be found in the job posting. Check that the full posting text was pasted, then start a new analysis.",
+        "no_evidence_extracted": "No usable statements could be read from the CV. Check the CV text, then start a new analysis."
+      }
+    }
+  },
+  "errorPage": {
+    "title": "This page could not be loaded",
+    "body": "The service may be unreachable for a moment. Nothing you saved is lost.",
+    "retry": "Try again"
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "fullName": "Full name",
+    "signIn": {
+      "title": "Sign in",
+      "submit": "Sign in",
+      "submitting": "Signing in…",
+      "switchPrompt": "No account yet?",
+      "switchLink": "Create one"
+    },
+    "register": {
+      "title": "Create an account",
+      "submit": "Create account",
+      "submitting": "Creating account…",
+      "passwordHint": "At least 8 characters.",
+      "switchPrompt": "Already have an account?",
+      "switchLink": "Sign in"
+    },
+    "samplePrompt": "Want to see a result first?",
+    "sampleLink": "Open the sample analysis",
+    "errors": {
+      "invalidCredentials": "This email and password do not match an account. Check them and try again.",
+      "emailTaken": "An account with this email already exists. Sign in instead, or use another email.",
+      "invalidInput": "Check the fields: a valid email address and a password of at least 8 characters.",
+      "unavailable": "The service is not reachable right now. Try again in a minute.",
+      "generic": "Something went wrong. Try again."
+    }
+  },
+  "history": {
+    "title": "Analyses",
+    "newAnalysis": "New analysis",
+    "columns": {
+      "posting": "Job posting",
+      "resume": "CV",
+      "result": "Result",
+      "date": "Date"
+    },
+    "status": {
+      "pending": "Queued",
+      "running": "Analyzing",
+      "failed": "Could not complete"
+    },
+    "empty": {
+      "title": "No analyses yet",
+      "body": "Add your CV and a job posting to see which requirements your CV supports and what to change before you apply.",
+      "tryPrompt": "Want to see it work first?",
+      "tryLink": "Try it with the sample CV and posting",
+      "samplePrompt": "Prefer to read a finished one?",
+      "sampleLink": "Open the sample analysis"
+    }
+  },
+  "newAnalysis": {
+    "title": "New analysis",
+    "intro": "Pick a CV, paste the job posting and start. An analysis usually takes a minute or two.",
+    "fillSample": "Fill with the sample CV and posting",
+    "sampleFilled": "Filled with a fictional sample CV and job posting. Start the analysis to see a live result.",
+    "characterCount": "{count} / {max} characters",
+    "overLimit": "Only the first {max} characters are analyzed.",
+    "resume": {
+      "title": "CV",
+      "legend": "Which CV should be compared?",
+      "pdf": "PDF",
+      "text": "Pasted text",
+      "characters": {
+        "one": "{count} character",
+        "other": "{count} characters"
+      },
+      "addNew": "Add a new CV",
+      "addFirst": "Add your CV",
+      "nameLabel": "CV name",
+      "nameHint": "Only you see this name, for example “CV, October 2026”.",
+      "sourceLegend": "How do you want to add it?",
+      "paste": "Paste text",
+      "upload": "Upload PDF",
+      "textLabel": "CV text",
+      "textPlaceholder": "Paste the full text of your CV…",
+      "dropPrompt": "Drop a PDF here, or",
+      "chooseFile": "choose a file",
+      "fileHint": "PDF up to 5 MB, with selectable text (not a scan).",
+      "replaceFile": "Choose another file",
+      "delete": "Delete",
+      "deleteConfirm": "Delete “{title}”?",
+      "deleteConsequence": {
+        "one": "The analysis made with this CV is deleted too.",
+        "other": "The {count} analyses made with this CV are deleted too."
+      },
+      "deleteNoAnalyses": "No analyses use this CV.",
+      "deleteButton": "Delete CV",
+      "deleting": "Deleting…",
+      "cancel": "Cancel",
+      "deleteFailed": "The CV could not be deleted. Try again."
+    },
+    "posting": {
+      "title": "Job posting",
+      "titleLabel": "Job title",
+      "companyLabel": "Company",
+      "optional": "optional",
+      "textLabel": "Posting text",
+      "textPlaceholder": "Paste the full job posting, including the requirements…"
+    },
+    "submit": "Start analysis",
+    "submitting": "Starting…",
+    "submitNote": "You can leave this page while it runs; the result is saved under Analyses.",
+    "errors": {
+      "resumeTitleMissing": "Give this CV a name.",
+      "resumeTextMissing": "Paste the text of your CV.",
+      "jobTitleMissing": "Add the job title.",
+      "jobTextMissing": "Paste the text of the job posting.",
+      "tooShort": "Add more text: at least 50 characters are needed for an analysis.",
+      "fileMissing": "Choose a PDF file.",
+      "fileType": "Only PDF files can be uploaded.",
+      "fileTooLarge": "This file is larger than 5 MB.",
+      "pdfInvalid": "This PDF could not be read. Try another file, or paste the text instead.",
+      "pdfNoText": "This PDF has no selectable text (it may be a scan). Paste the text instead.",
+      "pdfEncrypted": "This PDF is password-protected. Remove the password or paste the text instead.",
+      "unavailable": "The service is not reachable right now. Your text is still here; try again in a minute.",
+      "generic": "The analysis could not be started. Your text is still here; try again."
     }
   }
 }

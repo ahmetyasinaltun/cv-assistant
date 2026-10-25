@@ -26,6 +26,7 @@ function analysisForPreview(preview: SamplePreview | null): AnalysisDetail {
         fit_level: null,
         completed_at: null,
         interview_questions: null,
+        error_code: "ai_provider_error",
         error_message: "The AI provider timed out after 2 retries.",
       };
     case "no-questions":

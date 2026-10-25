@@ -1,4 +1,4 @@
-// TypeScript mirror of the analysis API contract defined by services/api/app/schemas/analysis.py.
+// TypeScript mirror of the API contract defined by the Pydantic schemas in services/api/app/schemas/.
 
 export type AnalysisStatus = "pending" | "running" | "completed" | "failed";
 export type RequirementCategory =
@@ -70,7 +70,7 @@ export interface InterviewQuestion {
   related_requirement_ids: string[];
 }
 
-export interface AnalysisDetail {
+export interface AnalysisSummary {
   id: string;
   status: AnalysisStatus;
   resume_id: string;
@@ -82,7 +82,47 @@ export interface AnalysisDetail {
   fit_level: FitLevel | null;
   created_at: string;
   completed_at: string | null;
+}
+
+export interface AnalysisDetail extends AnalysisSummary {
   result: AnalysisResult | null;
   interview_questions: InterviewQuestion[] | null;
+  /** Stable reason for a failure (e.g. "ai_quota_exhausted"); clients map it to localized text. */
+  error_code: string | null;
   error_message: string | null;
+}
+
+export interface User {
+  id: string;
+  email: string;
+  full_name: string;
+  created_at: string;
+}
+
+export interface TokenResponse {
+  access_token: string;
+  token_type: "bearer";
+  user: User;
+}
+
+export interface ResumeSummary {
+  id: string;
+  title: string;
+  source_type: "text" | "pdf";
+  original_filename: string | null;
+  character_count: number;
+  created_at: string;
+}
+
+export interface JobDescriptionSummary {
+  id: string;
+  title: string;
+  company: string | null;
+  character_count: number;
+  created_at: string;
+}
+
+export interface SampleAnalysisInput {
+  resume: { title: string; text: string };
+  job_description: { title: string; company: string | null; text: string };
 }

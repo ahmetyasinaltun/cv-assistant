@@ -52,6 +52,7 @@
 
   a,
   button,
+  label,
   summary {
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
@@ -124,6 +125,23 @@
   }
 }
 
+/* Analyses list row: two lines on phones, four aligned columns from tablet width. */
+.history-row {
+  display: grid;
+  gap: 2px 16px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "posting date" "resume outcome";
+}
+
+@media (min-width: 768px) {
+  .history-row {
+    gap: 0 24px;
+    align-items: baseline;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) 12rem 10rem;
+    grid-template-areas: "posting resume outcome date";
+  }
+}
+
 /* The editor's loop: drawn on once with a fast ease-out, interruptible, instant for keyboard and reduced motion. */
 .loop-reveal {
   stroke-dashoffset: 0;
@@ -136,6 +154,18 @@
 
 .loop-reveal[data-instant="true"] {
   transition: none;
+}
+
+/* A block revealed by a choice (adding a new CV): settles in from just above, quickly. */
+.reveal-in {
+  transition:
+    opacity 200ms var(--ease-out-strong),
+    translate 200ms var(--ease-out-strong);
+
+  @starting-style {
+    opacity: 0;
+    translate: 0 -4px;
+  }
 }
 
 /* Indeterminate progress: constant motion, so linear easing. */
@@ -160,6 +190,11 @@
 
   .loop-reveal {
     transition: none;
+  }
+
+  .reveal-in {
+    translate: none;
+    transition: opacity 150ms ease;
   }
 
   .loop-layer {

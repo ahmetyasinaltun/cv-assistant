@@ -4,6 +4,7 @@ import type { Metadata, Viewport } from "next";
 import { Archivo } from "next/font/google";
 
 import { AppHeader } from "@/components/AppHeader";
+import { ErrorCopyProvider } from "@/components/ErrorCopy";
 import { locales } from "@/i18n/config";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
 
@@ -25,7 +26,10 @@ export const viewport: Viewport = { themeColor: "#1c1b19" };
 
 export async function generateMetadata(): Promise<Metadata> {
   const dictionary = await getDictionary();
-  return { title: dictionary.meta.title, description: dictionary.meta.description };
+  return {
+    title: { default: dictionary.meta.title, template: `%s · ${dictionary.meta.title}` },
+    description: dictionary.meta.description,
+  };
 }
 
 export default async function RootLayout({ children }: LayoutProps<"/[lang]">) {
@@ -42,7 +46,7 @@ export default async function RootLayout({ children }: LayoutProps<"/[lang]">) {
           {dictionary.shell.skipToContent}
         </a>
         <AppHeader locale={locale} labels={dictionary.shell} />
-        {children}
+        <ErrorCopyProvider copy={dictionary.errorPage}>{children}</ErrorCopyProvider>
       </body>
     </html>
   );

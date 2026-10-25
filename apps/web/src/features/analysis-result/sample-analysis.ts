@@ -53,6 +53,7 @@ export const sampleAnalysis: AnalysisDetail = {
   fit_level: "strong",
   created_at: "2026-10-23T09:12:00Z",
   completed_at: "2026-10-23T09:12:41Z",
+  error_code: null,
   error_message: null,
   interview_questions: sampleInterviewQuestions,
   result: {

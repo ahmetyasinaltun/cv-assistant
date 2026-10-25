@@ -1,4 +1,4 @@
-// Localized home: until the analyses list exists, it opens the sample analysis.
+// Localized home fallback: the proxy already sends visitors to their analyses or the sample, so this rarely renders.
 
 import { redirect } from "next/navigation";
 

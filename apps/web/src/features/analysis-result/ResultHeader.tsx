@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 
+import { SampleNotice } from "@/components/SampleNotice";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { interpolate } from "@/i18n/format";
 
@@ -38,15 +39,7 @@ export function ResultHeader({
           <span aria-hidden="true" className="hidden sm:inline">·</span>
           <time dateTime={createdAt}>{createdAtLabel}</time>
         </p>
-        {isSample && (
-          <p className="mt-3 inline-flex items-center gap-2 rounded-[4px] bg-desk-deep px-2 py-1 text-[13px] text-ink-soft">
-            <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" className="shrink-0 text-edge">
-              <rect x="1" y="2.5" width="12" height="9" rx="1" fill="none" stroke="currentColor" strokeWidth="1.3" />
-              <path d="M1 5h12M1 9h12" stroke="currentColor" strokeWidth="1.3" strokeDasharray="1.5 1.5" />
-            </svg>
-            {labels.sampleNotice}
-          </p>
-        )}
+        {isSample && <SampleNotice className="mt-3">{labels.sampleNotice}</SampleNotice>}
       </div>
       {action && <div className="shrink-0">{action}</div>}
     </div>

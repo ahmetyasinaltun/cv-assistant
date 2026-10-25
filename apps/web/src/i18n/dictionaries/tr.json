@@ -1,16 +1,27 @@
 {
   "meta": {
     "title": "AI Career Assistant",
-    "description": "CV’nin bir iş ilanına ne kadar uyduğunu, her kararın dayandığı kanıtla birlikte gör."
+    "description": "CV’nin bir iş ilanına ne kadar uyduğunu, her kararın dayandığı kanıtla birlikte gör.",
+    "titles": {
+      "signIn": "Giriş yap",
+      "register": "Hesap oluştur",
+      "analyses": "Analizler",
+      "newAnalysis": "Yeni analiz",
+      "analysis": "Analiz"
+    }
   },
   "shell": {
     "product": "AI Career Assistant",
     "navLabel": "Ana menü",
     "nav": {
-      "analyses": "Analizler"
+      "analyses": "Analizler",
+      "sample": "Örnek analiz"
     },
     "language": "Dil",
-    "skipToContent": "İçeriğe geç"
+    "skipToContent": "İçeriğe geç",
+    "accountLabel": "Hesap",
+    "signIn": "Giriş yap",
+    "signOut": "Çıkış yap"
   },
   "notFound": {
     "title": "Bu sayfa henüz yok",
@@ -86,12 +97,144 @@
       "pending": "Sırada",
       "running": "Analiz ediliyor",
       "title": "CV’n bu ilanla karşılaştırılıyor",
-      "body": "İlandaki şartlar çıkarılıyor, CV’ndeki kanıtlarla eşleştiriliyor ve kontrol ediliyor. Genellikle bir dakikadan kısa sürer; sayfa kendiliğinden güncellenir."
+      "body": "İlandaki şartlar çıkarılıyor, CV’ndeki kanıtlarla eşleştiriliyor ve kontrol ediliyor. Bu genellikle bir iki dakika sürer, ücretsiz yapay zeka servisi yoğunsa daha uzun. Sayfa kendiliğinden güncellenir."
     },
     "failed": {
       "title": "Bu analiz tamamlanamadı",
       "body": "Yapay zeka servisi zamanında yanıt vermedi ya da geçersiz bir sonuç döndürdü. CV’n ve ilan kayıtlı; analizi yeniden çalıştırabilirsin.",
-      "retry": "Analizi yeniden çalıştır"
+      "retry": "Analizi yeniden çalıştır",
+      "newAnalysis": "Yeni analiz başlat",
+      "starting": "Başlatılıyor…",
+      "reasons": {
+        "ai_quota_exhausted": "Ücretsiz yapay zeka kotası şimdilik doldu. Kota her gün yenilenir; daha sonra tekrar dene. CV’n ve ilan kayıtlı.",
+        "no_requirements_extracted": "İş ilanında hiç gereksinim bulunamadı. İlanın tam metninin yapıştırıldığını kontrol et, sonra yeni bir analiz başlat.",
+        "no_evidence_extracted": "CV’den kullanılabilir bir ifade okunamadı. CV metnini kontrol et, sonra yeni bir analiz başlat."
+      }
+    }
+  },
+  "errorPage": {
+    "title": "Bu sayfa yüklenemedi",
+    "body": "Servise şu an ulaşılamıyor olabilir. Kaydettiğin hiçbir şey kaybolmadı.",
+    "retry": "Tekrar dene"
+  },
+  "auth": {
+    "email": "E-posta",
+    "password": "Şifre",
+    "fullName": "Ad soyad",
+    "signIn": {
+      "title": "Giriş yap",
+      "submit": "Giriş yap",
+      "submitting": "Giriş yapılıyor…",
+      "switchPrompt": "Hesabın yok mu?",
+      "switchLink": "Hesap oluştur"
+    },
+    "register": {
+      "title": "Hesap oluştur",
+      "submit": "Hesap oluştur",
+      "submitting": "Hesap oluşturuluyor…",
+      "passwordHint": "En az 8 karakter.",
+      "switchPrompt": "Zaten hesabın var mı?",
+      "switchLink": "Giriş yap"
+    },
+    "samplePrompt": "Önce bir sonuç görmek ister misin?",
+    "sampleLink": "Örnek analizi aç",
+    "errors": {
+      "invalidCredentials": "Bu e-posta ve şifreyle eşleşen bir hesap yok. Kontrol edip tekrar dene.",
+      "emailTaken": "Bu e-postayla açılmış bir hesap zaten var. Giriş yap ya da başka bir e-posta kullan.",
+      "invalidInput": "Alanları kontrol et: geçerli bir e-posta adresi ve en az 8 karakterlik bir şifre gerekiyor.",
+      "unavailable": "Servise şu an ulaşılamıyor. Bir dakika sonra tekrar dene.",
+      "generic": "Bir şeyler ters gitti. Tekrar dene."
+    }
+  },
+  "history": {
+    "title": "Analizler",
+    "newAnalysis": "Yeni analiz",
+    "columns": {
+      "posting": "İş ilanı",
+      "resume": "CV",
+      "result": "Sonuç",
+      "date": "Tarih"
+    },
+    "status": {
+      "pending": "Sırada",
+      "running": "Analiz ediliyor",
+      "failed": "Tamamlanamadı"
+    },
+    "empty": {
+      "title": "Henüz analiz yok",
+      "body": "CV’ni ve bir iş ilanını ekle; CV’nin hangi gereksinimleri karşıladığını ve başvurmadan önce neyi değiştirmen gerektiğini gör.",
+      "tryPrompt": "Önce nasıl çalıştığını görmek ister misin?",
+      "tryLink": "Örnek CV ve ilanla dene",
+      "samplePrompt": "Önce hazır bir sonucu okumak mı istersin?",
+      "sampleLink": "Örnek analizi aç"
+    }
+  },
+  "newAnalysis": {
+    "title": "Yeni analiz",
+    "intro": "Bir CV seç, iş ilanını yapıştır ve başlat. Bir analiz genellikle bir iki dakika sürer.",
+    "fillSample": "Örnek CV ve ilanla doldur",
+    "sampleFilled": "Kurgusal bir örnek CV ve iş ilanıyla dolduruldu. Canlı bir sonuç görmek için analizi başlat.",
+    "characterCount": "{count} / {max} karakter",
+    "overLimit": "Yalnızca ilk {max} karakter analiz edilir.",
+    "resume": {
+      "title": "CV",
+      "legend": "Hangi CV karşılaştırılsın?",
+      "pdf": "PDF",
+      "text": "Yapıştırılmış metin",
+      "characters": {
+        "one": "{count} karakter",
+        "other": "{count} karakter"
+      },
+      "addNew": "Yeni CV ekle",
+      "addFirst": "CV’ni ekle",
+      "nameLabel": "CV adı",
+      "nameHint": "Bu adı yalnızca sen görürsün, örneğin “CV, Ekim 2026”.",
+      "sourceLegend": "Nasıl eklemek istersin?",
+      "paste": "Metni yapıştır",
+      "upload": "PDF yükle",
+      "textLabel": "CV metni",
+      "textPlaceholder": "CV’nin tam metnini buraya yapıştır…",
+      "dropPrompt": "PDF’i buraya bırak ya da",
+      "chooseFile": "dosya seç",
+      "fileHint": "En fazla 5 MB, metni seçilebilen bir PDF (taranmış görüntü değil).",
+      "replaceFile": "Başka bir dosya seç",
+      "delete": "Sil",
+      "deleteConfirm": "“{title}” silinsin mi?",
+      "deleteConsequence": {
+        "one": "Bu CV ile yapılan analiz de silinir.",
+        "other": "Bu CV ile yapılan {count} analiz de silinir."
+      },
+      "deleteNoAnalyses": "Bu CV’yi kullanan bir analiz yok.",
+      "deleteButton": "CV’yi sil",
+      "deleting": "Siliniyor…",
+      "cancel": "Vazgeç",
+      "deleteFailed": "CV silinemedi. Tekrar dene."
+    },
+    "posting": {
+      "title": "İş ilanı",
+      "titleLabel": "Pozisyon",
+      "companyLabel": "Şirket",
+      "optional": "isteğe bağlı",
+      "textLabel": "İlan metni",
+      "textPlaceholder": "Gereksinimler dahil, ilanın tam metnini buraya yapıştır…"
+    },
+    "submit": "Analizi başlat",
+    "submitting": "Başlatılıyor…",
+    "submitNote": "Analiz sürerken bu sayfadan ayrılabilirsin; sonuç Analizler altında saklanır.",
+    "errors": {
+      "resumeTitleMissing": "Bu CV’ye bir ad ver.",
+      "resumeTextMissing": "CV’nin metnini yapıştır.",
+      "jobTitleMissing": "Pozisyon adını yaz.",
+      "jobTextMissing": "İlan metnini yapıştır.",
+      "tooShort": "Biraz daha metin ekle: analiz için en az 50 karakter gerekiyor.",
+      "fileMissing": "Bir PDF dosyası seç.",
+      "fileType": "Yalnızca PDF dosyaları yüklenebilir.",
+      "fileTooLarge": "Bu dosya 5 MB’tan büyük.",
+      "pdfInvalid": "Bu PDF okunamadı. Başka bir dosya dene ya da metni yapıştır.",
+      "pdfNoText": "Bu PDF’te seçilebilir metin yok (taranmış olabilir). Metni yapıştır.",
+      "pdfEncrypted": "Bu PDF şifreli. Şifreyi kaldır ya da metni yapıştır.",
+      "unavailable": "Servise şu an ulaşılamıyor. Metnin hâlâ burada; bir dakika sonra tekrar dene.",
+      "generic": "Analiz başlatılamadı. Metnin hâlâ burada; tekrar dene."
     }
   }
 }

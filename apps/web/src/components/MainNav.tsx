@@ -11,6 +11,8 @@ interface NavItem {
   href: string;
   /** Path prefix that counts as "inside" this item; defaults to href. */
   section?: string;
+  /** Paths under the section that belong elsewhere (the public sample is not "your" analyses). */
+  excludes?: string[];
   label: string;
 }
 
@@ -29,7 +31,9 @@ export function MainNav({ locale, label, items }: MainNavProps) {
         {items.map((item) => {
           const href = `/${locale}${item.href}`;
           const section = `/${locale}${item.section ?? item.href}`;
-          const isCurrent = pathname === section || pathname.startsWith(`${section}/`);
+          const isExcluded = item.excludes?.some((path) => pathname === `/${locale}${path}`) ?? false;
+          const isCurrent =
+            !isExcluded && (pathname === section || pathname.startsWith(`${section}/`));
           return (
             <li key={item.href}>
               <Link

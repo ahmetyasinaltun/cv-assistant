@@ -38,6 +38,9 @@ interface AnalysisResultViewProps {
   contentLang?: string;
   generateQuestions?: () => Promise<InterviewQuestion[]>;
   retryHref?: string;
+  /** Runs the analysis again on the server (real analyses); the sample uses `retryHref` instead. */
+  retryAction?: () => Promise<void>;
+  newAnalysisHref?: string;
 }
 
 function prefersReducedMotion() {
@@ -81,6 +84,8 @@ export function AnalysisResultView({
   contentLang,
   generateQuestions,
   retryHref,
+  retryAction,
+  newAnalysisHref,
 }: AnalysisResultViewProps) {
   const result = analysis.status === "completed" ? analysis.result : null;
   const requirements = useMemo(() => result?.requirements ?? [], [result]);
@@ -172,7 +177,10 @@ export function AnalysisResultView({
       {!result ? (
         <AnalysisStatusPanel
           status={analysis.status === "completed" ? "failed" : analysis.status}
+          errorCode={analysis.error_code}
           retryHref={retryHref}
+          retryAction={retryAction}
+          newAnalysisHref={newAnalysisHref}
           labels={labels}
         />
       ) : (

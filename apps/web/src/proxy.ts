@@ -1,26 +1,44 @@
-// Redirects paths without a locale prefix to the visitor's language (saved choice first, then the browser's).
+// Runs before every page request: adds the locale to unprefixed paths, picks the home screen and keeps
+// signed-out visitors out of the private screens. Cookie presence is only an optimistic check; every
+// private page still asks the API whether the session is valid.
 
 import { NextResponse, type NextRequest } from "next/server";
 
-import { LOCALE_COOKIE, locales } from "./i18n/config";
+import { LOCALE_COOKIE, locales, type Locale } from "./i18n/config";
 import { negotiateLocale } from "./i18n/negotiate";
+import { SESSION_COOKIE, isPrivatePath } from "./lib/auth/session-rules";
 
-const HOME_PATH = "/analyses/sample";
+const SAMPLE_PATH = "/analyses/sample";
+const HISTORY_PATH = "/analyses";
+
+function redirectTo(request: NextRequest, pathname: string, search = "") {
+  const url = request.nextUrl.clone();
+  url.pathname = pathname;
+  url.search = search;
+  return NextResponse.redirect(url);
+}
 
 export function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  const hasLocale = locales.some(
-    (locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`),
+  const { pathname, search } = request.nextUrl;
+  const hasSession = request.cookies.has(SESSION_COOKIE);
+  const home = hasSession ? HISTORY_PATH : SAMPLE_PATH;
+  const locale = locales.find(
+    (candidate) => pathname === `/${candidate}` || pathname.startsWith(`/${candidate}/`),
   );
-  if (hasLocale) return;
 
-  const locale = negotiateLocale(
-    request.headers.get("accept-language"),
-    request.cookies.get(LOCALE_COOKIE)?.value,
-  );
-  const url = request.nextUrl.clone();
-  url.pathname = `/${locale}${pathname === "/" ? HOME_PATH : pathname}`;
-  return NextResponse.redirect(url);
+  if (!locale) {
+    const negotiated: Locale = negotiateLocale(
+      request.headers.get("accept-language"),
+      request.cookies.get(LOCALE_COOKIE)?.value,
+    );
+    return redirectTo(request, `/${negotiated}${pathname === "/" ? home : pathname}`, search);
+  }
+
+  const path = pathname.slice(locale.length + 1);
+  if (path === "" || path === "/") return redirectTo(request, `/${locale}${home}`);
+  if (isPrivatePath(path) && !hasSession) {
+    return redirectTo(request, `/${locale}/sign-in`, `?next=${encodeURIComponent(pathname + search)}`);
+  }
 }
 
 export const config = {

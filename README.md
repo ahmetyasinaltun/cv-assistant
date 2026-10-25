@@ -15,7 +15,7 @@ services/api    FastAPI backend: auth, documents, AI pipeline, persistence
 ```
 
 - Backend: Python 3.12+, FastAPI, SQLAlchemy 2, Alembic, PostgreSQL
-- AI: provider-agnostic service layer; default provider is Google Gemini (free tier) for both structured LLM output and embeddings
+- AI: provider-agnostic service layer; default provider is Google Gemini (free tier) for both structured LLM output and embeddings, with a fallback chain of models because free-tier quotas are per model
 - Auth: email/password with bcrypt hashing and JWT bearer tokens
 
 ## Local setup (backend)
@@ -52,6 +52,7 @@ API docs: http://localhost:8000/docs
 Requirements: Node.js 20+.
 
 ```bash
+# Start the backend first (see above); the web client talks to it at http://localhost:8000
 cd apps/web
 npm install
 npm run dev            # http://localhost:3000 → redirects to /en or /tr
@@ -59,7 +60,9 @@ npm run dev            # http://localhost:3000 → redirects to /en or /tr
 
 The web client is a Next.js 16 app (App Router, TypeScript, Tailwind CSS 4). The interface is bilingual (English/Turkish): the language lives in the URL (`/en/...`, `/tr/...`) and the first visit picks it from the browser.
 
-Until authentication screens exist, the result screen runs on a fictional sample analysis at `/en/analyses/sample`. Add `?preview=running`, `failed`, `no-questions` or `questions-error` to see the other states.
+- Register at `/en/register`, then start an analysis from **New analysis**. "Fill with the sample CV and posting" runs the fictional sample live.
+- The session token lives in an httpOnly cookie and every API call is made by the Next.js server, so the browser never sees the token. Set `API_BASE_URL` in `apps/web/.env.local` if the API is not on `http://localhost:8000` (see `.env.example`).
+- Without an account, the pre-computed sample result is at `/en/analyses/sample`. Add `?preview=running`, `failed`, `no-questions` or `questions-error` to see the other states.
 
 ## Tests
 
