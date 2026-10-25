@@ -8,7 +8,7 @@
   "expected_statuses": [
     {"keyword": "state management", "status": "matched"},
     {"keyword": "ci/cd", "status": "missing"},
-    {"keyword": "native", "status": "partial"}
+    {"keyword": "native", "status": ["partial", "matched"], "why": "Kotlin bug fixes in an Android app: thin but real native experience"}
   ],
   "expected_importance": [
     {"keyword": "native", "importance": "nice_to_have"}

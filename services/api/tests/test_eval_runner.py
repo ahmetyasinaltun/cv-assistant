@@ -12,3 +12,38 @@ def test_eval_cases_run_with_fake_provider():
         assert report.completed, report.error
         assert report.keyword_recall == 1.0, report.notes
         assert report.grounded_rate in (None, 1.0)
+
+
+def test_labels_may_accept_several_answers_for_borderline_cases():
+    from app.ai.eval.run_eval import CaseReport, _labelled_accuracy
+    from app.schemas.analysis import AnalysisResult
+
+    result = AnalysisResult.model_validate(
+        {
+            "overall": {
+                "score": 50,
+                "fit_level": "moderate",
+                "summary": "",
+                "score_explanation": "",
+                "limitations": [],
+            },
+            "requirements": [
+                {
+                    "id": "r1",
+                    "text": "1+ years of Python",
+                    "category": "technical_skill",
+                    "importance": "must_have",
+                    "status": "partial",
+                    "reasoning": "",
+                    "evidence": [],
+                }
+            ],
+            "candidate_evidence": [],
+            "suggestions": [],
+        }
+    )
+    report = CaseReport(name="t", completed=True)
+    strict = [{"keyword": "python", "status": "matched"}]
+    flexible = [{"keyword": "python", "status": ["matched", "partial"]}]
+    assert _labelled_accuracy(result, strict, "status", report) == 0.0
+    assert _labelled_accuracy(result, flexible, "status", report) == 1.0

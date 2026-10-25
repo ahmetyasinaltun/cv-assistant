@@ -111,7 +111,9 @@ def _labelled_accuracy(
             )
             continue
         actual = getattr(match, attribute)
-        if actual == expected:
+        # A borderline case may list several acceptable answers instead of forcing one.
+        accepted = expected if isinstance(expected, list) else [expected]
+        if actual in accepted:
             correct += 1
         else:
             report.notes.append(

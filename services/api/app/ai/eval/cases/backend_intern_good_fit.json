@@ -6,7 +6,7 @@
   "resume": "Jane Doe\nComputer Engineering student, 4th year\n\nExperience\n- Backend Intern, Acme Corp (Jun 2025 - Sep 2025): Built REST endpoints with Python and FastAPI, designed PostgreSQL schemas, and wrote pytest unit tests for the order service.\n- Teaching Assistant, Data Structures (2024): Led weekly lab sessions for 40 students and wrote weekly feedback emails in English.\n\nProjects\n- Inventory Tracker: FastAPI backend with SQLAlchemy and PostgreSQL, React frontend; containerised with Docker Compose for local development.\n- Open-source contributions: Reviewed and merged pull requests on GitHub for a small CLI tool.\n\nSkills\n- Python, FastAPI, SQL, PostgreSQL, Git, Docker basics, pytest",
   "expected_requirement_keywords": ["python", "sql", "git", "docker", "kubernetes", "communication"],
   "expected_statuses": [
-    {"keyword": "python", "status": "matched"},
+    {"keyword": "python", "status": ["matched", "partial"], "why": "1+ years asked; a 4-month internship plus a project is defensibly either"},
     {"keyword": "postgresql", "status": "matched"},
     {"keyword": "kubernetes", "status": "missing"},
     {"keyword": "docker", "status": "matched"}
