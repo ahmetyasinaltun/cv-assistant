@@ -22,6 +22,8 @@ from app.services.document_service import JobDescriptionService, ResumeService
 
 logger = logging.getLogger(__name__)
 
+UNEXPECTED_FAILURE_CODE = "analysis_failed_unexpectedly"
+
 
 class AnalysisService:
     def __init__(self, db: Session, provider: AIProvider):
@@ -58,15 +60,20 @@ class AnalysisService:
                 )
             )
         except AppError as exc:
-            self._mark_failed(analysis, exc.message)
+            self._mark_failed(analysis, exc.code, exc.message)
             return
         except Exception:
             logger.exception("Unexpected failure while running analysis %s", analysis_id)
-            self._mark_failed(analysis, "The analysis failed unexpectedly. Please try again.")
+            self._mark_failed(
+                analysis,
+                UNEXPECTED_FAILURE_CODE,
+                "The analysis failed unexpectedly. Please try again.",
+            )
             return
         analysis.result = result.model_dump(mode="json")
         analysis.status = AnalysisStatus.COMPLETED
         analysis.completed_at = utc_now()
+        analysis.error_code = None
         analysis.error_message = None
         self.analyses.save(analysis)
 
@@ -96,8 +103,9 @@ class AnalysisService:
         self.analyses.save(analysis)
         return questions
 
-    def _mark_failed(self, analysis: Analysis, message: str) -> None:
+    def _mark_failed(self, analysis: Analysis, code: str, message: str) -> None:
         analysis.status = AnalysisStatus.FAILED
+        analysis.error_code = code
         analysis.error_message = message
         analysis.completed_at = utc_now()
         self.analyses.save(analysis)
@@ -136,5 +144,6 @@ def to_detail_response(analysis: Analysis) -> AnalysisDetailResponse:
         **to_summary_response(analysis).model_dump(),
         result=analysis.result,
         interview_questions=analysis.interview_questions,
+        error_code=analysis.error_code,
         error_message=analysis.error_message,
     )

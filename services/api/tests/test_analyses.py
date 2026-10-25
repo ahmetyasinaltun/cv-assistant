@@ -108,6 +108,7 @@ def test_analysis_failure_is_recorded(client, auth_headers, monkeypatch):
 
     detail = client.get(f"/analyses/{analysis_id}", headers=auth_headers).json()
     assert detail["status"] == "failed"
+    assert detail["error_code"] == "ai_provider_error"
     assert detail["error_message"] == "Provider down"
     assert detail["result"] is None
 

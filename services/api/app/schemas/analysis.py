@@ -96,4 +96,5 @@ class AnalysisSummaryResponse(ORMModel):
 class AnalysisDetailResponse(AnalysisSummaryResponse):
     result: AnalysisResult | None
     interview_questions: list[InterviewQuestion] | None
+    error_code: str | None
     error_message: str | None

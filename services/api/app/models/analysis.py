@@ -4,7 +4,7 @@ import enum
 import uuid
 from datetime import datetime
 
-from sqlalchemy import JSON, DateTime, Enum, ForeignKey, Text
+from sqlalchemy import JSON, DateTime, Enum, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base, TimestampMixin, UUIDPrimaryKeyMixin
@@ -40,6 +40,8 @@ class Analysis(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     result: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     # Generated on demand after the analysis completes. Shape: list[schemas.analysis.InterviewQuestion]
     interview_questions: Mapped[list | None] = mapped_column(JSON, nullable=True)
+    # Stable machine-readable reason (e.g. "ai_quota_exhausted") that clients map to localized text.
+    error_code: Mapped[str | None] = mapped_column(String(64), nullable=True)
     error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
