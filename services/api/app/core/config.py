@@ -26,22 +26,25 @@ class Settings(BaseSettings):
     max_upload_size_bytes: int = 5 * 1024 * 1024
     max_document_chars: int = 30_000
 
-    # AI provider configuration. Each list is a fallback chain, most capable model first: free-tier
-    # quotas are per model, so a request moves down the list when a model is out of quota,
-    # overloaded or retired. Models change often; re-check with Google AI Studio and the eval runner.
+    # AI provider configuration. Each list is a fallback chain: free-tier quotas are per model, so a
+    # request moves down the list when a model is out of quota, overloaded or retired.
+    # LLM order is "reliable first, then most capable" (probes of 2026-10-25): the Flash-Lite and
+    # Gemma 26B models answered every time in seconds, while the full Flash models were often
+    # overloaded (60 s timeouts) and have daily free quotas of only a few dozen requests.
+    # Models change often; re-check with Google AI Studio and the eval runner.
     ai_provider: str = Field(default="gemini", pattern="^(gemini|fake)$")
     gemini_api_key: str = ""
     gemini_llm_models: list[str] = Field(
         default=[
-            "gemini-3.8-flash",
-            "gemini-3.7-flash",
+            "gemini-3.5-flash-lite",
+            "gemma-4-26b-a4b-it",
+            "gemini-3.1-flash-lite",
+            "gemini-3-flash-preview",
             "gemini-3.6-flash",
             "gemini-3.5-flash",
-            "gemini-3-flash-preview",
-            "gemini-3.5-flash-lite",
-            "gemini-3.1-flash-lite",
+            "gemini-3.8-flash",
+            "gemini-3.7-flash",
             "gemma-4-31b-it",
-            "gemma-4-26b-a4b-it",
         ],
         min_length=1,
     )
