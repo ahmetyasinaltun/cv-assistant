@@ -192,8 +192,13 @@ class AnalysisPipeline:
     def retrieve(
         self, requirements: list[_Requirement], evidence: list[CandidateEvidence]
     ) -> list[list[RetrievedCandidate]]:
-        requirement_vectors = self.embeddings.embed([r.text for r in requirements])
-        evidence_vectors = self.embeddings.embed([e.text for e in evidence])
+        # One embedding call for both sides: vectors are only comparable when the same model made
+        # them, and the provider may fall back to another model between separate calls.
+        vectors = self.embeddings.embed([r.text for r in requirements] + [e.text for e in evidence])
+        requirement_vectors, evidence_vectors = (
+            vectors[: len(requirements)],
+            vectors[len(requirements) :],
+        )
         return retrieve_candidates(requirement_vectors, [e.id for e in evidence], evidence_vectors)
 
     @staticmethod

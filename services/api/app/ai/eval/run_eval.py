@@ -9,6 +9,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
 from app.ai.pipeline import AnalysisInput, AnalysisPipeline
+from app.ai.providers.base import AIProvider
 from app.ai.providers.fake import FakeProvider
 from app.core.config import get_settings
 from app.core.errors import AIProviderError
@@ -123,12 +124,16 @@ def load_cases() -> list[dict]:
     return [json.loads(p.read_text(encoding="utf-8")) for p in sorted(CASES_DIR.glob("*.json"))]
 
 
-def build_pipeline(provider_name: str) -> AnalysisPipeline:
+def build_provider(provider_name: str) -> AIProvider:
     if provider_name == "fake":
-        return AnalysisPipeline(FakeProvider())
+        return FakeProvider()
     from app.ai.providers.gemini import GeminiProvider
 
-    return AnalysisPipeline(GeminiProvider(get_settings()))
+    return GeminiProvider(get_settings())
+
+
+def build_pipeline(provider_name: str) -> AnalysisPipeline:
+    return AnalysisPipeline(build_provider(provider_name))
 
 
 def _mean(values: list[float | None]) -> float | None:
@@ -144,8 +149,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--json", type=Path, help="Write the full report to this path.")
     args = parser.parse_args(argv)
 
-    pipeline = build_pipeline(args.provider)
-    reports = [evaluate_case(pipeline, case) for case in load_cases()]
+    provider = build_provider(args.provider)
+    reports = [evaluate_case(AnalysisPipeline(provider), case) for case in load_cases()]
 
     print(f"provider: {args.provider}\n")
     header = f"{'case':<28}{'ok':<4}{'score':<7}{'reqs':<6}{'kw':<7}{'status':<8}{'imp':<7}{'grounded':<9}"
@@ -170,6 +175,10 @@ def main(argv: list[str] | None = None) -> int:
         "importance_accuracy": _mean([r.importance_accuracy for r in reports]),
         "grounded_rate": _mean([r.grounded_rate for r in reports]),
     }
+    # With a fallback chain the answering model can change between steps; record which ones did.
+    models_used = getattr(provider, "models_used", None)
+    if models_used is not None:
+        summary["models_used"] = models_used()
     print("\nsummary:", json.dumps(summary))
     if args.json:
         args.json.write_text(

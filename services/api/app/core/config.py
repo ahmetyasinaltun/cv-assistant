@@ -26,13 +26,29 @@ class Settings(BaseSettings):
     max_upload_size_bytes: int = 5 * 1024 * 1024
     max_document_chars: int = 30_000
 
-    # AI provider configuration. Model names are configurable because free-tier quotas change.
+    # AI provider configuration. Each list is a fallback chain, most capable model first: free-tier
+    # quotas are per model, so a request moves down the list when a model is out of quota,
+    # overloaded or retired. Models change often; re-check with Google AI Studio and the eval runner.
     ai_provider: str = Field(default="gemini", pattern="^(gemini|fake)$")
     gemini_api_key: str = ""
-    gemini_llm_model: str = "gemini-2.5-flash"
-    gemini_embedding_model: str = "gemini-embedding-001"
+    gemini_llm_models: list[str] = Field(
+        default=[
+            "gemini-3.8-flash",
+            "gemini-3.7-flash",
+            "gemini-3.6-flash",
+            "gemini-3.5-flash",
+            "gemini-3-flash-preview",
+            "gemini-3.5-flash-lite",
+            "gemini-3.1-flash-lite",
+            "gemma-4-31b-it",
+            "gemma-4-26b-a4b-it",
+        ],
+        min_length=1,
+    )
+    gemini_embedding_models: list[str] = Field(
+        default=["gemini-embedding-2", "gemini-embedding-001"], min_length=1
+    )
     ai_request_timeout_seconds: float = 60.0
-    ai_max_retries: int = 2
 
 
 @lru_cache

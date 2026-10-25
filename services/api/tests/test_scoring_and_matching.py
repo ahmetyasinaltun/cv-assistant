@@ -4,6 +4,7 @@ import pytest
 
 from app.ai.matching import RetrievedCandidate, cosine_similarity, retrieve_candidates
 from app.ai.pipeline import AnalysisPipeline, _Requirement
+from app.ai.providers.fake import FakeProvider
 from app.ai.schemas import RequirementJudgement
 from app.ai.scoring import compute_score, fit_level_for
 from app.schemas.analysis import CandidateEvidence
@@ -52,6 +53,25 @@ def test_retrieve_candidates_returns_top_k_best_first():
     [candidates] = retrieve_candidates(requirement_vectors, evidence_ids, evidence_vectors, top_k=2)
     assert [c.evidence_id for c in candidates] == ["e2", "e3"]
     assert candidates[0].similarity == pytest.approx(1.0)
+
+
+def test_retrieve_embeds_both_sides_in_one_call():
+    # Separate calls could be served by different fallback models, whose vectors are not comparable.
+    provider = FakeProvider()
+    embed_calls: list[list[str]] = []
+    real_embed = provider.embeddings.embed
+    provider.embeddings.embed = lambda texts: embed_calls.append(texts) or real_embed(texts)
+
+    evidence = [
+        CandidateEvidence(
+            id="e1", text="Built REST APIs with FastAPI", section="experience", skills=[]
+        ),
+        CandidateEvidence(id="e2", text="Led a chess club", section="other", skills=[]),
+    ]
+    [candidates] = AnalysisPipeline(provider).retrieve([_requirement("r1")], evidence)
+
+    assert embed_calls == [["Requirement r1", "Built REST APIs with FastAPI", "Led a chess club"]]
+    assert {c.evidence_id for c in candidates} == {"e1", "e2"}
 
 
 def _requirement(rid: str, importance: str = "must_have") -> _Requirement:
