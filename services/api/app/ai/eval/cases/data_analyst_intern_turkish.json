@@ -1,0 +1,29 @@
+{
+  "name": "data_analyst_intern_turkish",
+  "description": "Turkish posting and Turkish CV for a data analyst internship, output in Turkish. Checks that requirements keep the posting's Turkish wording and that generated text follows the output language. Clear gap: Power BI/Tableau.",
+  "output_language": "tr",
+  "job_title": "Stajyer Veri Analisti",
+  "job_description": "Stajyer Veri Analisti (İstanbul, hibrit)\n\nVeri ekibimize yaz dönemi için bir stajyer arıyoruz.\n\nAranan nitelikler\n- İstatistik, Endüstri Mühendisliği, Bilgisayar Mühendisliği veya ilgili bir bölümde 3. ya da 4. sınıf öğrencisi olmak\n- SQL ile veri sorgulama deneyimi\n- Python ve pandas ile veri temizleme ve analiz\n- Excel'de pivot tablolar ve formüllerle rahat çalışabilmek\n- Power BI veya Tableau ile pano hazırlama deneyimi tercih sebebidir\n- A/B testleri ve temel istatistik bilgisi\n- Bulguları teknik olmayan ekiplere anlatabilecek iletişim becerisi\n\nNeler yapacaksın\n- Satış ve kampanya verilerini analiz etmek\n- Haftalık raporlar hazırlamak",
+  "resume": "Ayşe Yılmaz\nEndüstri Mühendisliği 3. sınıf öğrencisi\n\nDeneyim\n- Yaz Stajyeri, Kuzey Lojistik (Temmuz 2025 - Ağustos 2025): Depo sevkiyat verilerini SQL sorgularıyla çekip Excel pivot tablolarıyla haftalık raporlar hazırladım.\n- Öğrenci Asistanı, Olasılık ve İstatistik dersi (2024): 30 öğrenciye haftalık problem saatleri düzenledim ve konuları sade bir dille anlattım.\n\nProjeler\n- Kampanya Etkisi Analizi: Python ve pandas ile 50.000 satırlık satış verisini temizleyip kampanya öncesi ve sonrası satışları karşılaştırdım.\n- Talep Tahmini: Excel'de geçmiş satışlarla basit bir regresyon modeli kurup sonuçları ekibe sundum.\n\nBeceriler\n- SQL, Python (pandas, matplotlib), Excel, temel istatistik\n- Türkçe (ana dil), İngilizce (B2)",
+  "expected_requirement_keywords": ["sınıf", "sql", "python", "excel", "power bi", "a/b", "iletişim"],
+  "expected_statuses": [
+    {
+      "keyword": "sınıf",
+      "status": "matched",
+      "why": "The CV headline states a 3rd-year Industrial Engineering student; a miss here means the headline was not extracted as evidence"
+    },
+    {"keyword": "sql", "status": "matched"},
+    {"keyword": "python", "status": "matched"},
+    {"keyword": "excel", "status": "matched"},
+    {"keyword": "power bi", "status": "missing"},
+    {
+      "keyword": "a/b",
+      "status": ["partial", "missing"],
+      "why": "Statistics coursework and a before/after campaign comparison are related, but there is no A/B test; if the model splits the line, the A/B half alone is missing"
+    }
+  ],
+  "expected_importance": [
+    {"keyword": "power bi", "importance": "nice_to_have"},
+    {"keyword": "sql", "importance": "must_have"}
+  ]
+}

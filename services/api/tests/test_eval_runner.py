@@ -47,3 +47,43 @@ def test_labels_may_accept_several_answers_for_borderline_cases():
     flexible = [{"keyword": "python", "status": ["matched", "partial"]}]
     assert _labelled_accuracy(result, strict, "status", report) == 0.0
     assert _labelled_accuracy(result, flexible, "status", report) == 1.0
+
+
+def test_keywords_match_regardless_of_turkish_case_and_accents():
+    from app.ai.eval.run_eval import _fold
+
+    assert _fold("iletişim") in _fold("Bulguları anlatabilecek İLETİŞİM becerisi")
+    assert _fold("iletişim") in _fold("İletişim becerisi")
+    assert _fold("ILETISIM") == _fold("iletişim")
+
+
+def test_guess_language_tells_english_from_turkish():
+    from app.ai.eval.language_check import guess_language
+
+    assert guess_language("Add a Docker example to the Projects section of your CV.") == "en"
+    assert guess_language("CV’nde Docker ile ilgili bir proje örneği ekle.") == "tr"
+    assert guess_language("İstatistik bilgin var ama A/B testi deneyimin yok.") == "tr"
+    assert guess_language("Docker, Kubernetes") is None
+
+
+def test_language_match_rate_counts_texts_in_the_wrong_language():
+    from app.ai.eval.run_eval import CaseReport, _language_match_rate
+    from app.schemas.analysis import AnalysisResult
+
+    result = AnalysisResult.model_validate(
+        {
+            "overall": {
+                "score": 50,
+                "fit_level": "moderate",
+                "summary": "CV’n SQL ve Python şartlarını karşılıyor, ama Power BI deneyimi yok.",
+                "score_explanation": "",
+                "limitations": ["The analysis cannot know how deep your SQL experience is."],
+            },
+            "requirements": [],
+            "candidate_evidence": [],
+            "suggestions": [],
+        }
+    )
+    report = CaseReport(name="t", completed=True)
+    assert _language_match_rate(result, "tr", report) == 0.5
+    assert report.notes == ["1 generated text(s) not in 'tr'"]

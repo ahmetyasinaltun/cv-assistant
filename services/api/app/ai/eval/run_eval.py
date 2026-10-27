@@ -5,9 +5,11 @@ import argparse
 import json
 import re
 import sys
+import unicodedata
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
+from app.ai.eval.language_check import guess_language
 from app.ai.pipeline import AnalysisInput, AnalysisPipeline
 from app.ai.providers.base import AIProvider
 from app.ai.providers.fake import FakeProvider
@@ -30,6 +32,7 @@ class CaseReport:
     status_accuracy: float | None = None
     importance_accuracy: float | None = None
     grounded_rate: float | None = None
+    language_match_rate: float | None = None
     score_within_bound: bool | None = None
     notes: list[str] = field(default_factory=list)
 
@@ -38,19 +41,37 @@ def _normalize(text: str) -> str:
     return re.sub(r"\s+", " ", text.lower()).strip()
 
 
+def _fold(text: str) -> str:
+    """Lowercase without accents, so a keyword like "iletişim" also finds "İletişim" or "ILETISIM"."""
+    decomposed = unicodedata.normalize("NFKD", text.lower())
+    return "".join(c for c in decomposed if not unicodedata.combining(c)).replace("ı", "i")
+
+
 def _find_requirement(result: AnalysisResult, keyword: str):
-    keyword = keyword.lower()
-    return next((r for r in result.requirements if keyword in r.text.lower()), None)
+    keyword = _fold(keyword)
+    return next((r for r in result.requirements if keyword in _fold(r.text)), None)
+
+
+def _generated_texts(result: AnalysisResult) -> list[str]:
+    """The free text the model writes in the output language (not requirement wording or CV quotes)."""
+    return [
+        result.overall.summary,
+        *result.overall.limitations,
+        *(r.reasoning for r in result.requirements),
+        *(f"{s.title}. {s.detail}" for s in result.suggestions),
+    ]
 
 
 def evaluate_case(pipeline: AnalysisPipeline, case: dict) -> CaseReport:
     report = CaseReport(name=case["name"], completed=False)
+    output_language = case.get("output_language", "en")
     try:
         result = pipeline.run(
             AnalysisInput(
                 job_title=case["job_title"],
                 job_description=case["job_description"],
                 resume=case["resume"],
+                output_language=output_language,
             )
         )
     except AIProviderError as exc:
@@ -88,6 +109,8 @@ def evaluate_case(pipeline: AnalysisPipeline, case: dict) -> CaseReport:
     else:
         report.grounded_rate = None
 
+    report.language_match_rate = _language_match_rate(result, output_language, report)
+
     max_score = case.get("max_expected_score")
     if max_score is not None:
         report.score_within_bound = result.overall.score <= max_score
@@ -120,6 +143,17 @@ def _labelled_accuracy(
                 f"{attribute}: '{expectation['keyword']}' expected {expected}, got {actual}"
             )
     return correct / len(expectations)
+
+
+def _language_match_rate(result: AnalysisResult, expected: str, report: CaseReport) -> float | None:
+    """Share of generated texts written in the expected language; undecided texts are left out."""
+    guesses = [g for g in map(guess_language, _generated_texts(result)) if g is not None]
+    if not guesses:
+        return None
+    on_language = sum(g == expected for g in guesses)
+    if on_language < len(guesses):
+        report.notes.append(f"{len(guesses) - on_language} generated text(s) not in '{expected}'")
+    return on_language / len(guesses)
 
 
 def load_cases() -> list[dict]:
@@ -155,14 +189,17 @@ def main(argv: list[str] | None = None) -> int:
     reports = [evaluate_case(AnalysisPipeline(provider), case) for case in load_cases()]
 
     print(f"provider: {args.provider}\n")
-    header = f"{'case':<28}{'ok':<4}{'score':<7}{'reqs':<6}{'kw':<7}{'status':<8}{'imp':<7}{'grounded':<9}"
+    header = (
+        f"{'case':<30}{'ok':<4}{'score':<7}{'reqs':<6}{'kw':<7}{'status':<8}{'imp':<7}"
+        f"{'grounded':<10}{'lang':<6}"
+    )
     print(header)
     print("-" * len(header))
     for r in reports:
         print(
-            f"{r.name:<28}{'yes' if r.completed else 'NO':<4}{str(r.score):<7}{r.requirement_count:<6}"
+            f"{r.name:<30}{'yes' if r.completed else 'NO':<4}{str(r.score):<7}{r.requirement_count:<6}"
             f"{r.keyword_recall:<7.2f}{_fmt(r.status_accuracy):<8}{_fmt(r.importance_accuracy):<7}"
-            f"{_fmt(r.grounded_rate):<9}"
+            f"{_fmt(r.grounded_rate):<10}{_fmt(r.language_match_rate):<6}"
         )
         for note in r.notes:
             print(f"    - {note}")
@@ -176,6 +213,7 @@ def main(argv: list[str] | None = None) -> int:
         "status_accuracy": _mean([r.status_accuracy for r in reports]),
         "importance_accuracy": _mean([r.importance_accuracy for r in reports]),
         "grounded_rate": _mean([r.grounded_rate for r in reports]),
+        "language_match_rate": _mean([r.language_match_rate for r in reports]),
     }
     # With a fallback chain the answering model can change between steps; record which ones did.
     models_used = getattr(provider, "models_used", None)
