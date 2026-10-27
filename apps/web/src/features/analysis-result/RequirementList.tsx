@@ -18,9 +18,10 @@ interface RequirementListProps {
   selectedId: string | null;
   onSelect: (requirementId: string, source: SelectionSource) => void;
   labels: Dictionary["result"];
+  contentLang?: string;
 }
 
-export function RequirementList({ requirements, selectedId, onSelect, labels }: RequirementListProps) {
+export function RequirementList({ requirements, selectedId, onSelect, labels, contentLang }: RequirementListProps) {
   if (requirements.length === 0) {
     return (
       <section aria-labelledby="requirements-heading">
@@ -60,6 +61,7 @@ export function RequirementList({ requirements, selectedId, onSelect, labels }: 
                 isSelected={requirement.id === selectedId}
                 onSelect={onSelect}
                 labels={labels}
+                contentLang={contentLang}
               />
             ))}
           </ul>
@@ -74,9 +76,10 @@ interface RequirementRowProps {
   isSelected: boolean;
   onSelect: RequirementListProps["onSelect"];
   labels: Dictionary["result"];
+  contentLang?: string;
 }
 
-function RequirementRow({ requirement, isSelected, onSelect, labels }: RequirementRowProps) {
+function RequirementRow({ requirement, isSelected, onSelect, labels, contentLang }: RequirementRowProps) {
   const refs = requirement.evidence.map((reference) => evidenceLabel(reference.evidence_id));
   const detailsId = `requirement-${requirement.id}-details`;
 
@@ -106,7 +109,7 @@ function RequirementRow({ requirement, isSelected, onSelect, labels }: Requireme
         </span>
       </button>
       {isSelected && (
-        <RequirementDetails id={detailsId} requirement={requirement} labels={labels} />
+        <RequirementDetails id={detailsId} requirement={requirement} labels={labels} contentLang={contentLang} />
       )}
     </li>
   );
@@ -117,16 +120,18 @@ function RequirementDetails({
   id,
   requirement,
   labels,
+  contentLang,
 }: {
   id: string;
   requirement: RequirementMatch;
   labels: Dictionary["result"];
+  contentLang?: string;
 }) {
   return (
     <div id={id} className="px-2.5 pt-1 pb-3 pl-[34px] text-[14px] lg:hidden">
       <p className={requirement.status === "missing" ? "text-marker" : "text-ink-soft"}>
         <span className="font-semibold">{labels.status[requirement.status]}.</span>{" "}
-        {requirement.reasoning}
+        <span lang={contentLang}>{requirement.reasoning}</span>
       </p>
       {requirement.evidence.length > 0 && (
         <ul className="mt-2 space-y-1">

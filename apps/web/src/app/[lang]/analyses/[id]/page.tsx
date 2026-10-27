@@ -14,9 +14,6 @@ import { ApiError } from "@/lib/api/client";
 import type { AnalysisDetail } from "@/lib/api/types";
 import { requireUser } from "@/lib/auth/current-user";
 
-// Prompts write in English until the API records an output language per analysis.
-const GENERATED_CONTENT_LANG = "en";
-
 export async function generateMetadata(): Promise<Metadata> {
   return { title: (await getDictionary()).meta.titles.analysis };
 }
@@ -49,7 +46,6 @@ async function AnalysisContent({ params }: PageProps<"/[lang]/analyses/[id]">) {
         labels={dictionary.result}
         locale={locale}
         createdAtLabel={createdAtLabel}
-        contentLang={GENERATED_CONTENT_LANG}
         generateQuestions={generateQuestionsForAnalysis.bind(null, analysis.id)}
         retryAction={rerunAnalysis.bind(null, locale, analysis.id)}
         newAnalysisHref={`/${locale}/analyses/new`}

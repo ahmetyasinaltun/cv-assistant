@@ -13,9 +13,10 @@ export async function generateQuestionsForAnalysis(analysisId: string): Promise<
   return generateInterviewQuestions(analysisId);
 }
 
-/** Starts a fresh analysis with the same CV and posting, then opens it. */
-export async function rerunAnalysis(locale: string, analysisId: string): Promise<void> {
+/** Starts a fresh analysis with the same CV and posting in the current interface language, then opens it. */
+export async function rerunAnalysis(localeValue: string, analysisId: string): Promise<void> {
+  const locale = isLocale(localeValue) ? localeValue : defaultLocale;
   const previous = await getAnalysis(analysisId);
-  const created = await createAnalysis(previous.resume_id, previous.job_description_id);
-  redirect(`/${isLocale(locale) ? locale : defaultLocale}/analyses/${created.id}`);
+  const created = await createAnalysis(previous.resume_id, previous.job_description_id, locale);
+  redirect(`/${locale}/analyses/${created.id}`);
 }

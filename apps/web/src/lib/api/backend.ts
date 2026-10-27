@@ -8,6 +8,7 @@ import type {
   AnalysisSummary,
   InterviewQuestion,
   JobDescriptionSummary,
+  Language,
   ResumeSummary,
   SampleAnalysisInput,
   TokenResponse,
@@ -26,10 +27,10 @@ export function login(email: string, password: string) {
   return apiRequest<TokenResponse>("/auth/login", { method: "POST", json: { email, password } });
 }
 
-export function register(fullName: string, email: string, password: string) {
+export function register(fullName: string, email: string, password: string, preferredLanguage: Language) {
   return apiRequest<TokenResponse>("/auth/register", {
     method: "POST",
-    json: { full_name: fullName, email, password },
+    json: { full_name: fullName, email, password, preferred_language: preferredLanguage },
   });
 }
 
@@ -75,10 +76,10 @@ export function getAnalysis(analysisId: string) {
   return authed<AnalysisDetail>(`/analyses/${segment(analysisId)}`);
 }
 
-export function createAnalysis(resumeId: string, jobDescriptionId: string) {
+export function createAnalysis(resumeId: string, jobDescriptionId: string, outputLanguage: Language) {
   return authed<AnalysisSummary>("/analyses", {
     method: "POST",
-    json: { resume_id: resumeId, job_description_id: jobDescriptionId },
+    json: { resume_id: resumeId, job_description_id: jobDescriptionId, output_language: outputLanguage },
   });
 }
 

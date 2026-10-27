@@ -36,6 +36,7 @@ function analysis(patch: Partial<AnalysisSummary>): AnalysisSummary {
   return {
     id: "a1",
     status: "completed",
+    output_language: "en",
     resume_id: "resume-1",
     job_description_id: "job-1",
     resume_title: "CV",

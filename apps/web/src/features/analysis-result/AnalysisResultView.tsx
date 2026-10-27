@@ -34,8 +34,6 @@ interface AnalysisResultViewProps {
   locale: string;
   createdAtLabel: string;
   isSample?: boolean;
-  /** Language of AI-generated text, when known; it can differ from the interface language. */
-  contentLang?: string;
   generateQuestions?: () => Promise<InterviewQuestion[]>;
   retryHref?: string;
   /** Runs the analysis again on the server (real analyses); the sample uses `retryHref` instead. */
@@ -81,13 +79,14 @@ export function AnalysisResultView({
   locale,
   createdAtLabel,
   isSample = false,
-  contentLang,
   generateQuestions,
   retryHref,
   retryAction,
   newAnalysisHref,
 }: AnalysisResultViewProps) {
   const result = analysis.status === "completed" ? analysis.result : null;
+  // AI-written text keeps the language the analysis was generated in, which can differ from the interface.
+  const contentLang = analysis.output_language;
   const requirements = useMemo(() => result?.requirements ?? [], [result]);
 
   const [selection, setSelection] = useState<Selection>(() => ({
@@ -198,6 +197,7 @@ export function AnalysisResultView({
                 selectedId={selection.id}
                 onSelect={selectFromList}
                 labels={labels}
+                contentLang={contentLang}
               />
             </div>
             <div className="min-w-0 [grid-area:sheet]">

@@ -64,7 +64,6 @@ export function SampleAnalysis({ preview, labels, locale, createdAtLabel, sample
       locale={locale}
       createdAtLabel={createdAtLabel}
       isSample
-      contentLang="en"
       generateQuestions={generateQuestions}
       retryHref={sampleHref}
     />

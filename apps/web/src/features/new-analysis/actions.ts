@@ -64,7 +64,8 @@ export async function startAnalysis(localeValue: string, formData: FormData): Pr
     const company = text(formData, "company") || null;
     const job = await createJobDescription(text(formData, "jobTitle"), company, text(formData, "jobText"));
     step = "analysis";
-    analysisId = (await createAnalysis(resumeId, job.id)).id;
+    // AI-written text follows the interface language the analysis was started in.
+    analysisId = (await createAnalysis(resumeId, job.id, locale)).id;
   } catch (error) {
     redirectIfSignedOut(error, locale);
     if (!(error instanceof ApiError)) console.error("Starting an analysis failed", error);

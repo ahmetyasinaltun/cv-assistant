@@ -44,6 +44,7 @@ export const sampleInterviewQuestions: InterviewQuestion[] = [
 export const sampleAnalysis: AnalysisDetail = {
   id: "sample",
   status: "completed",
+  output_language: "en",
   resume_id: "sample-resume",
   job_description_id: "sample-posting",
   resume_title: "Jane Doe — CV, September 2026",

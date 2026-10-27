@@ -51,7 +51,8 @@ export async function registerAccount(
 
   let token: string;
   try {
-    token = (await register(fullName, email, typeof password === "string" ? password : ""))
+    // The account starts in the language the visitor registered in.
+    token = (await register(fullName, email, typeof password === "string" ? password : "", locale))
       .access_token;
   } catch (error) {
     return { error: authErrorKey(error), email, fullName };

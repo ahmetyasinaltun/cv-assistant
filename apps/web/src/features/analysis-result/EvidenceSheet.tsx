@@ -59,14 +59,16 @@ export function EvidenceSheet({
       <div className="px-5 pb-8 sm:px-8 sm:pl-[72px]">
         {selected?.status === "missing" && (
           <EditorNote tone="missing">
-            {interpolate(labels.missingNote, { requirement: selected.text })} {selected.reasoning}
+            {interpolate(labels.missingNote, { requirement: selected.text })}{" "}
+            <span lang={contentLang}>{selected.reasoning}</span>
           </EditorNote>
         )}
 
         {evidence.length === 0 ? (
           <p className="mt-6 text-ink-soft">{labels.sheetEmpty}</p>
         ) : (
-          <div lang={contentLang}>
+          // CV lines stay in the CV's own language, which is not detected, so they inherit the page language.
+          <div>
             {groupEvidenceBySection(evidence).map(({ section, items }) => (
               <section key={section ?? "other"} className="mt-7">
                 <h3 className="border-b border-rule pb-1.5 text-[13px] font-semibold tracking-[0.01em] text-ink">
@@ -111,7 +113,7 @@ export function EvidenceSheet({
                         {item.id === lastSupportingId && selected && (
                           <EditorNote tone={selected.status === "partial" ? "partial" : "matched"}>
                             <span className="font-semibold">{labels.status[selected.status]}.</span>{" "}
-                            {selected.reasoning}
+                            <span lang={contentLang}>{selected.reasoning}</span>
                           </EditorNote>
                         )}
                       </li>

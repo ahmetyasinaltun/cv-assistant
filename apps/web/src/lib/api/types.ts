@@ -15,6 +15,8 @@ export type FitLevel = "strong" | "moderate" | "weak";
 export type SuggestionTarget = "skill" | "cv_section" | "project" | "interview_topic";
 export type Priority = "high" | "medium" | "low";
 export type QuestionCategory = "technical" | "behavioral" | "project" | "gap";
+/** Account language and language of AI-written text; requirement wording and CV quotes keep their own. */
+export type Language = "en" | "tr";
 
 export interface EvidenceReference {
   evidence_id: string;
@@ -73,6 +75,7 @@ export interface InterviewQuestion {
 export interface AnalysisSummary {
   id: string;
   status: AnalysisStatus;
+  output_language: Language;
   resume_id: string;
   job_description_id: string;
   resume_title: string;
@@ -96,6 +99,7 @@ export interface User {
   id: string;
   email: string;
   full_name: string;
+  preferred_language: Language;
   created_at: string;
 }
 
