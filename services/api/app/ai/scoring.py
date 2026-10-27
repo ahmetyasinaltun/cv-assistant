@@ -1,16 +1,24 @@
 # Deterministic, explainable match score derived from per-requirement statuses and importance weights.
 
 from app.schemas.analysis import FitLevel, Importance, MatchStatus
+from app.schemas.common import Language
 
 IMPORTANCE_WEIGHTS: dict[Importance, int] = {"must_have": 2, "nice_to_have": 1}
 STATUS_VALUES: dict[MatchStatus, float] = {"matched": 1.0, "partial": 0.5, "missing": 0.0}
 STRONG_FIT_THRESHOLD = 75
 MODERATE_FIT_THRESHOLD = 45
 
-SCORE_EXPLANATION = (
-    "Each requirement counts as matched (1), partial (0.5) or missing (0); must-have requirements "
-    "weigh twice as much as nice-to-have ones. The score is the weighted percentage."
-)
+# The Turkish wording reuses the status and importance labels of the Turkish interface.
+SCORE_EXPLANATIONS: dict[Language, str] = {
+    "en": (
+        "Each requirement counts as matched (1), partial (0.5) or missing (0); must-have requirements "
+        "weigh twice as much as nice-to-have ones. The score is the weighted percentage."
+    ),
+    "tr": (
+        "Her şart eşleşti (1), kısmi (0,5) ya da eksik (0) sayılır; zorunlu şartlar, tercih sebebi "
+        "olanların iki katı ağırlık taşır. Puan bu ağırlıklı yüzdedir."
+    ),
+}
 
 
 def compute_score(items: list[tuple[Importance, MatchStatus]]) -> int:

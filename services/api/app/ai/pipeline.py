@@ -16,7 +16,7 @@ from app.ai.schemas import (
     RequirementExtraction,
     RequirementJudgement,
 )
-from app.ai.scoring import SCORE_EXPLANATION, compute_score, fit_level_for
+from app.ai.scoring import SCORE_EXPLANATIONS, compute_score, fit_level_for
 from app.core.errors import AIProviderError
 from app.schemas.analysis import (
     AnalysisResult,
@@ -26,10 +26,28 @@ from app.schemas.analysis import (
     OverallMatch,
     RequirementMatch,
 )
+from app.schemas.common import DEFAULT_LANGUAGE, Language
 
 logger = logging.getLogger(__name__)
 
 MAX_QUOTE_CHARS = 300
+
+# Prompts name the language instead of passing a code: models follow a name more reliably.
+# The Turkish interface addresses the user informally, so generated Turkish text should too.
+PROMPT_LANGUAGES: dict[Language, str] = {
+    "en": "English",
+    "tr": 'Turkish, addressing the candidate informally ("sen") as the product interface does',
+}
+
+# Sentences the grounding guard writes itself, in each output language.
+NOT_ASSESSED_REASONING: dict[Language, str] = {
+    "en": "The model did not assess this requirement.",
+    "tr": "Model bu şartı değerlendirmedi.",
+}
+UNGROUNDED_NOTE: dict[Language, str] = {
+    "en": "(No supporting evidence was cited, so this is treated as missing.)",
+    "tr": "(Destekleyen bir kanıt gösterilmediği için eksik sayıldı.)",
+}
 
 
 @dataclass(frozen=True)
@@ -37,6 +55,7 @@ class AnalysisInput:
     job_title: str
     job_description: str
     resume: str
+    output_language: Language = DEFAULT_LANGUAGE
 
 
 @dataclass(frozen=True)
@@ -53,13 +72,14 @@ class AnalysisPipeline:
         self.embeddings = provider.embeddings
 
     def run(self, analysis_input: AnalysisInput) -> AnalysisResult:
+        language = analysis_input.output_language
         requirements = self.extract_requirements(analysis_input.job_description)
         evidence = self.extract_evidence(analysis_input.resume)
         candidates = self.retrieve(requirements, evidence)
-        judgements = self.judge(requirements, evidence, candidates)
-        matches = self.build_matches(requirements, evidence, candidates, judgements)
-        overall = self.score(matches)
-        narrative = self.write_narrative(analysis_input.job_title, matches, overall)
+        judgements = self.judge(requirements, evidence, candidates, language)
+        matches = self.build_matches(requirements, evidence, candidates, judgements, language)
+        overall = self.score(matches, language)
+        narrative = self.write_narrative(analysis_input.job_title, matches, overall, language)
         overall.summary = narrative.summary
         overall.limitations = narrative.limitations
         return AnalysisResult(
@@ -119,6 +139,7 @@ class AnalysisPipeline:
         requirements: list[_Requirement],
         evidence: list[CandidateEvidence],
         candidates: list[list[RetrievedCandidate]],
+        output_language: Language,
     ) -> dict[str, RequirementJudgement]:
         evidence_by_id = {item.id: item for item in evidence}
         payload = [
@@ -140,6 +161,7 @@ class AnalysisPipeline:
         prompt = render_prompt(
             "judge_matches",
             requirements_with_candidates=json.dumps(payload, ensure_ascii=False, indent=1),
+            output_language=PROMPT_LANGUAGES[output_language],
         )
         judgement = self.llm.generate_structured(
             task="judge_matches", prompt=prompt, schema=MatchJudgement
@@ -147,15 +169,20 @@ class AnalysisPipeline:
         return {item.requirement_id: item for item in judgement.judgements}
 
     def write_narrative(
-        self, job_title: str, matches: list[RequirementMatch], overall: OverallMatch
+        self,
+        job_title: str,
+        matches: list[RequirementMatch],
+        overall: OverallMatch,
+        output_language: Language,
     ) -> AnalysisNarrative:
         prompt = render_prompt(
             "write_narrative",
             job_title=job_title,
             score=str(overall.score),
             fit_level=overall.fit_level,
-            score_explanation=SCORE_EXPLANATION,
+            score_explanation=overall.score_explanation,
             requirement_matches=_matches_as_json(matches),
+            output_language=PROMPT_LANGUAGES[output_language],
         )
         narrative = self.llm.generate_structured(
             task="write_narrative", prompt=prompt, schema=AnalysisNarrative
@@ -168,12 +195,13 @@ class AnalysisPipeline:
         return narrative
 
     def generate_interview_questions(
-        self, job_title: str, result: AnalysisResult
+        self, job_title: str, result: AnalysisResult, output_language: Language
     ) -> list[InterviewQuestion]:
         prompt = render_prompt(
             "generate_interview_questions",
             job_title=job_title,
             requirement_matches=_matches_as_json(result.requirements),
+            output_language=PROMPT_LANGUAGES[output_language],
         )
         question_set = self.llm.generate_structured(
             task="generate_interview_questions", prompt=prompt, schema=InterviewQuestionSet
@@ -207,6 +235,7 @@ class AnalysisPipeline:
         evidence: list[CandidateEvidence],
         candidates: list[list[RetrievedCandidate]],
         judgements: dict[str, RequirementJudgement],
+        output_language: Language,
     ) -> list[RequirementMatch]:
         """Combine judgements with retrieval data and enforce grounding rules on the model output."""
         evidence_by_id = {item.id: item for item in evidence}
@@ -218,7 +247,7 @@ class AnalysisPipeline:
                 logger.warning("Judgement missing for %s; marking as missing", requirement.id)
                 status, reasoning, cited_ids = (
                     "missing",
-                    "The model did not assess this requirement.",
+                    NOT_ASSESSED_REASONING[output_language],
                     [],
                 )
             else:
@@ -232,7 +261,7 @@ class AnalysisPipeline:
                         "Downgrading %s to missing: no grounded evidence cited", requirement.id
                     )
                     status = "missing"
-                    reasoning = f"{reasoning} (No supporting evidence was cited, so this is treated as missing.)"
+                    reasoning = f"{reasoning} {UNGROUNDED_NOTE[output_language]}"
                 if status == "missing":
                     cited_ids = []
             matches.append(
@@ -256,13 +285,13 @@ class AnalysisPipeline:
         return matches
 
     @staticmethod
-    def score(matches: list[RequirementMatch]) -> OverallMatch:
+    def score(matches: list[RequirementMatch], output_language: Language) -> OverallMatch:
         score = compute_score([(m.importance, m.status) for m in matches])
         return OverallMatch(
             score=score,
             fit_level=fit_level_for(score),
             summary="",
-            score_explanation=SCORE_EXPLANATION,
+            score_explanation=SCORE_EXPLANATIONS[output_language],
             limitations=[],
         )
 

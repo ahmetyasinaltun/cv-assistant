@@ -27,3 +27,7 @@ Return a JSON object with a `questions` array of 8-12 items. Each has:
 - Base `project` questions only on evidence that actually appears in the input; do not invent projects.
 - Prefer questions that require explanation of trade-offs and decisions over yes/no or trivia questions.
 - Keep each question to one or two sentences.
+
+## Language
+
+Write `question` and `rationale` in {{output_language}}, even when the requirements and the resume evidence are in another language. Keep technology and product names as they are.

@@ -1,5 +1,9 @@
 # Integration tests for the analysis endpoints using the deterministic fake AI provider.
 
+from app.ai.pipeline import UNGROUNDED_NOTE
+from app.ai.providers import get_ai_provider
+from app.ai.providers.fake import FakeLLM, FakeProvider
+from app.ai.scoring import SCORE_EXPLANATIONS
 from tests.conftest import SAMPLE_JOB, SAMPLE_RESUME, register_user
 
 
@@ -30,6 +34,7 @@ def test_analysis_runs_and_returns_structured_result(client, auth_headers):
     assert body["status"] == "completed", body.get("error_message")
     assert body["job_title"] == "Junior Backend Developer"
     assert body["resume_title"] == "CV"
+    assert body["output_language"] == "en"
 
     result = body["result"]
     assert 0 <= result["overall"]["score"] <= 100
@@ -115,3 +120,74 @@ def test_analysis_failure_is_recorded(client, auth_headers, monkeypatch):
     blocked = client.post(f"/analyses/{analysis_id}/interview-questions", headers=auth_headers)
     assert blocked.status_code == 422
     assert blocked.json()["error"]["code"] == "analysis_not_completed"
+
+
+class _RecordingLLM(FakeLLM):
+    """Fake LLM that keeps the last prompt of each task, so a test can check what the model was asked."""
+
+    def __init__(self):
+        self.prompts: dict[str, str] = {}
+
+    def generate_structured(self, *, task, prompt, schema):
+        self.prompts[task] = prompt
+        return super().generate_structured(task=task, prompt=prompt, schema=schema)
+
+
+def test_output_language_is_stored_and_reaches_every_writing_step(client, auth_headers):
+    provider = FakeProvider()
+    provider.llm = _RecordingLLM()
+    client.app.dependency_overrides[get_ai_provider] = lambda: provider
+    resume_id, job_id = _create_documents(client, auth_headers)
+
+    created = client.post(
+        "/analyses",
+        json={"resume_id": resume_id, "job_description_id": job_id, "output_language": "tr"},
+        headers=auth_headers,
+    )
+    assert created.status_code == 202, created.text
+    assert created.json()["output_language"] == "tr"
+    analysis_id = created.json()["id"]
+    questions = client.post(f"/analyses/{analysis_id}/interview-questions", headers=auth_headers)
+    assert questions.status_code == 200, questions.text
+
+    detail = client.get(f"/analyses/{analysis_id}", headers=auth_headers).json()
+    assert detail["output_language"] == "tr"
+    assert detail["result"]["overall"]["score_explanation"] == SCORE_EXPLANATIONS["tr"]
+    prompts = provider.llm.prompts
+    for task in ("judge_matches", "write_narrative", "generate_interview_questions"):
+        assert "in Turkish" in prompts[task], task
+    # Extraction keeps the source language, so its prompts carry no output language.
+    for task in ("extract_requirements", "extract_evidence"):
+        assert "Turkish" not in prompts[task], task
+    assert all(
+        UNGROUNDED_NOTE["en"] not in r["reasoning"] for r in detail["result"]["requirements"]
+    )
+
+
+def test_unsupported_output_language_is_rejected(client, auth_headers):
+    resume_id, job_id = _create_documents(client, auth_headers)
+    response = client.post(
+        "/analyses",
+        json={"resume_id": resume_id, "job_description_id": job_id, "output_language": "de"},
+        headers=auth_headers,
+    )
+    assert response.status_code == 422
+    assert client.get("/analyses", headers=auth_headers).json() == []
+
+
+def test_analysis_without_a_language_uses_the_account_preference(client, auth_headers):
+    client.patch("/me", json={"preferred_language": "tr"}, headers=auth_headers)
+    resume_id, job_id = _create_documents(client, auth_headers)
+
+    implicit = client.post(
+        "/analyses",
+        json={"resume_id": resume_id, "job_description_id": job_id},
+        headers=auth_headers,
+    )
+    explicit = client.post(
+        "/analyses",
+        json={"resume_id": resume_id, "job_description_id": job_id, "output_language": "en"},
+        headers=auth_headers,
+    )
+    assert implicit.json()["output_language"] == "tr"
+    assert explicit.json()["output_language"] == "en"

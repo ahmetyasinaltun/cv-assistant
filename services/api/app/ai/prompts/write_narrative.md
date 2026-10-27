@@ -34,3 +34,7 @@ Return a JSON object with:
 - Never suggest claiming experience the candidate does not have. Suggestions about the resume must only surface evidence that already exists or propose gaining real experience.
 - Be specific to this role and this resume; avoid generic advice such as "improve your communication skills".
 - Use a supportive, direct tone. No filler.
+
+## Language
+
+Write `summary`, `limitations` and each suggestion's `title` and `detail` in {{output_language}}, even when the job posting or the resume is in another language. Keep technology names, requirement wording and resume quotes in their original form.

@@ -36,6 +36,9 @@ class Analysis(UUIDPrimaryKeyMixin, TimestampMixin, Base):
         default=AnalysisStatus.PENDING,
         nullable=False,
     )
+    # Language code of the AI-written text (schemas.common.Language). A plain string rather than a
+    # database enum, so supporting another language needs no migration.
+    output_language: Mapped[str] = mapped_column(String(8), nullable=False, server_default="en")
     # Structured pipeline output (requirements, matches, suggestions). Shape: schemas.analysis.AnalysisResult
     result: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     # Generated on demand after the analysis completes. Shape: list[schemas.analysis.InterviewQuestion]

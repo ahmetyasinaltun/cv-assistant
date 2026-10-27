@@ -39,7 +39,7 @@ def create_analysis(
     background_tasks: BackgroundTasks,
 ) -> AnalysisSummaryResponse:
     analysis = AnalysisService(db, provider).create(
-        current_user.id, payload.resume_id, payload.job_description_id
+        current_user, payload.resume_id, payload.job_description_id, payload.output_language
     )
     background_tasks.add_task(run_analysis_in_background, analysis.id, session_factory, provider)
     return to_summary_response(analysis)

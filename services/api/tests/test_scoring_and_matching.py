@@ -1,13 +1,22 @@
 # Unit tests for the deterministic parts of the AI pipeline: scoring, similarity, retrieval and grounding rules.
 
+from typing import get_args
+
 import pytest
 
 from app.ai.matching import RetrievedCandidate, cosine_similarity, retrieve_candidates
-from app.ai.pipeline import AnalysisPipeline, _Requirement
+from app.ai.pipeline import (
+    NOT_ASSESSED_REASONING,
+    PROMPT_LANGUAGES,
+    UNGROUNDED_NOTE,
+    AnalysisPipeline,
+    _Requirement,
+)
 from app.ai.providers.fake import FakeProvider
 from app.ai.schemas import RequirementJudgement
-from app.ai.scoring import compute_score, fit_level_for
+from app.ai.scoring import SCORE_EXPLANATIONS, compute_score, fit_level_for
 from app.schemas.analysis import CandidateEvidence
+from app.schemas.common import Language
 
 
 def test_compute_score_weights_must_have_twice():
@@ -100,7 +109,7 @@ def test_build_matches_downgrades_unsupported_claims():
             supporting_evidence_ids=["e1"],
         ),
     }
-    matches = AnalysisPipeline.build_matches(requirements, evidence, candidates, judgements)
+    matches = AnalysisPipeline.build_matches(requirements, evidence, candidates, judgements, "en")
     assert matches[0].status == "missing"
     assert matches[0].evidence == []
     assert "treated as missing" in matches[0].reasoning
@@ -113,7 +122,29 @@ def test_build_matches_handles_missing_judgement():
     requirements = [_requirement("r1")]
     evidence = [CandidateEvidence(id="e1", text="Something")]
     matches = AnalysisPipeline.build_matches(
-        requirements, evidence, [[RetrievedCandidate("e1", 0.5)]], {}
+        requirements, evidence, [[RetrievedCandidate("e1", 0.5)]], {}, "en"
     )
     assert matches[0].status == "missing"
     assert matches[0].evidence == []
+
+
+def test_every_output_language_has_the_text_the_server_writes_itself():
+    for language in get_args(Language):
+        assert SCORE_EXPLANATIONS[language]
+        assert PROMPT_LANGUAGES[language]
+        assert NOT_ASSESSED_REASONING[language]
+        assert UNGROUNDED_NOTE[language]
+
+
+def test_build_matches_writes_its_notes_in_the_output_language():
+    requirements = [_requirement("r1"), _requirement("r2")]
+    evidence = [CandidateEvidence(id="e1", text="SQL sorgularıyla raporlar hazırladım")]
+    candidates = [[RetrievedCandidate("e1", 0.8)], [RetrievedCandidate("e1", 0.3)]]
+    judgements = {
+        "r1": RequirementJudgement(
+            requirement_id="r1", status="matched", reasoning="Uygun görünüyor."
+        ),
+    }
+    matches = AnalysisPipeline.build_matches(requirements, evidence, candidates, judgements, "tr")
+    assert matches[0].reasoning == f"Uygun görünüyor. {UNGROUNDED_NOTE['tr']}"
+    assert matches[1].reasoning == NOT_ASSESSED_REASONING["tr"]

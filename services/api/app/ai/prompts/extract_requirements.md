@@ -19,6 +19,7 @@ Return a JSON object with a `requirements` array. Each item has:
 ## Rules
 
 - Extract between 5 and 15 requirements. Merge duplicates; split lines that combine several unrelated skills.
+- Write each requirement in the language of the posting. Do not translate it.
 - Do not invent requirements that are not stated or clearly implied by the posting.
 - Do not include company perks, salary, location or application instructions.
 - If the posting is too vague to extract a requirement confidently, extract fewer items rather than guessing.

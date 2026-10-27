@@ -11,6 +11,7 @@ from app.ai.providers.base import AIProvider
 from app.core.errors import AppError, NotFoundError, ValidationFailedError
 from app.db.base import utc_now
 from app.models.analysis import Analysis, AnalysisStatus
+from app.models.user import User
 from app.repositories.analysis_repository import AnalysisRepository
 from app.schemas.analysis import (
     AnalysisDetailResponse,
@@ -18,6 +19,7 @@ from app.schemas.analysis import (
     AnalysisSummaryResponse,
     InterviewQuestion,
 )
+from app.schemas.common import Language
 from app.services.document_service import JobDescriptionService, ResumeService
 
 logger = logging.getLogger(__name__)
@@ -31,15 +33,26 @@ class AnalysisService:
         self.analyses = AnalysisRepository(db)
         self.pipeline = AnalysisPipeline(provider)
 
-    def create(self, user_id: UUID, resume_id: UUID, job_description_id: UUID) -> Analysis:
-        """Validate ownership and persist a pending analysis; the pipeline runs separately via `run`."""
-        ResumeService(self.db).get(resume_id, user_id)
-        JobDescriptionService(self.db).get(job_description_id, user_id)
+    def create(
+        self,
+        user: User,
+        resume_id: UUID,
+        job_description_id: UUID,
+        output_language: Language | None,
+    ) -> Analysis:
+        """Validate ownership and persist a pending analysis; the pipeline runs separately via `run`.
+
+        Without an explicit language the account's preferred language is used, so a client that does
+        not send one still gets text in the language the user chose.
+        """
+        ResumeService(self.db).get(resume_id, user.id)
+        JobDescriptionService(self.db).get(job_description_id, user.id)
         analysis = Analysis(
-            user_id=user_id,
+            user_id=user.id,
             resume_id=resume_id,
             job_description_id=job_description_id,
             status=AnalysisStatus.PENDING,
+            output_language=output_language or user.preferred_language,
         )
         return self.analyses.add(analysis)
 
@@ -57,6 +70,7 @@ class AnalysisService:
                     job_title=analysis.job_description.title,
                     job_description=analysis.job_description.raw_text,
                     resume=analysis.resume.raw_text,
+                    output_language=analysis.output_language,
                 )
             )
         except AppError as exc:
@@ -96,8 +110,9 @@ class AnalysisService:
                 code="analysis_not_completed",
             )
         result = AnalysisResult.model_validate(analysis.result)
+        # Questions use the analysis's own language, so one result page never mixes two languages.
         questions = self.pipeline.generate_interview_questions(
-            analysis.job_description.title, result
+            analysis.job_description.title, result, analysis.output_language
         )
         analysis.interview_questions = [q.model_dump(mode="json") for q in questions]
         self.analyses.save(analysis)
@@ -127,6 +142,7 @@ def to_summary_response(analysis: Analysis) -> AnalysisSummaryResponse:
     return AnalysisSummaryResponse(
         id=analysis.id,
         status=analysis.status,
+        output_language=analysis.output_language,
         resume_id=analysis.resume_id,
         job_description_id=analysis.job_description_id,
         resume_title=analysis.resume.title,

@@ -23,3 +23,7 @@ Return a JSON object with a `judgements` array containing exactly one item per r
 - Judge the evidence text, not the similarity score; the score is only a retrieval hint. A high score with unrelated content is still `missing`.
 - Do not assume unstated experience. "Familiar with Docker" does not satisfy "3+ years running Kubernetes in production".
 - When in doubt between `matched` and `partial`, choose `partial` and explain what is uncertain.
+
+## Language
+
+Write `reasoning` in {{output_language}}. The requirements and the resume evidence may be written in another language: do not translate or rephrase them when you refer to them, and keep technology names as they are.

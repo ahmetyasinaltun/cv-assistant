@@ -8,7 +8,7 @@ from uuid import UUID
 from pydantic import BaseModel, Field
 
 from app.models.analysis import AnalysisStatus
-from app.schemas.common import ORMModel
+from app.schemas.common import Language, ORMModel
 
 RequirementCategory = Literal[
     "technical_skill", "tool", "experience", "education", "soft_skill", "domain", "other"
@@ -77,11 +77,14 @@ class InterviewQuestion(BaseModel):
 class AnalysisCreateRequest(BaseModel):
     resume_id: UUID
     job_description_id: UUID
+    # Language of the AI-written text; when omitted, the account's preferred language is used.
+    output_language: Language | None = None
 
 
 class AnalysisSummaryResponse(ORMModel):
     id: UUID
     status: AnalysisStatus
+    output_language: Language
     resume_id: UUID
     job_description_id: UUID
     resume_title: str

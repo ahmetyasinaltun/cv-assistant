@@ -57,3 +57,36 @@ def test_me_requires_token(client):
     bad = client.get("/me", headers={"Authorization": "Bearer not-a-token"})
     assert bad.status_code == 401
     assert bad.json()["error"]["code"] == "invalid_token"
+
+
+def test_register_stores_the_preferred_language(client):
+    default = client.post(
+        "/auth/register",
+        json={"email": "en@example.com", "full_name": "En", "password": "long-enough-pw"},
+    )
+    assert default.json()["user"]["preferred_language"] == "en"
+    turkish = client.post(
+        "/auth/register",
+        json={
+            "email": "tr@example.com",
+            "full_name": "Tr",
+            "password": "long-enough-pw",
+            "preferred_language": "tr",
+        },
+    )
+    assert turkish.status_code == 201
+    token = turkish.json()["access_token"]
+    me = client.get("/me", headers={"Authorization": f"Bearer {token}"})
+    assert me.json()["preferred_language"] == "tr"
+
+
+def test_preferred_language_can_be_changed_and_is_validated(client, auth_headers):
+    updated = client.patch("/me", json={"preferred_language": "tr"}, headers=auth_headers)
+    assert updated.status_code == 200, updated.text
+    assert updated.json()["preferred_language"] == "tr"
+    assert client.get("/me", headers=auth_headers).json()["preferred_language"] == "tr"
+
+    unsupported = client.patch("/me", json={"preferred_language": "de"}, headers=auth_headers)
+    assert unsupported.status_code == 422
+    assert client.get("/me", headers=auth_headers).json()["preferred_language"] == "tr"
+    assert client.patch("/me", json={"preferred_language": "en"}).status_code == 401

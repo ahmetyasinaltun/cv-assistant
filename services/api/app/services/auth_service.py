@@ -21,6 +21,7 @@ class AuthService:
             email=email,
             full_name=payload.full_name.strip(),
             password_hash=hash_password(payload.password),
+            preferred_language=payload.preferred_language,
         )
         self.users.add(user)
         return self._token_for(user)
