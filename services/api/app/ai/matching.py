@@ -1,16 +1,20 @@
-# Semantic retrieval: cosine similarity between requirement and evidence embeddings, top-k candidates per requirement.
+# Hybrid retrieval: for each requirement, the evidence closest in meaning (embedding cosine similarity) plus the
+# evidence sharing the most words with it (BM25), so a near-literal match is never lost to the embedding ranking.
 
 import math
 from dataclasses import dataclass
 
-TOP_K_CANDIDATES = 3
-MIN_CANDIDATE_SIMILARITY = 0.0  # Kept permissive; the judgement step decides relevance from text.
+from app.ai.lexical import BM25Index
+
+TOP_K_BY_MEANING = 3
+# Keyword matches are added only when not already among the meaning matches, so at most 5 candidates.
+TOP_K_BY_KEYWORDS = 2
 
 
 @dataclass(frozen=True)
 class RetrievedCandidate:
     evidence_id: str
-    similarity: float
+    similarity: float  # Cosine similarity, reported for every candidate however it was found.
 
 
 def cosine_similarity(a: list[float], b: list[float]) -> float:
@@ -30,25 +34,39 @@ def clamp_unit(value: float) -> float:
 
 
 def retrieve_candidates(
+    requirement_texts: list[str],
     requirement_vectors: list[list[float]],
     evidence_ids: list[str],
+    evidence_texts: list[str],
     evidence_vectors: list[list[float]],
     *,
-    top_k: int = TOP_K_CANDIDATES,
+    top_k_by_meaning: int = TOP_K_BY_MEANING,
+    top_k_by_keywords: int = TOP_K_BY_KEYWORDS,
 ) -> list[list[RetrievedCandidate]]:
-    """For each requirement, return the top-k most similar evidence items, best first."""
-    if len(evidence_ids) != len(evidence_vectors):
-        raise ValueError("evidence_ids and evidence_vectors must align")
+    """For each requirement: the closest evidence by meaning (best first), then keyword matches not yet included."""
+    if not len(evidence_ids) == len(evidence_texts) == len(evidence_vectors):
+        raise ValueError("evidence_ids, evidence_texts and evidence_vectors must align")
+    if len(requirement_texts) != len(requirement_vectors):
+        raise ValueError("requirement_texts and requirement_vectors must align")
+    keyword_index = BM25Index(evidence_texts)
+    positions = range(len(evidence_ids))
     results: list[list[RetrievedCandidate]] = []
-    for requirement_vector in requirement_vectors:
-        scored = [
-            RetrievedCandidate(
-                evidence_id=evidence_id,
-                similarity=round(clamp_unit(cosine_similarity(requirement_vector, vector)), 4),
-            )
-            for evidence_id, vector in zip(evidence_ids, evidence_vectors, strict=True)
+    for text, vector in zip(requirement_texts, requirement_vectors, strict=True):
+        similarities = [
+            round(clamp_unit(cosine_similarity(vector, evidence_vector)), 4)
+            for evidence_vector in evidence_vectors
         ]
-        scored = [c for c in scored if c.similarity >= MIN_CANDIDATE_SIMILARITY]
-        scored.sort(key=lambda c: c.similarity, reverse=True)
-        results.append(scored[:top_k])
+        # sorted() is stable, so ties keep the resume order and retrieval stays deterministic.
+        by_meaning = sorted(positions, key=lambda i: similarities[i], reverse=True)[
+            :top_k_by_meaning
+        ]
+        keyword_scores = keyword_index.scores(text)
+        by_keywords = [
+            i
+            for i in sorted(positions, key=lambda i: keyword_scores[i], reverse=True)
+            if keyword_scores[i] > 0 and i not in by_meaning
+        ][:top_k_by_keywords]
+        results.append(
+            [RetrievedCandidate(evidence_ids[i], similarities[i]) for i in by_meaning + by_keywords]
+        )
     return results

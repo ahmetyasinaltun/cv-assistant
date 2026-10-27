@@ -227,7 +227,13 @@ class AnalysisPipeline:
             vectors[: len(requirements)],
             vectors[len(requirements) :],
         )
-        return retrieve_candidates(requirement_vectors, [e.id for e in evidence], evidence_vectors)
+        return retrieve_candidates(
+            [r.text for r in requirements],
+            requirement_vectors,
+            [e.id for e in evidence],
+            [e.text for e in evidence],
+            evidence_vectors,
+        )
 
     @staticmethod
     def build_matches(

@@ -4,6 +4,7 @@ from typing import get_args
 
 import pytest
 
+from app.ai.lexical import BM25Index, keyword_terms
 from app.ai.matching import RetrievedCandidate, cosine_similarity, retrieve_candidates
 from app.ai.pipeline import (
     NOT_ASSESSED_REASONING,
@@ -55,13 +56,73 @@ def test_cosine_similarity_basics():
         cosine_similarity([1.0], [1.0, 2.0])
 
 
-def test_retrieve_candidates_returns_top_k_best_first():
-    requirement_vectors = [[1.0, 0.0]]
-    evidence_ids = ["e1", "e2", "e3"]
-    evidence_vectors = [[0.0, 1.0], [1.0, 0.0], [0.7, 0.7]]
-    [candidates] = retrieve_candidates(requirement_vectors, evidence_ids, evidence_vectors, top_k=2)
+def test_retrieve_candidates_returns_closest_by_meaning_first():
+    [candidates] = retrieve_candidates(
+        ["Requirement"],
+        [[1.0, 0.0]],
+        ["e1", "e2", "e3"],
+        ["alpha", "beta", "gamma"],  # No shared words, so only the meaning ranking contributes.
+        [[0.0, 1.0], [1.0, 0.0], [0.7, 0.7]],
+        top_k_by_meaning=2,
+    )
     assert [c.evidence_id for c in candidates] == ["e2", "e3"]
     assert candidates[0].similarity == pytest.approx(1.0)
+
+
+def test_retrieve_candidates_adds_keyword_matches_the_embedding_ranked_low():
+    # The Turkish evaluation case: the literal match ranked last by embeddings and never reached the judge.
+    evidence_texts = [
+        "Endüstri Mühendisliği 3. sınıf öğrencisi",
+        "SQL, Python (pandas, matplotlib), Excel, temel istatistik",
+        "Öğrenci Asistanı, Olasılık ve İstatistik dersi (2024)",
+        "Kampanya Etkisi Analizi: Python ve pandas ile satış verisi",
+        "Talep Tahmini: Excel'de basit bir regresyon modeli",
+    ]
+    evidence_vectors = [[0.64, 0.77], [0.8, 0.6], [0.78, 0.63], [0.75, 0.66], [0.73, 0.68]]
+    [candidates] = retrieve_candidates(
+        [
+            "İstatistik, Endüstri Mühendisliği veya ilgili bir bölümde 3. ya da 4. sınıf öğrencisi olmak"
+        ],
+        [[1.0, 0.0]],
+        ["e1", "e2", "e3", "e4", "e5"],
+        evidence_texts,
+        evidence_vectors,
+    )
+    ids = [c.evidence_id for c in candidates]
+    assert ids[:3] == ["e2", "e3", "e4"]  # The meaning ranking keeps its order.
+    assert ids[3] == "e1"  # Added because it shares the rare words.
+    assert len(ids) == len(set(ids)) <= 5
+    assert candidates[3].similarity == pytest.approx(0.64, abs=0.01)  # Its own cosine, still low.
+
+
+def test_retrieve_candidates_adds_nothing_without_shared_words():
+    [candidates] = retrieve_candidates(
+        ["Kubernetes in production"],
+        [[1.0, 0.0]],
+        ["e1", "e2", "e3", "e4"],
+        ["Built REST APIs", "Wrote unit tests", "Led lab sessions", "Designed SQL schemas"],
+        [[0.9, 0.1], [0.8, 0.2], [0.7, 0.3], [0.1, 0.9]],
+    )
+    assert [c.evidence_id for c in candidates] == ["e1", "e2", "e3"]
+
+
+def test_keyword_terms_fold_case_accents_and_suffixes():
+    assert keyword_terms("Endüstri Mühendisliği 3. sınıf öğrencisi") == [
+        "endus",
+        "muhen",
+        "sinif",
+        "ogren",
+    ]
+    assert keyword_terms("Öğrenci") == ["ogren"]
+    assert keyword_terms("İLETİŞİM ve the iletişim") == ["ileti", "ileti"]
+    assert keyword_terms("Developer, development") == ["devel", "devel"]
+
+
+def test_bm25_weighs_words_that_are_rare_in_the_resume():
+    index = BM25Index(["python fastapi", "python django", "python flask", "kubernetes cluster"])
+    common, rare = index.scores("python kubernetes")[0], index.scores("python kubernetes")[3]
+    assert rare > common > 0
+    assert index.scores("rust") == [0.0, 0.0, 0.0, 0.0]
 
 
 def test_retrieve_embeds_both_sides_in_one_call():

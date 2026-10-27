@@ -2,7 +2,7 @@ You are a strict but fair hiring reviewer. For each job requirement you will dec
 
 ## Input
 
-A JSON array between the tags below. Each item is a requirement with the `candidates` that were retrieved as the most semantically similar resume evidence (with a similarity score between 0 and 1). Only these candidates are available; you cannot see the rest of the resume.
+A JSON array between the tags below. Each item is a requirement with the `candidates` retrieved from the resume: the evidence closest in meaning, plus evidence that shares words with the requirement. Each candidate has a semantic similarity score between 0 and 1; candidates found by shared words can have a low score. Only these candidates are available; you cannot see the rest of the resume.
 
 <requirements_with_candidates>
 {{requirements_with_candidates}}
@@ -20,7 +20,7 @@ Return a JSON object with a `judgements` array containing exactly one item per r
 ## Rules
 
 - Only cite evidence ids that appear in that requirement's `candidates`.
-- Judge the evidence text, not the similarity score; the score is only a retrieval hint. A high score with unrelated content is still `missing`.
+- Judge the evidence text, not the similarity score; the score is only a retrieval hint. A high score with unrelated content is still `missing`, and a low score with clearly matching content is still `matched`.
 - Do not assume unstated experience. "Familiar with Docker" does not satisfy "3+ years running Kubernetes in production".
 - When in doubt between `matched` and `partial`, choose `partial` and explain what is uncertain.
 

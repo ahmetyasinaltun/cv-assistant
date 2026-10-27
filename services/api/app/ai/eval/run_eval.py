@@ -5,7 +5,6 @@ import argparse
 import json
 import re
 import sys
-import unicodedata
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
@@ -16,6 +15,7 @@ from app.ai.providers.fake import FakeProvider
 from app.core.config import get_settings
 from app.core.errors import AIProviderError
 from app.schemas.analysis import AnalysisResult
+from app.services.text_normalization import fold_for_matching
 
 CASES_DIR = Path(__file__).parent / "cases"
 
@@ -41,15 +41,9 @@ def _normalize(text: str) -> str:
     return re.sub(r"\s+", " ", text.lower()).strip()
 
 
-def _fold(text: str) -> str:
-    """Lowercase without accents, so a keyword like "iletişim" also finds "İletişim" or "ILETISIM"."""
-    decomposed = unicodedata.normalize("NFKD", text.lower())
-    return "".join(c for c in decomposed if not unicodedata.combining(c)).replace("ı", "i")
-
-
 def _find_requirement(result: AnalysisResult, keyword: str):
-    keyword = _fold(keyword)
-    return next((r for r in result.requirements if keyword in _fold(r.text)), None)
+    keyword = fold_for_matching(keyword)
+    return next((r for r in result.requirements if keyword in fold_for_matching(r.text)), None)
 
 
 def _generated_texts(result: AnalysisResult) -> list[str]:

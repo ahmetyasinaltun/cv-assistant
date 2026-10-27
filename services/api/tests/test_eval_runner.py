@@ -49,14 +49,6 @@ def test_labels_may_accept_several_answers_for_borderline_cases():
     assert _labelled_accuracy(result, flexible, "status", report) == 1.0
 
 
-def test_keywords_match_regardless_of_turkish_case_and_accents():
-    from app.ai.eval.run_eval import _fold
-
-    assert _fold("iletişim") in _fold("Bulguları anlatabilecek İLETİŞİM becerisi")
-    assert _fold("iletişim") in _fold("İletişim becerisi")
-    assert _fold("ILETISIM") == _fold("iletişim")
-
-
 def test_guess_language_tells_english_from_turkish():
     from app.ai.eval.language_check import guess_language
 

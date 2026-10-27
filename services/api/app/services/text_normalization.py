@@ -25,3 +25,12 @@ def _normalize_line(line: str) -> str:
     if len(line) > 1 and line[0] in _BULLET_CHARS and line[1] == " ":
         line = "- " + line[2:].lstrip()
     return line
+
+
+def fold_for_matching(text: str) -> str:
+    """Lowercase without accents, so "İletişim", "iletişim" and "ILETISIM" compare equal.
+
+    Only for comparing words; stored and displayed text keeps its original form.
+    """
+    decomposed = unicodedata.normalize("NFKD", text.lower())
+    return "".join(c for c in decomposed if not unicodedata.combining(c)).replace("ı", "i")
