@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import en from "./dictionaries/en.json";
 import tr from "./dictionaries/tr.json";
 import { interpolate, pluralize } from "./format";
+import { pathForLocale } from "./config";
 import { negotiateLocale } from "./negotiate";
 
 describe("negotiateLocale", () => {
@@ -54,5 +55,13 @@ function keyPaths(value: unknown, prefix = ""): string[] {
 describe("dictionaries", () => {
   it("define exactly the same keys in Turkish and English", () => {
     expect(keyPaths(tr).sort()).toEqual(keyPaths(en).sort());
+  });
+});
+
+describe("pathForLocale", () => {
+  it("swaps only the language segment and keeps the rest of the path and query", () => {
+    expect(pathForLocale("/en/analyses/abc", "tr")).toBe("/tr/analyses/abc");
+    expect(pathForLocale("/tr/analyses/new?sample=1", "en")).toBe("/en/analyses/new?sample=1");
+    expect(pathForLocale("/en", "tr")).toBe("/tr");
   });
 });

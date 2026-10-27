@@ -6,8 +6,9 @@ import { redirect } from "next/navigation";
 
 import { defaultLocale, isLocale, type Locale } from "@/i18n/config";
 import { login, register } from "@/lib/api/backend";
-import { clearSession, saveSession } from "@/lib/auth/session";
-import { safeReturnPath } from "@/lib/auth/session-rules";
+import type { TokenResponse } from "@/lib/api/types";
+import { clearSession, saveLocaleChoice, saveSession } from "@/lib/auth/session";
+import { signInDestination } from "@/lib/auth/session-rules";
 
 import { authErrorKey, type AuthFormState } from "./auth-errors";
 
@@ -21,23 +22,23 @@ function readText(formData: FormData, name: string): string {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function afterSignIn(formData: FormData, locale: Locale): string {
-  return safeReturnPath(formData.get("next"), locale) ?? `/${locale}/analyses`;
-}
-
 export async function signIn(_previous: AuthFormState, formData: FormData): Promise<AuthFormState> {
   const locale = readLocale(formData);
   const email = readText(formData, "email");
   const password = formData.get("password");
 
-  let token: string;
+  let session: TokenResponse;
   try {
-    token = (await login(email, typeof password === "string" ? password : "")).access_token;
+    session = await login(email, typeof password === "string" ? password : "");
   } catch (error) {
     return { error: authErrorKey(error), email, fullName: "" };
   }
-  await saveSession(token);
-  redirect(afterSignIn(formData, locale));
+  await saveSession(session.access_token);
+  // The account remembers the last language the user chose, so signing in restores it on any device.
+  const preferred = session.user.preferred_language;
+  const accountLocale = isLocale(preferred) ? preferred : locale;
+  await saveLocaleChoice(accountLocale);
+  redirect(signInDestination(formData.get("next"), locale, accountLocale));
 }
 
 export async function registerAccount(
@@ -58,7 +59,7 @@ export async function registerAccount(
     return { error: authErrorKey(error), email, fullName };
   }
   await saveSession(token);
-  redirect(afterSignIn(formData, locale));
+  redirect(signInDestination(formData.get("next"), locale, locale));
 }
 
 export async function signOut(formData: FormData): Promise<void> {

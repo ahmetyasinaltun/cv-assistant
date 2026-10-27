@@ -38,6 +38,10 @@ export function getMe() {
   return authed<User>("/me");
 }
 
+export function updatePreferredLanguage(language: Language) {
+  return authed<User>("/me", { method: "PATCH", json: { preferred_language: language } });
+}
+
 export function getSampleInput() {
   return apiRequest<SampleAnalysisInput>("/samples/analysis-input");
 }

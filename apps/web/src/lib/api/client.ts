@@ -19,7 +19,7 @@ export class ApiError extends Error {
 export const NETWORK_ERROR_STATUS = 0;
 
 interface RequestOptions {
-  method?: "GET" | "POST" | "DELETE";
+  method?: "GET" | "POST" | "PATCH" | "DELETE";
   token?: string | null;
   json?: unknown;
   formData?: FormData;

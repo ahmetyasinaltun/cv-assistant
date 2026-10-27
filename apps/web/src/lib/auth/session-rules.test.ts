@@ -2,7 +2,7 @@
 
 import { describe, expect, it } from "vitest";
 
-import { isPrivatePath, safeReturnPath, tokenExpiry } from "./session-rules";
+import { isPrivatePath, safeReturnPath, signInDestination, tokenExpiry } from "./session-rules";
 
 function fakeJwt(payload: object): string {
   const encode = (value: object) => Buffer.from(JSON.stringify(value)).toString("base64url");
@@ -46,5 +46,19 @@ describe("isPrivatePath", () => {
     expect(isPrivatePath("/analyses/7f6c")).toBe(true);
     expect(isPrivatePath("/analyses/sample")).toBe(false);
     expect(isPrivatePath("/sign-in")).toBe(false);
+  });
+});
+
+describe("signInDestination", () => {
+  it("opens the checked return path in the account's language", () => {
+    expect(signInDestination("/en/analyses/abc", "en", "tr")).toBe("/tr/analyses/abc");
+    expect(signInDestination("/tr/analyses/new?sample=1", "tr", "tr")).toBe("/tr/analyses/new?sample=1");
+  });
+
+  it("falls back to the analyses list when the return path is missing or unsafe", () => {
+    expect(signInDestination(null, "en", "tr")).toBe("/tr/analyses");
+    expect(signInDestination("https://evil.example/en/x", "en", "en")).toBe("/en/analyses");
+    // A path in another language than the form is not trusted either, as before.
+    expect(signInDestination("/tr/analyses/abc", "en", "en")).toBe("/en/analyses");
   });
 });

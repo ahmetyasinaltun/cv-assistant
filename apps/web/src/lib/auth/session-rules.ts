@@ -1,6 +1,6 @@
 // Pure rules for the session: when a token expires, which paths need an account, which return paths are safe.
 
-import type { Locale } from "@/i18n/config";
+import { pathForLocale, type Locale } from "@/i18n/config";
 
 /** httpOnly cookie that holds the API access token. Defined here so the proxy can check it too. */
 export const SESSION_COOKIE = "career_session";
@@ -25,6 +25,15 @@ export function safeReturnPath(value: unknown, locale: Locale): string | null {
   if (typeof value !== "string") return null;
   if (!value.startsWith(`/${locale}/`) || value.startsWith("//") || value.includes("\\")) return null;
   return value;
+}
+
+/**
+ * Where sign-in or registration lands: the checked `?next=` path (or the analyses list), opened in the
+ * account's language. The check uses the form's language, because that is the language `next` was made in.
+ */
+export function signInDestination(next: unknown, formLocale: Locale, accountLocale: Locale): string {
+  const path = safeReturnPath(next, formLocale) ?? `/${formLocale}/analyses`;
+  return pathForLocale(path, accountLocale);
 }
 
 /** The analyses list, the new-analysis screen and real results need an account; the public sample does not. */

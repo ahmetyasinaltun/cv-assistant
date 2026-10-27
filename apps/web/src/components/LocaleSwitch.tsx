@@ -1,21 +1,24 @@
 "use client";
 
-// Two-option language switch: keeps the current page, swaps the locale segment and remembers the choice in a cookie.
+// Two-option language switch: keeps the current page, swaps the locale segment and remembers the choice in a
+// cookie; for a signed-in user it is also saved on the account, so other devices and the mobile app follow it.
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { LOCALE_COOKIE, locales, type Locale } from "@/i18n/config";
-
-const ONE_YEAR_IN_SECONDS = 60 * 60 * 24 * 365;
-
-function pathForLocale(pathname: string, target: Locale): string {
-  const [, , ...rest] = pathname.split("/");
-  return `/${[target, ...rest].join("/")}`;
-}
+import { saveLanguagePreference } from "@/features/account/actions";
+import {
+  LOCALE_COOKIE,
+  LOCALE_COOKIE_MAX_AGE_SECONDS,
+  locales,
+  pathForLocale,
+  type Locale,
+} from "@/i18n/config";
 
 function rememberLocale(locale: Locale) {
-  document.cookie = `${LOCALE_COOKIE}=${locale}; path=/; max-age=${ONE_YEAR_IN_SECONDS}; samesite=lax`;
+  document.cookie = `${LOCALE_COOKIE}=${locale}; path=/; max-age=${LOCALE_COOKIE_MAX_AGE_SECONDS}; samesite=lax`;
+  // Not awaited: the navigation takes priority over a pending Server Action, whose request still completes.
+  void saveLanguagePreference(locale);
 }
 
 interface LocaleSwitchProps {
@@ -37,7 +40,7 @@ export function LocaleSwitch({ locale, label }: LocaleSwitchProps) {
             hrefLang={option}
             lang={option}
             aria-current={isActive ? "true" : undefined}
-            onClick={() => rememberLocale(option)}
+            onClick={isActive ? undefined : () => rememberLocale(option)}
             className="flex h-8 min-w-10 items-center justify-center rounded-[5px] px-2 text-[12px] font-semibold tracking-[0.06em] text-shell-mute uppercase transition-colors duration-150 [font-stretch:85%] hover:text-shell-text aria-[current=true]:bg-paper aria-[current=true]:text-ink"
           >
             {option}
