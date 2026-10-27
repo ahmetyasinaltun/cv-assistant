@@ -64,6 +64,22 @@ The web client is a Next.js 16 app (App Router, TypeScript, Tailwind CSS 4). The
 - The session token lives in an httpOnly cookie and every API call is made by the Next.js server, so the browser never sees the token. Set `API_BASE_URL` in `apps/web/.env.local` if the API is not on `http://localhost:8000` (see `.env.example`).
 - Without an account, the pre-computed sample result is at `/en/analyses/sample`. Add `?preview=running`, `failed`, `no-questions` or `questions-error` to see the other states.
 
+## Local setup (mobile)
+
+Requirements: Flutter 3.47 (stable) and the Android SDK. The mobile client is Android-first; it calls the same API as the web client.
+
+```bash
+# Start the backend first (see above)
+cd apps/mobile
+flutter pub get
+flutter run            # Android emulator; the API is reached at http://10.0.2.2:8000
+flutter run --dart-define=API_BASE_URL=http://192.168.1.20:8000   # a phone on the same network
+```
+
+- The access token is kept in `flutter_secure_storage` (encrypted with a key in the Android Keystore).
+- The app opens in the device language until sign-in, then in the account's language; changing the language while signed in saves it to the account, as on the web.
+- Debug builds allow plain HTTP for the local API; release builds allow HTTPS only.
+
 ## Tests
 
 ```bash
@@ -74,6 +90,10 @@ cd apps/web
 npm test               # unit tests (Vitest)
 npm run lint
 npm run build          # also type-checks
+
+cd apps/mobile
+flutter analyze
+flutter test           # unit and widget tests against a scripted fake API
 ```
 
 Backend tests run against an in-memory SQLite database and a deterministic fake AI provider, so they need no network access or API keys.

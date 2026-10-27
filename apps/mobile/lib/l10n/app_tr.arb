@@ -1,0 +1,10 @@
+{
+  "@@locale": "tr",
+  "appTitle": "AI Kariyer Asistanı",
+  "startupChecking": "Oturumun kontrol ediliyor…",
+  "serverUnreachable": "Servise şu an ulaşılamıyor. Bağlantını kontrol edip tekrar dene.",
+  "tryAgain": "Tekrar dene",
+  "signedInAs": "{name} olarak giriş yapıldı",
+  "signedOut": "Giriş yapılmadı",
+  "screensComing": "Mobil ekranlar sıradaki adımda tasarlanıyor."
+}

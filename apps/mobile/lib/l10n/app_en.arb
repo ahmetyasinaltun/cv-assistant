@@ -1,0 +1,17 @@
+{
+  "@@locale": "en",
+  "appTitle": "AI Career Assistant",
+  "startupChecking": "Checking your session…",
+  "serverUnreachable": "The service can’t be reached right now. Check your connection and try again.",
+  "tryAgain": "Try again",
+  "signedInAs": "Signed in as {name}",
+  "@signedInAs": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "signedOut": "Not signed in",
+  "screensComing": "The mobile screens are being designed next."
+}
