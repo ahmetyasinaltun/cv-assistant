@@ -22,10 +22,12 @@ void main() {
 
     await expectLater(
       fake.build().login('ayse@example.com', 'wrong'),
-      throwsA(isA<ApiException>()
-          .having((e) => e.statusCode, 'statusCode', 401)
-          .having((e) => e.code, 'code', 'invalid_credentials')
-          .having((e) => e.isUnauthorized, 'isUnauthorized', true)),
+      throwsA(
+        isA<ApiException>()
+            .having((e) => e.statusCode, 'statusCode', 401)
+            .having((e) => e.code, 'code', 'invalid_credentials')
+            .having((e) => e.isUnauthorized, 'isUnauthorized', true),
+      ),
     );
   });
 

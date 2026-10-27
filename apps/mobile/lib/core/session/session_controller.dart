@@ -17,11 +17,8 @@ enum SessionStatus {
 }
 
 class SessionController extends ChangeNotifier {
-  SessionController({
-    required this._api,
-    required this._tokens,
-    required String deviceLanguage,
-  }) : _language = supportedLanguageOr(deviceLanguage);
+  SessionController({required this._api, required this._tokens, required String deviceLanguage})
+    : _language = supportedLanguageOr(deviceLanguage);
 
   final CareerApi _api;
   final TokenStore _tokens;
@@ -29,9 +26,13 @@ class SessionController extends ChangeNotifier {
   SessionStatus _status = SessionStatus.unknown;
   User? _user;
   String _language;
+  bool _sessionExpired = false;
 
   SessionStatus get status => _status;
   User? get user => _user;
+
+  /// True when the API rejected the token mid-session, until the user signs in again.
+  bool get sessionExpired => _sessionExpired;
 
   /// Language of the interface and of new analyses.
   String get language => _language;
@@ -74,6 +75,13 @@ class SessionController extends ChangeNotifier {
     _becomeSignedOut();
   }
 
+  /// Called when any API call answers 401: the stored token no longer works, so the user signs in again.
+  Future<void> expire() async {
+    if (_status != SessionStatus.signedIn) return;
+    _sessionExpired = true;
+    await signOut();
+  }
+
   /// Switches the app language at once; a signed-in user's choice is also saved on the account.
   /// An expired session signs the user out; other save failures are rethrown for the screen to report.
   Future<void> changeLanguage(String code) async {
@@ -85,7 +93,7 @@ class SessionController extends ChangeNotifier {
       _user = await _api.updatePreferredLanguage(code);
     } on ApiException catch (error) {
       if (!error.isUnauthorized) rethrow;
-      await signOut();
+      await expire();
     }
   }
 
@@ -102,6 +110,7 @@ class SessionController extends ChangeNotifier {
   void _becomeSignedIn(User user) {
     _user = user;
     _status = SessionStatus.signedIn;
+    _sessionExpired = false;
     _language = supportedLanguageOr(user.preferredLanguage);
     notifyListeners();
   }

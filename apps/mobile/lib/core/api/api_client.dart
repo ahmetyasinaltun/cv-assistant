@@ -28,11 +28,8 @@ class ApiException implements Exception {
 }
 
 class ApiClient {
-  ApiClient({
-    required this.baseUrl,
-    http.Client? httpClient,
-    this.timeout = const Duration(seconds: 30),
-  }) : _http = httpClient ?? http.Client();
+  ApiClient({required this.baseUrl, http.Client? httpClient, this.timeout = const Duration(seconds: 30)})
+    : _http = httpClient ?? http.Client();
 
   final String baseUrl;
   final Duration timeout;
@@ -75,10 +72,7 @@ class ApiClient {
 
   Uri _uri(String path) => Uri.parse('$baseUrl$path');
 
-  Map<String, String> _headers() => {
-        'Accept': 'application/json',
-        if (token != null) 'Authorization': 'Bearer $token',
-      };
+  Map<String, String> _headers() => {'Accept': 'application/json', if (token != null) 'Authorization': 'Bearer $token'};
 
   Future<dynamic> _run(http.BaseRequest request) async {
     final http.Response response;
@@ -105,11 +99,7 @@ class ApiClient {
   static ApiException _errorFrom(int statusCode, Object? body) {
     if (body is Map && body['error'] is Map) {
       final error = body['error'] as Map;
-      return ApiException(
-        statusCode,
-        error['code'] as String? ?? 'unknown_error',
-        error['message'] as String? ?? '',
-      );
+      return ApiException(statusCode, error['code'] as String? ?? 'unknown_error', error['message'] as String? ?? '');
     }
     return ApiException(statusCode, 'unknown_error', 'Unexpected error response.');
   }

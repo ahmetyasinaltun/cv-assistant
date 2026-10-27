@@ -4,30 +4,30 @@ import 'package:career_assistant/core/api/models.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Map<String, dynamic> analysisJson({String status = 'completed', Object? result}) => {
-      'id': 'a1',
-      'status': status,
-      'output_language': 'tr',
-      'resume_id': 'r1',
-      'job_description_id': 'j1',
-      'resume_title': 'CV',
-      'job_title': 'Stajyer Veri Analisti',
-      'company': null,
-      'score': 77,
-      'fit_level': 'strong',
-      'created_at': '2026-10-27T10:00:00Z',
-      'completed_at': '2026-10-27T10:00:35Z',
-      'result': result,
-      'interview_questions': [
-        {
-          'question': 'SQL sorgularını nasıl yazdın?',
-          'category': 'project',
-          'rationale': 'Stajındaki SQL deneyimini anlatman beklenir.',
-          'related_requirement_ids': ['r2'],
-        },
-      ],
-      'error_code': null,
-      'error_message': null,
-    };
+  'id': 'a1',
+  'status': status,
+  'output_language': 'tr',
+  'resume_id': 'r1',
+  'job_description_id': 'j1',
+  'resume_title': 'CV',
+  'job_title': 'Stajyer Veri Analisti',
+  'company': null,
+  'score': 77,
+  'fit_level': 'strong',
+  'created_at': '2026-10-27T10:00:00Z',
+  'completed_at': '2026-10-27T10:00:35Z',
+  'result': result,
+  'interview_questions': [
+    {
+      'question': 'SQL sorgularını nasıl yazdın?',
+      'category': 'project',
+      'rationale': 'Stajındaki SQL deneyimini anlatman beklenir.',
+      'related_requirement_ids': ['r2'],
+    },
+  ],
+  'error_code': null,
+  'error_message': null,
+};
 
 const resultJson = {
   'overall': {
@@ -51,7 +51,12 @@ const resultJson = {
     },
   ],
   'candidate_evidence': [
-    {'id': 'e2', 'text': 'Depo sevkiyat verilerini SQL sorgularıyla çekip', 'section': 'Deneyim', 'skills': ['SQL']},
+    {
+      'id': 'e2',
+      'text': 'Depo sevkiyat verilerini SQL sorgularıyla çekip',
+      'section': 'Deneyim',
+      'skills': ['SQL'],
+    },
   ],
   'suggestions': [
     {
@@ -81,11 +86,13 @@ void main() {
   });
 
   test('parses a running analysis without a result', () {
-    final detail = AnalysisDetail.fromJson(analysisJson(status: 'running')
-      ..['score'] = null
-      ..['fit_level'] = null
-      ..['completed_at'] = null
-      ..['interview_questions'] = null);
+    final detail = AnalysisDetail.fromJson(
+      analysisJson(status: 'running')
+        ..['score'] = null
+        ..['fit_level'] = null
+        ..['completed_at'] = null
+        ..['interview_questions'] = null,
+    );
 
     expect(detail.summary.isInProgress, isTrue);
     expect(detail.summary.fitLevel, isNull);

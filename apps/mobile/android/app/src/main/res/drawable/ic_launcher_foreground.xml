@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The web icon's artwork (apps/web/src/app/icon.svg) on Android's 108dp adaptive-icon canvas: two paper lines
+     circled by the editor's red pencil. The 32-unit drawing is scaled 2x into the 66dp safe zone. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group android:translateX="22" android:translateY="22" android:scaleX="2" android:scaleY="2">
+        <path
+            android:pathData="M8,13h16M8,19h11"
+            android:strokeColor="#F2F1EE"
+            android:strokeWidth="2"
+            android:strokeLineCap="round" />
+        <path
+            android:pathData="M5.5,17C5,9.5 9,7.5 16,7.5s11,2 11,8.5 -4.5,9 -11,9 -10.5,-2 -10.5,-8.5c0,-3 1.5,-5 5,-6"
+            android:strokeColor="#D23A2C"
+            android:strokeWidth="2"
+            android:strokeLineCap="round" />
+    </group>
+</vector>

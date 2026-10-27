@@ -1,29 +1,75 @@
-// Root widget: the design-system theme, the two app languages, and the first screen for the session state.
+// Root widget: the design-system theme, the two app languages, and a gate that shows the screen for the session:
+// start-up check, sign-in, or the analyses list as home.
 
 import 'package:flutter/material.dart';
 
+import 'app_scope.dart';
+import 'core/api/career_api.dart';
 import 'core/session/session_controller.dart';
 import 'core/theme/app_theme.dart';
+import 'features/analyses/analyses_screen.dart';
+import 'features/auth/auth_screen.dart';
 import 'features/startup/startup_screen.dart';
 import 'l10n/app_localizations.dart';
 
-class CareerAssistantApp extends StatelessWidget {
-  const CareerAssistantApp({super.key, required this.session});
+class CareerAssistantApp extends StatefulWidget {
+  const CareerAssistantApp({super.key, required this.api, required this.session});
 
+  final CareerApi api;
   final SessionController session;
 
   @override
+  State<CareerAssistantApp> createState() => _CareerAssistantAppState();
+}
+
+class _CareerAssistantAppState extends State<CareerAssistantApp> {
+  final _navigatorKey = GlobalKey<NavigatorState>();
+  late SessionStatus _lastStatus = widget.session.status;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.session.addListener(_onSessionChanged);
+  }
+
+  @override
+  void dispose() {
+    widget.session.removeListener(_onSessionChanged);
+    super.dispose();
+  }
+
+  void _onSessionChanged() {
+    final status = widget.session.status;
+    // Signing out (or an expired token) closes every open screen, so no private data stays on the stack.
+    if (_lastStatus == SessionStatus.signedIn && status == SessionStatus.signedOut) {
+      _navigatorKey.currentState?.popUntil((route) => route.isFirst);
+    }
+    _lastStatus = status;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: session,
-      builder: (context, _) => MaterialApp(
-        onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
-        theme: buildAppTheme(),
-        // The session decides the language (the account's language once signed in), not only the device.
-        locale: Locale(session.language),
-        supportedLocales: AppLocalizations.supportedLocales,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        home: StartupScreen(session: session),
+    final session = widget.session;
+    return AppScope(
+      api: widget.api,
+      session: session,
+      child: ListenableBuilder(
+        listenable: session,
+        builder: (context, _) => MaterialApp(
+          navigatorKey: _navigatorKey,
+          debugShowCheckedModeBanner: false,
+          onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
+          theme: buildAppTheme(),
+          // The session decides the language (the account's language once signed in), not only the device.
+          locale: Locale(session.language),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          home: switch (session.status) {
+            SessionStatus.unknown => StartupScreen(session: session),
+            SessionStatus.signedOut => const AuthScreen(),
+            SessionStatus.signedIn => const AnalysesScreen(),
+          },
+        ),
       ),
     );
   }

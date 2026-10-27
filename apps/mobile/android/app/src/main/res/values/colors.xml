@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Design-system tokens used before Flutter draws: the graphite icon ground and the light-table desk. -->
+<resources>
+    <color name="graphite">#1C1B19</color>
+    <color name="desk">#ECECE9</color>
+</resources>

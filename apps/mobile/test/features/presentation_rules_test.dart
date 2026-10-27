@@ -1,0 +1,144 @@
+// Unit tests for the pure presentation rules ported from the web client: form validation and API error mapping,
+// the default CV, result grouping and quote highlighting, auth errors, and Turkish-aware label caps.
+
+import 'package:career_assistant/core/api/api_client.dart';
+import 'package:career_assistant/core/api/models.dart';
+import 'package:career_assistant/core/theme/app_text.dart';
+import 'package:career_assistant/features/analysis/result_view_model.dart';
+import 'package:career_assistant/features/auth/auth_errors.dart';
+import 'package:career_assistant/features/new_analysis/new_analysis_model.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+NewAnalysisDraft draft({
+  String? resumeId,
+  ResumeSource source = ResumeSource.paste,
+  String resumeTitle = '',
+  String resumeText = '',
+  PickedPdf? file,
+  String jobTitle = '',
+  String jobText = '',
+}) => NewAnalysisDraft(
+  resumeId: resumeId,
+  resumeSource: source,
+  resumeTitle: resumeTitle,
+  resumeText: resumeText,
+  resumeFile: file,
+  jobTitle: jobTitle,
+  company: '',
+  jobText: jobText,
+);
+
+RequirementMatch requirement(String id, MatchStatus status) => RequirementMatch(
+  id: id,
+  text: 'Requirement $id',
+  category: 'technical_skill',
+  importance: Importance.mustHave,
+  status: status,
+  reasoning: '',
+  evidence: const [],
+);
+
+void main() {
+  group('new analysis', () {
+    test('a new CV needs a name and text, and the posting a title and text, in screen order', () {
+      final problems = validateDraft(draft());
+      expect(problems.keys, [Field.resumeTitle, Field.resumeText, Field.jobTitle, Field.jobText]);
+      expect(problems[Field.resumeText], FieldProblem.resumeTextMissing);
+    });
+
+    test('a saved CV only needs the posting; short text is named as too short', () {
+      final problems = validateDraft(draft(resumeId: 'r1', jobTitle: 'Intern', jobText: 'Too short'));
+      expect(problems, {Field.jobText: FieldProblem.tooShort});
+    });
+
+    test('a PDF must be a .pdf of at most 5 MB', () {
+      expect(checkPdf(null), FieldProblem.fileMissing);
+      expect(checkPdf(const PickedPdf(name: 'cv.docx', bytes: [1])), FieldProblem.fileType);
+      expect(checkPdf(PickedPdf(name: 'cv.PDF', bytes: List.filled(maxPdfBytes + 1, 0))), FieldProblem.fileTooLarge);
+      expect(checkPdf(const PickedPdf(name: 'cv.pdf', bytes: [1])), isNull);
+    });
+
+    test('API failures land on the field of the step that failed', () {
+      final encrypted = submitFailureFor(SubmitStep.resumeUpload, const ApiException(422, 'pdf_encrypted', ''));
+      expect((encrypted.field, encrypted.fieldProblem), (Field.resumeFile, FieldProblem.pdfEncrypted));
+      final posting = submitFailureFor(SubmitStep.jobDescription, const ApiException(422, 'validation_failed', ''));
+      expect((posting.field, posting.fieldProblem), (Field.jobText, FieldProblem.tooShort));
+      expect(
+        submitFailureFor(SubmitStep.analysis, const ApiException(503, 'x', '')).formProblem,
+        FormProblem.unavailable,
+      );
+      expect(
+        submitFailureFor(SubmitStep.analysis, const ApiException(0, 'network_error', '')).formProblem,
+        FormProblem.unavailable,
+      );
+      expect(submitFailureFor(SubmitStep.analysis, const ApiException(422, 'x', '')).formProblem, FormProblem.generic);
+    });
+  });
+
+  group('result', () {
+    test('evidence ids become edge numbers', () {
+      expect(evidenceLabel('e3'), 'E03');
+      expect(evidenceLabel('e12'), 'E12');
+    });
+
+    test('the quoted words are split out case-insensitively', () {
+      final segments = splitByQuote('Built REST APIs with FastAPI', 'rest apis');
+      expect(segments.map((s) => (s.text, s.highlighted)), [
+        ('Built ', false),
+        ('REST APIs', true),
+        (' with FastAPI', false),
+      ]);
+      expect(splitByQuote('Text', 'missing').single.highlighted, isFalse);
+    });
+
+    test('evidence keeps the order in which CV sections first appear', () {
+      const evidence = [
+        CandidateEvidence(id: 'e1', text: 'a', section: 'Experience', skills: []),
+        CandidateEvidence(id: 'e2', text: 'b', section: 'Skills', skills: []),
+        CandidateEvidence(id: 'e3', text: 'c', section: 'Experience', skills: []),
+        CandidateEvidence(id: 'e4', text: 'd', section: ' ', skills: []),
+      ];
+      final sections = groupEvidenceBySection(evidence);
+      expect(sections.map((s) => s.section), ['Experience', 'Skills', null]);
+      expect(sections.first.items.map((e) => e.id), ['e1', 'e3']);
+    });
+
+    test('a fix opens its first unmet requirement', () {
+      final requirements = [requirement('r1', MatchStatus.matched), requirement('r2', MatchStatus.partial)];
+      const fix = Suggestion(
+        title: '',
+        detail: '',
+        target: SuggestionTarget.cvSection,
+        priority: Priority.high,
+        relatedRequirementIds: ['r1', 'r2', 'r9'],
+      );
+      expect(requirementForFix(fix, requirements)!.id, 'r2');
+    });
+
+    test('fixes are ordered high, medium, low', () {
+      Suggestion fix(Priority priority) => Suggestion(
+        title: priority.name,
+        detail: '',
+        target: SuggestionTarget.skill,
+        priority: priority,
+        relatedRequirementIds: const [],
+      );
+      final sorted = sortSuggestionsByPriority([fix(Priority.low), fix(Priority.high), fix(Priority.medium)]);
+      expect(sorted.map((s) => s.priority), [Priority.high, Priority.medium, Priority.low]);
+    });
+  });
+
+  test('auth failures map to what the form says', () {
+    expect(authProblemFor(const ApiException(401, 'invalid_credentials', '')), AuthProblem.invalidCredentials);
+    expect(authProblemFor(const ApiException(409, 'email_taken', '')), AuthProblem.emailTaken);
+    expect(authProblemFor(const ApiException(0, 'network_error', '')), AuthProblem.unavailable);
+    expect(looksLikeEmail('ayse@example.com'), isTrue);
+    expect(looksLikeEmail('ayse@'), isFalse);
+  });
+
+  test('label caps follow Turkish casing', () {
+    expect(upperFor('tr', 'Tercih sebebi'), 'TERCİH SEBEBİ');
+    expect(upperFor('tr', 'Kısmi'), 'KISMİ'); // dotless ı → I, dotted i → İ
+    expect(upperFor('en', 'Nice-to-have'), 'NICE-TO-HAVE');
+  });
+}

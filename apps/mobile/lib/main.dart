@@ -13,10 +13,11 @@ import 'core/session/token_store.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  final api = CareerApi(ApiClient(baseUrl: apiBaseUrl));
   final session = SessionController(
-    api: CareerApi(ApiClient(baseUrl: apiBaseUrl)),
+    api: api,
     tokens: SecureTokenStore(),
     deviceLanguage: PlatformDispatcher.instance.locale.languageCode,
   );
-  runApp(CareerAssistantApp(session: session));
+  runApp(CareerAssistantApp(api: api, session: session));
 }
