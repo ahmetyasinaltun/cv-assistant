@@ -4,6 +4,8 @@ A web and Android app that compares a CV with a job posting and shows, requireme
 
 Instead of an unexplained "87% fit", every judgement points at the CV lines it relied on, unsupported claims are marked missing instead of trusted, and the score comes from a stated formula computed by code, not by the model.
 
+**Live demo:** [ai-career-assistant-seven-delta.vercel.app](https://ai-career-assistant-seven-delta.vercel.app) opens the sample result without an account. Register to run the fictional sample CV and posting live. The API runs on a free tier that sleeps when idle, so the first request after a quiet spell can take about a minute, and an analysis can take a couple of minutes when the free AI models are busy.
+
 ![Web: the sample result. Requirements on the left, the CV sheet with the supporting lines circled in the middle, what to fix on the right.](docs/screenshots/web-result.png)
 
 <p>
