@@ -2,8 +2,10 @@
 
 from functools import lru_cache
 
-from pydantic import Field
+from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+DEV_JWT_SECRET = "dev-only-secret-change-me-before-deploying-0000"
 
 
 class Settings(BaseSettings):
@@ -15,9 +17,7 @@ class Settings(BaseSettings):
 
     database_url: str = "postgresql+psycopg://career:career@localhost:5434/career_assistant"
 
-    jwt_secret_key: str = Field(
-        default="dev-only-secret-change-me-before-deploying-0000", min_length=32
-    )
+    jwt_secret_key: str = Field(default=DEV_JWT_SECRET, min_length=32)
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 60 * 24 * 7
 
@@ -52,6 +52,25 @@ class Settings(BaseSettings):
         default=["gemini-embedding-2", "gemini-embedding-001"], min_length=1
     )
     ai_request_timeout_seconds: float = 60.0
+
+    @field_validator("database_url")
+    @classmethod
+    def name_the_psycopg_driver(cls, value: str) -> str:
+        """Hosted Postgres (Neon, Render) hands out postgres:// URLs; SQLAlchemy needs the driver named."""
+        for prefix in ("postgres://", "postgresql://"):
+            if value.startswith(prefix):
+                return "postgresql+psycopg://" + value.removeprefix(prefix)
+        return value
+
+    @model_validator(mode="after")
+    def refuse_development_secrets_in_production(self) -> "Settings":
+        """Fail at start-up, not at the first request, when a deployment forgot a secret."""
+        if self.environment == "production":
+            if self.jwt_secret_key == DEV_JWT_SECRET:
+                raise ValueError("JWT_SECRET_KEY must be set to a random value in production.")
+            if self.ai_provider == "gemini" and not self.gemini_api_key:
+                raise ValueError("GEMINI_API_KEY must be set in production.")
+        return self
 
 
 @lru_cache
