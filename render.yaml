@@ -1,0 +1,31 @@
+# Render Blueprint for the API on the free plan (see the README's Deployment section).
+# Values marked "sync: false" are secrets entered once in the Render dashboard; they never live in the repository.
+services:
+  - type: web
+    name: career-assistant-api
+    runtime: python
+    plan: free
+    region: frankfurt
+    rootDir: services/api
+    buildCommand: pip install .
+    # Migrations run on every start, so a fresh database gets its schema and a deploy brings it up to date.
+    startCommand: alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.10
+      - key: ENVIRONMENT
+        value: production
+      - key: AI_PROVIDER
+        value: gemini
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      # Neon's direct (non-pooled) connection string; the API adds the psycopg driver to it.
+      - key: DATABASE_URL
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      # Browsers never call the API directly: the web client calls it from its server, the app is native.
+      - key: CORS_ORIGINS
+        value: "[]"

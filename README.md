@@ -171,6 +171,10 @@ flutter test           # unit and widget tests against a scripted fake API
 
 Backend tests run against an in-memory SQLite database and a deterministic fake AI provider, so they need no network access or API keys.
 
+## Deployment
+
+The demo runs on free tiers: Neon (PostgreSQL), Render (API, from `render.yaml`) and Vercel (web), all in Frankfurt.
+
 ## Known limitations
 
 - **Free AI tier and personal data.** The default provider is Gemini's free tier. Under Google's terms for unpaid services, submitted content may be used to improve Google's products and may be read by human reviewers. Use fictional or anonymized CVs for demos; a paid tier or a self-hosted model would be needed for real personal data.
