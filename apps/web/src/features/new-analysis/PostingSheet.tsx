@@ -21,8 +21,8 @@ export function PostingSheet({ draft, onChange, errors, locale, labels }: Postin
   const errorText = (field: keyof FieldErrors) => (errors[field] ? labels.errors[errors[field]] : null);
 
   return (
-    <section aria-labelledby="posting-sheet-title" className="bg-paper px-5 py-6 shadow-sheet sm:px-8 sm:py-7">
-      <h2 id="posting-sheet-title" className="text-[20px] leading-[1.25] font-semibold tracking-[-0.01em]">
+    <section aria-labelledby="posting-sheet-title" className="rounded-card border border-rule bg-paper px-5 py-6 shadow-sheet sm:px-7 sm:py-7">
+      <h2 id="posting-sheet-title" className="text-[21px] leading-[1.25] font-bold tracking-[-0.015em]">
         {copy.title}
       </h2>
       <div className="mt-5 flex flex-col gap-4">

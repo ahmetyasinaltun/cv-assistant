@@ -1,12 +1,17 @@
-// The analyses list: hairline-ruled rows on the desk, each one a link to its result, newest first.
+// The analyses list: one card of rows, each a link to its result, newest first, with the outcome at a glance.
 
 import Link from "next/link";
 
-import { StruckMark } from "@/components/form/StruckMark";
+import { StatusMark } from "@/components/StatusMark";
 import type { Dictionary } from "@/i18n/dictionaries";
-import type { AnalysisSummary } from "@/lib/api/types";
+import type { AnalysisSummary, FitLevel, MatchStatus } from "@/lib/api/types";
 
 import { rowOutcome } from "./history-model";
+
+// A fit level borrows the icon of the status it is closest to, as on the result page.
+const FIT_STATUS: Record<FitLevel, MatchStatus> = { strong: "matched", moderate: "partial", weak: "missing" };
+
+const cardClass = "overflow-hidden rounded-card border border-rule bg-paper shadow-sheet";
 
 interface AnalysisHistoryListProps {
   analyses: AnalysisSummary[];
@@ -18,22 +23,28 @@ interface AnalysisHistoryListProps {
 function Outcome({ analysis, labels, fitLabels }: { analysis: AnalysisSummary } & Omit<AnalysisHistoryListProps, "analyses" | "locale">) {
   const outcome = rowOutcome(analysis);
   if (outcome.kind === "progress") {
-    return <span className="label-caps text-accent-hover">{labels.status[outcome.status]}</span>;
+    return (
+      <span className="flex items-center gap-2 text-[14px] font-semibold text-accent-hover">
+        <span aria-hidden="true" className="size-2 rounded-full bg-accent motion-safe:animate-pulse" />
+        {labels.status[outcome.status]}
+      </span>
+    );
   }
   if (outcome.kind === "failed") {
     return (
-      <span className="flex gap-2 text-[14px] text-marker">
-        <StruckMark size={10} />
+      <span className="flex items-center gap-2 text-[14px] font-medium text-marker">
+        <StatusMark status="missing" size={16} />
         {labels.status.failed}
       </span>
     );
   }
   return (
-    <span className="flex items-baseline gap-2 text-[14px] text-ink-soft">
+    <span className="flex items-center gap-2.5 text-[14px] text-ink-soft">
+      <StatusMark status={FIT_STATUS[outcome.fitLevel]} size={16} />
       <span>{fitLabels[outcome.fitLevel]}</span>
-      <span className="edge-number text-[15px] text-ink">
+      <span className="text-[16px] font-bold text-accent tabular-nums">
         {outcome.score}
-        <span className="text-mute">/100</span>
+        <span className="text-[13px] font-semibold text-mute">/100</span>
       </span>
     </span>
   );
@@ -42,13 +53,13 @@ function Outcome({ analysis, labels, fitLabels }: { analysis: AnalysisSummary } 
 /** Grey bars in the shape of the list while it loads; static, because it is usually gone within a blink. */
 export function AnalysisHistorySkeleton() {
   return (
-    <div aria-busy="true" className="border-t border-rule">
+    <div aria-busy="true" className={cardClass}>
       {[0, 1, 2].map((row) => (
-        <div key={row} className="history-row border-b border-rule px-2.5 py-4">
-          <span className="h-3 w-3/5 rounded-[3px] bg-desk-deep [grid-area:posting]" />
-          <span className="h-3 w-2/5 rounded-[3px] bg-desk-deep [grid-area:resume]" />
-          <span className="h-3 w-20 rounded-[3px] bg-desk-deep [grid-area:outcome]" />
-          <span className="h-3 w-16 justify-self-end rounded-[3px] bg-desk-deep [grid-area:date]" />
+        <div key={row} className="history-row border-b border-rule px-5 py-5 last:border-b-0 sm:px-6">
+          <span className="h-3.5 w-3/5 rounded bg-desk-deep [grid-area:posting]" />
+          <span className="h-3 w-2/5 rounded bg-desk-deep [grid-area:resume]" />
+          <span className="h-3 w-24 rounded bg-desk-deep [grid-area:outcome]" />
+          <span className="h-3 w-20 justify-self-end rounded bg-desk-deep [grid-area:date]" />
         </div>
       ))}
     </div>
@@ -60,10 +71,10 @@ export function AnalysisHistoryList({ analyses, locale, labels, fitLabels }: Ana
   const dateFormat = new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" });
 
   return (
-    <div>
+    <div className={cardClass}>
       {/* Column heads help scanning on wide screens; each row's text already reads on its own. */}
-      <div aria-hidden="true" className="hidden md:block">
-        <div className="history-row label-caps border-b border-rule px-2.5 pb-2 text-mute">
+      <div aria-hidden="true" className="hidden border-b border-rule bg-desk/60 md:block">
+        <div className="history-row px-6 py-3 text-[13px] font-semibold text-mute">
           <span className="[grid-area:posting]">{labels.columns.posting}</span>
           <span className="[grid-area:resume]">{labels.columns.resume}</span>
           <span className="[grid-area:outcome]">{labels.columns.result}</span>
@@ -72,12 +83,12 @@ export function AnalysisHistoryList({ analyses, locale, labels, fitLabels }: Ana
       </div>
       <ol>
         {analyses.map((analysis) => (
-          <li key={analysis.id} className="border-b border-rule">
+          <li key={analysis.id} className="border-b border-rule last:border-b-0">
             <Link
               href={`/${locale}/analyses/${analysis.id}`}
-              className="history-row rounded-[5px] px-2.5 py-3 transition-colors duration-150 hover:bg-desk-deep active:bg-rule"
+              className="history-row px-5 py-4 transition-colors duration-150 hover:bg-desk active:bg-desk-deep sm:px-6"
             >
-              <span className="min-w-0 [grid-area:posting]">
+              <span className="min-w-0 text-[16px] [grid-area:posting]">
                 <span className="font-semibold text-ink">{analysis.job_title}</span>
                 {analysis.company && <span className="text-mute"> · {analysis.company}</span>}
               </span>
@@ -88,10 +99,7 @@ export function AnalysisHistoryList({ analyses, locale, labels, fitLabels }: Ana
               <span className="justify-self-end [grid-area:outcome] md:justify-self-start">
                 <Outcome analysis={analysis} labels={labels} fitLabels={fitLabels} />
               </span>
-              <time
-                dateTime={analysis.created_at}
-                className="text-right text-[13px] text-mute [grid-area:date]"
-              >
+              <time dateTime={analysis.created_at} className="text-right text-[14px] text-mute [grid-area:date]">
                 {dateFormat.format(new Date(analysis.created_at))}
               </time>
             </Link>

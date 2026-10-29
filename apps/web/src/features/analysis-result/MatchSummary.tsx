@@ -1,11 +1,11 @@
 // Summary card over the brand band: the score with its fit level and how it is computed, the plain-language summary,
 // and a bar of every requirement coloured by status, so the number is read together with what makes it up.
 
+import { StatusMark } from "@/components/StatusMark";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { interpolate, pluralize } from "@/i18n/format";
 import type { FitLevel, MatchStatus, OverallMatch, RequirementMatch } from "@/lib/api/types";
 
-import { StatusMark } from "./StatusMark";
 import { countByStatus, scoreSegments } from "./view-model";
 
 const STATUS_ORDER: MatchStatus[] = ["matched", "partial", "missing"];

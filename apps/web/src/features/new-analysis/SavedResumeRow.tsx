@@ -5,7 +5,7 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 
-import { primaryButtonClass } from "@/components/button-styles";
+import { dangerButtonClass } from "@/components/button-styles";
 import { FormAlert } from "@/components/form/FormAlert";
 import { textActionClass } from "@/components/form/field-styles";
 import type { Dictionary } from "@/i18n/dictionaries";
@@ -53,16 +53,16 @@ export function SavedResumeRow({ resume, checked, onSelect, analysisCount, local
 
   if (isConfirming) {
     return (
-      <div className="flex flex-col gap-3 rounded-[5px] bg-desk px-2.5 py-3">
+      <div className="flex flex-col gap-3 rounded-[10px] bg-marker-tint px-3.5 py-3.5">
         <div>
-          <p className="text-[14px] font-medium text-ink">{interpolate(labels.deleteConfirm, { title: resume.title })}</p>
-          <p className="mt-0.5 text-[13px] text-ink-soft">
+          <p className="text-[15px] font-semibold text-ink">{interpolate(labels.deleteConfirm, { title: resume.title })}</p>
+          <p className="mt-0.5 text-[14px] text-ink-soft">
             {analysisCount > 0 ? pluralize(locale, analysisCount, labels.deleteConsequence) : labels.deleteNoAnalyses}
           </p>
         </div>
         <FormAlert message={failed ? labels.deleteFailed : null} />
         <div className="flex items-center gap-4">
-          <button ref={confirmRef} type="button" onClick={confirmDelete} disabled={isDeleting} className={primaryButtonClass}>
+          <button ref={confirmRef} type="button" onClick={confirmDelete} disabled={isDeleting} className={dangerButtonClass}>
             {isDeleting ? labels.deleting : labels.deleteButton}
           </button>
           <button
@@ -83,8 +83,8 @@ export function SavedResumeRow({ resume, checked, onSelect, analysisCount, local
 
   return (
     // The label owns the padding, so the whole row (minus the delete action) selects the CV.
-    <div className="flex items-start rounded-[5px] transition-colors duration-150 hover:bg-desk/60 has-checked:bg-desk">
-      <label htmlFor={radioId} className="flex min-w-0 flex-1 cursor-pointer gap-3 py-3 pl-2.5">
+    <div className="flex items-start rounded-[10px] transition-colors duration-150 hover:bg-desk has-checked:bg-accent-tint">
+      <label htmlFor={radioId} className="flex min-w-0 flex-1 cursor-pointer gap-3 py-3 pl-3">
         <input
           id={radioId}
           type="radio"
@@ -92,11 +92,11 @@ export function SavedResumeRow({ resume, checked, onSelect, analysisCount, local
           value={resume.id}
           checked={checked}
           onChange={onSelect}
-          className="mt-[3px] size-4 shrink-0 accent-ink"
+          className="mt-[4px] size-4 shrink-0 accent-accent"
         />
         <span className="min-w-0">
-          <span className="block truncate font-medium text-ink">{resume.title}</span>
-          <span className="block text-[13px] text-mute">{meta}</span>
+          <span className="block truncate font-semibold text-ink">{resume.title}</span>
+          <span className="block text-[14px] text-mute">{meta}</span>
         </span>
       </label>
       <button
@@ -104,7 +104,7 @@ export function SavedResumeRow({ resume, checked, onSelect, analysisCount, local
         type="button"
         onClick={() => setIsConfirming(true)}
         aria-label={`${labels.delete}: ${resume.title}`}
-        className={`${textActionClass} mt-3.5 mr-2.5 shrink-0`}
+        className={`${textActionClass} mt-3.5 mr-3 shrink-0`}
       >
         {labels.delete}
       </button>

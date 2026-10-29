@@ -1,12 +1,12 @@
 // Interview questions card with its four states: not generated, generating, failed and ready.
 
+import { StatusMark } from "@/components/StatusMark";
 import { primaryButtonClass } from "@/components/button-styles";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { InterviewQuestion, RequirementMatch } from "@/lib/api/types";
 
 import { RequirementLink } from "./RequirementLink";
 import type { SelectionSource } from "./RequirementList";
-import { StatusMark } from "./StatusMark";
 
 export type QuestionsState =
   | { kind: "idle" }

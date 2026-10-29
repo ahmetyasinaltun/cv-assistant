@@ -5,9 +5,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 
-import { primaryButtonClass } from "@/components/button-styles";
+import { BandPage } from "@/components/BandPage";
+import { onBrandPrimaryButtonClass } from "@/components/button-styles";
 import { inlineLinkClass, textActionClass } from "@/components/form/field-styles";
-import { PageHeader } from "@/components/PageHeader";
 import { RefreshWhileRunning } from "@/components/RefreshWhileRunning";
 import { AnalysisHistoryList, AnalysisHistorySkeleton } from "@/features/analyses-history/AnalysisHistoryList";
 import { isInProgress } from "@/features/analyses-history/history-model";
@@ -27,8 +27,8 @@ async function AnalysesContent() {
 
   if (analyses.length === 0) {
     return (
-      <section aria-labelledby="empty-title" className="max-w-[720px] bg-paper px-6 py-7 shadow-sheet sm:px-8">
-        <h2 id="empty-title" className="text-[20px] font-semibold tracking-[-0.01em]">
+      <section aria-labelledby="empty-title" className="max-w-[760px] rounded-card border border-rule bg-paper px-6 py-7 shadow-sheet sm:px-8">
+        <h2 id="empty-title" className="text-[21px] font-bold tracking-[-0.015em]">
           {labels.empty.title}
         </h2>
         <p className="mt-2 max-w-[60ch] text-ink-soft">{labels.empty.body}</p>
@@ -38,7 +38,7 @@ async function AnalysesContent() {
             {labels.empty.tryLink}
           </Link>
         </p>
-        <p className="mt-5 text-[13px] text-mute">
+        <p className="mt-5 text-[14px] text-mute">
           {labels.empty.samplePrompt}{" "}
           <Link href={`/${locale}/analyses/sample`} className={textActionClass}>
             {labels.empty.sampleLink}
@@ -65,18 +65,17 @@ export default async function AnalysesPage() {
   const [locale, dictionary] = await Promise.all([getLocale(), getDictionary()]);
 
   return (
-    <main id="main" className="mx-auto max-w-[1520px] px-4 pb-24 sm:px-6">
-      <PageHeader
-        title={dictionary.history.title}
-        action={
-          <Link href={`/${locale}/analyses/new`} className={primaryButtonClass}>
-            {dictionary.history.newAnalysis}
-          </Link>
-        }
-      />
+    <BandPage
+      title={dictionary.history.title}
+      action={
+        <Link href={`/${locale}/analyses/new`} className={onBrandPrimaryButtonClass}>
+          {dictionary.history.newAnalysis}
+        </Link>
+      }
+    >
       <Suspense fallback={<AnalysisHistorySkeleton />}>
         <AnalysesContent />
       </Suspense>
-    </main>
+    </BandPage>
   );
 }

@@ -19,6 +19,8 @@
   --color-ink-soft: #384d49;
   --color-mute: #586c68;
   --color-rule: #d6e4e0;
+  /* Form control edge: 3.3:1 on white, above the 3:1 a control boundary needs. */
+  --color-field-edge: #7f938e;
 
   /* Status. The icon's form carries the state; colour reinforces it. "marker" is red: missing, errors. */
   --color-ok: #13733a;
@@ -28,6 +30,7 @@
   --color-partial-tint: #fcefd4;
   --color-partial-mark: #d08a0b;
   --color-marker: #b42318;
+  --color-marker-hover: #8f1c13;
   --color-marker-tint: #fde6e3;
   --color-marker-mark: #d92d20;
 
@@ -90,22 +93,6 @@
   h3 {
     text-wrap: balance;
   }
-}
-
-@utility edge-number {
-  /* Counts and scores: condensed and tabular so digits line up. */
-  font-stretch: 72%;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.02em;
-}
-
-@utility label-caps {
-  font-stretch: 85%;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 /* Analyses list row: two lines on phones, four aligned columns from tablet width. */

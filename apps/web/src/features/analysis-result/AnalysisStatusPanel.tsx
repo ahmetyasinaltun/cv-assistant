@@ -5,11 +5,10 @@
 import Link from "next/link";
 import { useFormStatus } from "react-dom";
 
+import { StatusMark } from "@/components/StatusMark";
 import { primaryButtonClass } from "@/components/button-styles";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { AnalysisStatus } from "@/lib/api/types";
-
-import { StatusMark } from "./StatusMark";
 
 // The panel takes the summary card's place, overlapping the brand band.
 const panelClass =

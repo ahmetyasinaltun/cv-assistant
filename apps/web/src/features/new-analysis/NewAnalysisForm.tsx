@@ -113,7 +113,7 @@ export function NewAnalysisForm({ resumes, analysisCounts, initialDraft, locale,
 
   return (
     <form noValidate onSubmit={handleSubmit} aria-busy={isStarting}>
-      <div className="grid gap-7 lg:grid-cols-2 lg:items-start lg:gap-8">
+      <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
         <ResumeSheet
           resumes={resumes}
           analysisCounts={analysisCounts}
@@ -133,7 +133,7 @@ export function NewAnalysisForm({ resumes, analysisCounts, initialDraft, locale,
           <button type="submit" disabled={isStarting} className={primaryButtonClass}>
             {isStarting ? labels.submitting : labels.submit}
           </button>
-          <p className="max-w-[60ch] text-[13px] text-mute">{labels.submitNote}</p>
+          <p className="max-w-[60ch] text-[14px] text-mute">{labels.submitNote}</p>
         </div>
       </div>
     </form>

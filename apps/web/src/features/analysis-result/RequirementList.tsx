@@ -1,11 +1,11 @@
 // Requirements card: must-have and nice-to-have groups; selecting a row highlights its evidence on the CV sheet,
 // and on small screens, where the sheet sits far below, also opens the reasoning and the CV lines under the row.
 
+import { StatusChip, StatusMark } from "@/components/StatusMark";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { pluralize } from "@/i18n/format";
 import type { CandidateEvidence, RequirementMatch } from "@/lib/api/types";
 
-import { StatusChip, StatusMark } from "./StatusMark";
 import { splitByImportance, splitForHighlight } from "./view-model";
 
 export type SelectionSource = "initial" | "pointer" | "keyboard";

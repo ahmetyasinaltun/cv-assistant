@@ -54,7 +54,7 @@ export function TextAreaField({
         <span className={isOverLimit ? "text-partial" : undefined}>
           {isOverLimit && interpolate(overLimitTemplate, { max: numbers.format(maxChars) })}
         </span>
-        <span className={`edge-number ${isOverLimit ? "text-partial" : ""}`}>
+        <span className={`tabular-nums ${isOverLimit ? "font-semibold text-partial" : ""}`}>
           {interpolate(countTemplate, {
             count: numbers.format(value.length),
             max: numbers.format(maxChars),

@@ -1,10 +1,10 @@
 // Link from a fix or a question back to a requirement, as a small pill carrying the requirement's status icon.
 // It is an in-page link that also selects the requirement, so its CV words are highlighted on the sheet.
 
+import { StatusMark } from "@/components/StatusMark";
 import type { RequirementMatch } from "@/lib/api/types";
 
 import { requirementAnchorId, type SelectionSource } from "./RequirementList";
-import { StatusMark } from "./StatusMark";
 
 interface RequirementLinkProps {
   requirement: RequirementMatch;

@@ -5,8 +5,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 
-import { textActionClass } from "@/components/form/field-styles";
-import { PageHeader } from "@/components/PageHeader";
+import { BandPage } from "@/components/BandPage";
+import { onBrandButtonClass } from "@/components/button-styles";
 import { SampleNotice } from "@/components/SampleNotice";
 import { NewAnalysisForm } from "@/features/new-analysis/NewAnalysisForm";
 import {
@@ -64,7 +64,12 @@ async function NewAnalysisContent({ searchParams }: PageProps<"/[lang]/analyses/
 
   return (
     <>
-      {sample && <SampleNotice className="mb-6">{labels.sampleFilled}</SampleNotice>}
+      {/* Rendered with the form, because only the streamed part knows the query; it sits on the band's edge. */}
+      {sample && (
+        <SampleNotice tone="onBrand" className="mb-4">
+          {labels.sampleFilled}
+        </SampleNotice>
+      )}
       <NewAnalysisForm
         // The sample link swaps the starting values, so the form starts over instead of keeping old state.
         key={sample ? "sample" : "blank"}
@@ -81,9 +86,9 @@ async function NewAnalysisContent({ searchParams }: PageProps<"/[lang]/analyses/
 /** Two blank sheets in the form's layout while the saved CVs load. */
 function SheetsSkeleton() {
   return (
-    <div aria-busy="true" className="grid gap-7 lg:grid-cols-2 lg:gap-8">
-      <div className="min-h-80 bg-paper shadow-sheet" />
-      <div className="min-h-80 bg-paper shadow-sheet" />
+    <div aria-busy="true" className="grid gap-6 lg:grid-cols-2">
+      <div className="min-h-80 rounded-card border border-rule bg-paper shadow-sheet" />
+      <div className="min-h-80 rounded-card border border-rule bg-paper shadow-sheet" />
     </div>
   );
 }
@@ -93,19 +98,18 @@ export default async function NewAnalysisPage(props: PageProps<"/[lang]/analyses
   const labels = dictionary.newAnalysis;
 
   return (
-    <main id="main" className="mx-auto max-w-[1520px] px-4 pb-24 sm:px-6">
-      <PageHeader
-        title={labels.title}
-        meta={labels.intro}
-        action={
-          <Link href={`/${locale}/analyses/new?sample=1`} className={textActionClass}>
-            {labels.fillSample}
-          </Link>
-        }
-      />
+    <BandPage
+      title={labels.title}
+      meta={labels.intro}
+      action={
+        <Link href={`/${locale}/analyses/new?sample=1`} className={onBrandButtonClass}>
+          {labels.fillSample}
+        </Link>
+      }
+    >
       <Suspense fallback={<SheetsSkeleton />}>
         <NewAnalysisContent {...props} />
       </Suspense>
-    </main>
+    </BandPage>
   );
 }

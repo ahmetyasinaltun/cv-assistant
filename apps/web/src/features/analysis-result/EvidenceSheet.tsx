@@ -5,11 +5,11 @@
 
 import { useEffect, useState, type RefObject } from "react";
 
+import { StatusMark } from "@/components/StatusMark";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { pluralize } from "@/i18n/format";
 import type { CandidateEvidence, MatchStatus, RequirementMatch } from "@/lib/api/types";
 
-import { StatusMark } from "./StatusMark";
 import { groupEvidenceBySection, splitForHighlight } from "./view-model";
 
 const NOTE_TONE: Record<MatchStatus, string> = {

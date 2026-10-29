@@ -17,12 +17,12 @@ export function SegmentedChoice<T extends string>({
 }: SegmentedChoiceProps<T>) {
   return (
     <fieldset>
-      <legend className="text-[14px] font-medium text-ink">{legend}</legend>
-      <div className="mt-1.5 inline-flex flex-wrap rounded-md bg-desk p-0.5">
+      <legend className="text-[15px] font-semibold text-ink">{legend}</legend>
+      <div className="mt-1.5 inline-flex flex-wrap rounded-[10px] bg-desk p-1">
         {options.map((option) => (
           <label
             key={option.value}
-            className="flex h-8 cursor-pointer items-center rounded-[5px] px-3 text-[14px] text-ink-soft transition-colors duration-150 hover:text-ink has-checked:bg-paper has-checked:text-ink has-checked:ring-1 has-checked:ring-rule has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-ink"
+            className="flex h-9 cursor-pointer items-center rounded-lg px-3.5 text-[15px] font-medium text-ink-soft transition-colors duration-150 hover:text-ink has-checked:bg-paper has-checked:text-accent-hover has-checked:shadow-[0_1px_2px_rgb(16_52_48/0.12)] has-checked:ring-1 has-checked:ring-rule has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent"
           >
             <input
               type="radio"

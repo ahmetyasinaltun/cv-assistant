@@ -39,7 +39,7 @@ export function AuthForm({ mode, locale, next, labels }: AuthFormProps) {
   }, [state]);
 
   return (
-    <form action={formAction} className="mt-6 flex flex-col gap-4">
+    <form action={formAction} className="flex flex-col gap-4">
       <input type="hidden" name="locale" value={locale} />
       {next && <input type="hidden" name="next" value={next} />}
 
