@@ -14,7 +14,7 @@ from app.ai.pipeline import (
     _Requirement,
 )
 from app.ai.providers.fake import FakeProvider
-from app.ai.schemas import RequirementJudgement
+from app.ai.schemas import EvidenceExtraction, ExtractedEvidence, RequirementJudgement
 from app.ai.scoring import SCORE_EXPLANATIONS, compute_score, fit_level_for
 from app.schemas.analysis import CandidateEvidence
 from app.schemas.common import Language
@@ -142,6 +142,26 @@ def test_retrieve_embeds_both_sides_in_one_call():
 
     assert embed_calls == [["Requirement r1", "Built REST APIs with FastAPI", "Led a chess club"]]
     assert {c.evidence_id for c in candidates} == {"e1", "e2"}
+
+
+def test_extract_evidence_drops_the_list_marker_a_model_copies():
+    provider = FakeProvider()
+    provider.llm.generate_structured = lambda **_: EvidenceExtraction(
+        evidence=[
+            ExtractedEvidence(text="- https://github.com/jane/inventory", section="Links"),
+            ExtractedEvidence(text="  Built REST APIs  ", section=None),
+            ExtractedEvidence(text="-5% build time", section=None),
+            ExtractedEvidence(text="- ", section=None),
+        ]
+    )
+
+    evidence = AnalysisPipeline(provider).extract_evidence("resume text")
+
+    assert [e.text for e in evidence] == [
+        "https://github.com/jane/inventory",
+        "Built REST APIs",
+        "-5% build time",
+    ]
 
 
 def _requirement(rid: str, importance: str = "must_have") -> _Requirement:

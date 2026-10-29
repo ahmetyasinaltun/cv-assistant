@@ -23,7 +23,7 @@ Instead of an unexplained "87% fit", every judgement points at the CV lines it r
 
 ## What it does
 
-1. Paste or upload a CV (PDF) and paste a job posting.
+1. Paste or upload a CV (PDF; clickable links such as project repositories are read too) and paste a job posting.
 2. The posting's requirements are extracted and labelled must-have or nice-to-have.
 3. Each requirement is matched against the CV's own lines and judged **matched**, **partial** or **missing**, with the lines quoted.
 4. A score is computed from those labels (must-have counts double), with the formula shown next to it.
@@ -57,7 +57,7 @@ CV ───────────► extract evidence lines (LLM, copied verb
 
 ## Evaluation
 
-Four hand-labelled cases (`services/api/app/ai/eval/cases/`): a good-fit backend intern, a partial-fit mobile developer, a weak-fit ML engineer, and a Turkish data-analyst internship with Turkish output. `python -m app.ai.eval.run_eval --provider gemini` reports:
+Five hand-labelled cases (`services/api/app/ai/eval/cases/`): a good-fit backend intern, a partial-fit mobile developer, a weak-fit ML engineer, a Turkish data-analyst internship with Turkish output, and a Turkish frontend internship that asks for a GitHub link. `python -m app.ai.eval.run_eval --provider gemini` reports:
 
 | Metric | What it checks | Latest real run (Gemini free tier) |
 |---|---|---|
@@ -68,7 +68,7 @@ Four hand-labelled cases (`services/api/app/ai/eval/cases/`): a good-fit backend
 | Grounded rate | cited quotes appear verbatim in the CV | 1.0 |
 | Language match | generated text is in the requested language | 1.0 |
 
-Four cases are a smoke check, not a benchmark, and model output is not deterministic. The set earns its keep by catching regressions: the Turkish case exposed the retrieval miss above (status accuracy 0.83 on that case) before hybrid retrieval fixed it.
+Five cases are a smoke check, not a benchmark, and model output is not deterministic. The set earns its keep by catching regressions: the Turkish case exposed the retrieval miss above (status accuracy 0.83 on that case) before hybrid retrieval fixed it, and the GitHub case guards a fix for links: a real CV's GitHub link was judged missing because the prompt had no "link" evidence type and the project links sat behind PDF icons that text extraction does not return.
 
 ## Architecture
 

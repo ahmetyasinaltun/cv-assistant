@@ -3,6 +3,7 @@
 
 import json
 import logging
+import re
 from dataclasses import dataclass
 
 from app.ai.matching import RetrievedCandidate, retrieve_candidates
@@ -31,6 +32,7 @@ from app.schemas.common import DEFAULT_LANGUAGE, Language
 logger = logging.getLogger(__name__)
 
 MAX_QUOTE_CHARS = 300
+_LIST_MARKER = re.compile(r"^-(?:\s+|$)")
 
 # Prompts name the language instead of passing a code: models follow a name more reliably.
 # The Turkish interface addresses the user informally, so generated Turkish text should too.
@@ -121,10 +123,10 @@ class AnalysisPipeline:
         )
         evidence = [
             CandidateEvidence(
-                id=f"e{i}", text=item.text.strip(), section=item.section, skills=item.skills
+                id=f"e{i}", text=_evidence_text(item.text), section=item.section, skills=item.skills
             )
             for i, item in enumerate(extraction.evidence, start=1)
-            if item.text.strip()
+            if _evidence_text(item.text)
         ]
         if not evidence:
             raise AIProviderError(
@@ -300,6 +302,11 @@ class AnalysisPipeline:
             score_explanation=SCORE_EXPLANATIONS[output_language],
             limitations=[],
         )
+
+
+def _evidence_text(text: str) -> str:
+    """The copied statement without the "- " the normalizer puts in front of every bullet point."""
+    return _LIST_MARKER.sub("", text.strip()).strip()
 
 
 def _matches_as_json(matches: list[RequirementMatch]) -> str:

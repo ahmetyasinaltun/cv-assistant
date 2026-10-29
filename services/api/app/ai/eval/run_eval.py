@@ -183,15 +183,16 @@ def main(argv: list[str] | None = None) -> int:
     reports = [evaluate_case(AnalysisPipeline(provider), case) for case in load_cases()]
 
     print(f"provider: {args.provider}\n")
+    name_width = max(len(r.name) for r in reports) + 2
     header = (
-        f"{'case':<30}{'ok':<4}{'score':<7}{'reqs':<6}{'kw':<7}{'status':<8}{'imp':<7}"
+        f"{'case':<{name_width}}{'ok':<4}{'score':<7}{'reqs':<6}{'kw':<7}{'status':<8}{'imp':<7}"
         f"{'grounded':<10}{'lang':<6}"
     )
     print(header)
     print("-" * len(header))
     for r in reports:
         print(
-            f"{r.name:<30}{'yes' if r.completed else 'NO':<4}{str(r.score):<7}{r.requirement_count:<6}"
+            f"{r.name:<{name_width}}{'yes' if r.completed else 'NO':<4}{str(r.score):<7}{r.requirement_count:<6}"
             f"{r.keyword_recall:<7.2f}{_fmt(r.status_accuracy):<8}{_fmt(r.importance_accuracy):<7}"
             f"{_fmt(r.grounded_rate):<10}{_fmt(r.language_match_rate):<6}"
         )

@@ -4,6 +4,8 @@ import re
 import unicodedata
 
 _BULLET_CHARS = "•·▪◦●○■□➢➤►▶✓✔-–—*"
+# Characters that only ever mark a list item, so PDFs that set them without a following space ("•Built") still count.
+_BULLET_GLYPHS = "•·▪◦●○■□➢➤►▶✓✔"
 _MULTI_SPACE = re.compile(r"[ \t ]+")
 _MULTI_NEWLINE = re.compile(r"\n{3,}")
 _CONTROL_CHARS = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
@@ -24,6 +26,8 @@ def _normalize_line(line: str) -> str:
     line = _MULTI_SPACE.sub(" ", line).strip()
     if len(line) > 1 and line[0] in _BULLET_CHARS and line[1] == " ":
         line = "- " + line[2:].lstrip()
+    elif len(line) > 1 and line[0] in _BULLET_GLYPHS:
+        line = "- " + line[1:]
     return line
 
 

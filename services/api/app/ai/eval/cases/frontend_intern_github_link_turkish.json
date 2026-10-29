@@ -1,0 +1,23 @@
+{
+  "name": "frontend_intern_github_link_turkish",
+  "description": "Turkish frontend internship that asks for a GitHub link, against a fictional CV whose GitHub profile is in the header and whose project repository comes from a PDF link (the 'Links' block the PDF extractor appends). Checks that profile and project links are extracted as evidence. Clear gap: Tailwind CSS.",
+  "output_language": "tr",
+  "job_title": "Frontend Geliştirici Stajyeri",
+  "job_description": "Frontend Geliştirici Stajyeri (Kocaeli, hibrit)\n\nWeb uygulamamızın arayüzünü geliştirecek bir stajyer arıyoruz.\n\nAranan nitelikler\n- Bilgisayar Mühendisliği, Yazılım Mühendisliği veya ilgili bir bölümde öğrenci olmak\n- React ile arayüz geliştirme deneyimi\n- JavaScript ve TypeScript bilgisi\n- REST API'lerden veri çekip ekranda gösterebilmek\n- Başvuruda projelerini gösteren bir GitHub bağlantısı paylaşmak\n- Tailwind CSS bilgisi tercih sebebidir\n\nNeler yapacaksın\n- Yeni ekranları tasarım ekibiyle birlikte geliştirmek\n- Kod incelemelerine katılmak",
+  "resume": "Elif Aydın\nBilgisayar Mühendisliği 3. sınıf öğrencisi\nelif.aydin@example.com\ngithub.com/elifaydin-dev\n\nProjeler\nKitap Takas Platformu\n- React ve TypeScript ile kullanıcıların kitap ilanı verip takas isteği gönderebildiği bir web uygulaması geliştirdim.\n- İlan listesini Node.js ve Express ile yazdığım REST API'den çekip sayfalama ve arama ekledim.\nHava Durumu Panosu\n- JavaScript ve OpenWeather API ile şehir arama ve 5 günlük tahmin gösteren tek sayfalık bir uygulama yaptım.\n\nBeceriler\n- JavaScript, TypeScript, React, HTML, CSS, Git, Node.js\n\nLinks\n- https://github.com/elifaydin-dev/kitap-takas\n- https://www.linkedin.com/in/elif-aydin-4821",
+  "expected_requirement_keywords": ["react", "typescript", "rest", "github", "tailwind"],
+  "expected_statuses": [
+    {
+      "keyword": "github",
+      "status": "matched",
+      "why": "The header shows github.com/elifaydin-dev and the Links block lists a project repository; a miss means the links were not extracted as evidence"
+    },
+    {"keyword": "react", "status": "matched"},
+    {"keyword": "rest", "status": "matched"},
+    {"keyword": "tailwind", "status": "missing"}
+  ],
+  "expected_importance": [
+    {"keyword": "tailwind", "importance": "nice_to_have"},
+    {"keyword": "react", "importance": "must_have"}
+  ]
+}

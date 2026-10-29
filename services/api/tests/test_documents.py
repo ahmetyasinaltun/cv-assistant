@@ -3,21 +3,35 @@
 from tests.conftest import SAMPLE_JOB, SAMPLE_RESUME, register_user
 
 
-def minimal_pdf(lines: list[str]) -> bytes:
-    """Build a tiny single-page PDF with Helvetica text so pypdf can extract it."""
+def _pdf_string(text: str) -> str:
+    return "(" + text.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)") + ")"
+
+
+def minimal_pdf(lines: list[str], links: list[str] | None = None) -> bytes:
+    """Build a tiny single-page PDF with Helvetica text so pypdf can extract it.
+
+    Each entry in `links` becomes a clickable link annotation, like an icon that links to a repository.
+    """
     content_lines = ["BT", "/F1 12 Tf", "50 750 Td", "14 TL"]
     for line in lines:
-        escaped = line.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
-        content_lines.append(f"({escaped}) Tj T*")
+        content_lines.append(f"{_pdf_string(line)} Tj T*")
     content_lines.append("ET")
     stream = "\n".join(content_lines).encode("latin-1")
+    links = links or []
+    first_link_object = 6
+    annots = " ".join(f"{first_link_object + i} 0 R" for i in range(len(links)))
     objects = [
         b"<< /Type /Catalog /Pages 2 0 R >>",
         b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
         b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R "
-        b"/Resources << /Font << /F1 5 0 R >> >> >>",
+        b"/Resources << /Font << /F1 5 0 R >> >> /Annots [" + annots.encode() + b"] >>",
         b"<< /Length " + str(len(stream)).encode() + b" >>\nstream\n" + stream + b"\nendstream",
         b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+        *(
+            f"<< /Type /Annot /Subtype /Link /Rect [50 700 70 712] "
+            f"/A << /S /URI /URI {_pdf_string(uri)} >> >>".encode("latin-1")
+            for uri in links
+        ),
     ]
     out = bytearray(b"%PDF-1.4\n")
     offsets = []
@@ -70,6 +84,33 @@ def test_upload_pdf_resume_extracts_text(client, auth_headers):
     assert body["source_type"] == "pdf"
     assert body["original_filename"] == "cv.pdf"
     assert "FastAPI" in body["raw_text"]
+
+
+def test_upload_pdf_resume_appends_links_the_text_does_not_show(client, auth_headers):
+    pdf = minimal_pdf(
+        [
+            "Jane Doe - www.github.com/janedoe",
+            "Inventory Tracker: React and TypeScript frontend with a PostgreSQL database.",
+        ],
+        links=[
+            "https://github.com/janedoe/",
+            "https://github.com/janedoe/inventory-tracker",
+            "https://github.com/janedoe/inventory-tracker",
+            "mailto:jane@example.com",
+            "javascript:alert(1)",
+            "https://example.com/" + "x" * 400,
+        ],
+    )
+    response = client.post(
+        "/resumes/upload",
+        data={"title": "PDF CV with links"},
+        files={"file": ("cv.pdf", pdf, "application/pdf")},
+        headers=auth_headers,
+    )
+    assert response.status_code == 201, response.text
+    assert response.json()["raw_text"].endswith(
+        "PostgreSQL database.\n\nLinks\n- https://github.com/janedoe/inventory-tracker"
+    )
 
 
 def test_upload_rejects_non_pdf(client, auth_headers):

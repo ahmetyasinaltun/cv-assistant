@@ -13,6 +13,13 @@ def test_normalizes_bullet_characters():
     assert normalize_document_text(raw, max_chars=1000) == "- Built APIs\n- Wrote tests\n- Led labs"
 
 
+def test_bullet_glyph_without_space_is_a_bullet_but_a_dash_is_not():
+    raw = "•Built APIs\n▪Wrote tests\n-5% build time\n–2024"
+    assert normalize_document_text(raw, max_chars=1000) == (
+        "- Built APIs\n- Wrote tests\n-5% build time\n–2024"
+    )
+
+
 def test_strips_control_characters_and_truncates():
     raw = "abc\x00def" + "x" * 50
     result = normalize_document_text(raw, max_chars=10)
