@@ -15,7 +15,7 @@ SCORE_EXPLANATIONS: dict[Language, str] = {
         "weigh twice as much as nice-to-have ones. The score is the weighted percentage."
     ),
     "tr": (
-        "Her şart eşleşti (1), kısmi (0,5) ya da eksik (0) sayılır; zorunlu şartlar, tercih sebebi "
+        "Her şart karşılandı (1), kısmen (0,5) ya da eksik (0) sayılır; zorunlu şartlar, tercih sebebi "
         "olanların iki katı ağırlık taşır. Puan bu ağırlıklı yüzdedir."
     ),
 }

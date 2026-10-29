@@ -13,6 +13,7 @@
   "shell": {
     "product": "AI Career Assistant",
     "navLabel": "Main",
+    "menu": "Menu",
     "nav": {
       "analyses": "Analyses",
       "sample": "Sample analysis"
@@ -60,7 +61,6 @@
       "other": "{count} lines read from this CV"
     },
     "sheetEmpty": "No evidence statements could be extracted from this CV.",
-    "missingNote": "Nothing in this CV supports “{requirement}”.",
     "otherSection": "Other",
     "fixesTitle": "What to fix",
     "fixesEmpty": "No changes are suggested for this posting.",
@@ -77,6 +77,19 @@
     },
     "relatedRequirements": "Related requirements",
     "supportingLines": "From your CV",
+    "breadcrumbLabel": "Breadcrumb",
+    "backToAnalyses": "Analyses",
+    "summaryTitle": "In short",
+    "requirementCount": {
+      "one": "{count} requirement",
+      "other": "{count} requirements"
+    },
+    "breakdownCaption": "What the score is made of",
+    "breakdownNote": "Wide pieces are must-haves; they count twice in the score.",
+    "fixesCount": {
+      "one": "{count} suggestion",
+      "other": "{count} suggestions"
+    },
     "questions": {
       "title": "Interview questions",
       "intro": "Questions an interviewer is likely to ask, based on this posting and the gaps above.",

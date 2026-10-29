@@ -386,22 +386,22 @@ class AppLocalizationsTr extends AppLocalizations {
   String get limitationsTitle => 'Bu analizin bilemeyecekleri';
 
   @override
-  String get statusMatched => 'Eşleşti';
+  String get statusMatched => 'Karşılandı';
 
   @override
-  String get statusPartial => 'Kısmi';
+  String get statusPartial => 'Kısmen';
 
   @override
   String get statusMissing => 'Eksik';
 
   @override
   String statusCountMatched(int count) {
-    return '$count eşleşti';
+    return '$count karşılandı';
   }
 
   @override
   String statusCountPartial(int count) {
-    return '$count kısmi';
+    return '$count kısmen';
   }
 
   @override

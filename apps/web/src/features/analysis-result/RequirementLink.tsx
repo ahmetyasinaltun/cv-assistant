@@ -1,5 +1,5 @@
-// Inline link from a fix or a question back to a requirement, carrying the requirement's status mark.
-// It is an in-page link (inline, so long names wrap with the surrounding text) that also selects the requirement.
+// Link from a fix or a question back to a requirement, as a small pill carrying the requirement's status icon.
+// It is an in-page link that also selects the requirement, so its CV words are highlighted on the sheet.
 
 import type { RequirementMatch } from "@/lib/api/types";
 
@@ -22,14 +22,12 @@ export function RequirementLink({ requirement, isSelected, onSelect }: Requireme
         event.preventDefault();
         onSelect(requirement.id, event.detail === 0 ? "keyboard" : "pointer");
       }}
-      className="group rounded-[3px] text-ink-soft no-underline transition-colors duration-150 hover:text-ink aria-[current=true]:text-ink"
+      className="inline-flex max-w-full items-start gap-1.5 rounded-lg border border-rule bg-desk py-1 pr-2.5 pl-1.5 text-[14px] leading-[1.4] font-medium text-ink no-underline transition-colors duration-150 hover:border-accent/40 hover:bg-accent-tint aria-[current=true]:border-accent/60 aria-[current=true]:bg-accent-tint"
     >
-      <span className="mr-1.5 inline-block align-[-1px]">
-        <StatusMark status={requirement.status} importance={requirement.importance} />
+      <span className="mt-px">
+        <StatusMark status={requirement.status} size={16} />
       </span>
-      <span className="underline decoration-rule underline-offset-[3px] transition-colors duration-150 group-hover:decoration-ink group-aria-[current=true]:decoration-marker">
-        {requirement.text}
-      </span>
+      <span>{requirement.text}</span>
     </a>
   );
 }

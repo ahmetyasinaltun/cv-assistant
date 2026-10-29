@@ -16,7 +16,7 @@ interface SessionPartProps {
 }
 
 const barActionClass =
-  "flex h-9 items-center rounded px-2.5 text-[14px] whitespace-nowrap text-shell-mute transition-colors duration-150 hover:text-shell-text";
+  "flex h-10 items-center rounded-lg px-3 text-[14px] font-medium whitespace-nowrap text-ink-soft transition-colors duration-150 hover:bg-desk hover:text-ink";
 
 /** The bar must render even when the API is down; pages report that failure themselves. */
 async function userOrNull(): Promise<User | null> {
@@ -49,7 +49,7 @@ export async function AccountControls({ locale, labels }: SessionPartProps) {
 
   return (
     <div role="group" aria-label={labels.accountLabel} className="flex items-center gap-1">
-      <span translate="no" className="hidden max-w-[18ch] truncate text-[14px] text-shell-mute md:inline">
+      <span translate="no" className="hidden max-w-[18ch] truncate text-[14px] text-mute md:inline">
         {user.full_name}
       </span>
       <form action={signOut}>

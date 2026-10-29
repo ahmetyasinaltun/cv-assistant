@@ -9,9 +9,11 @@ import {
   countByStatus,
   defaultSelectedRequirementId,
   groupEvidenceBySection,
+  scoreSegments,
   sortSuggestionsByPriority,
   splitByImportance,
   splitByQuote,
+  splitForHighlight,
 } from "./view-model";
 
 const result = sampleAnalysis.result!;
@@ -125,5 +127,32 @@ describe("splitByQuote", () => {
 
   it("drops empty segments when the quote covers the start or the whole text", () => {
     expect(splitByQuote("pytest", "pytest")).toEqual([{ text: "pytest", highlighted: true }]);
+  });
+});
+
+describe("splitForHighlight", () => {
+  it("marks only the quoted words when they are found", () => {
+    expect(splitForHighlight("Python, FastAPI, pytest", "pytest")).toEqual([
+      { text: "Python, FastAPI, ", highlighted: false },
+      { text: "pytest", highlighted: true },
+    ]);
+  });
+
+  it("marks the whole supporting line when the quote is not part of it", () => {
+    expect(splitForHighlight("Python, FastAPI", "Django")).toEqual([{ text: "Python, FastAPI", highlighted: true }]);
+  });
+});
+
+describe("scoreSegments", () => {
+  it("puts matched first and draws must-haves twice as wide as nice-to-haves", () => {
+    const segments = scoreSegments(result.requirements);
+    expect(segments.map((segment) => segment.status)).toEqual([
+      ...Array(countByStatus(result.requirements).matched).fill("matched"),
+      ...Array(countByStatus(result.requirements).partial).fill("partial"),
+      ...Array(countByStatus(result.requirements).missing).fill("missing"),
+    ]);
+    const kubernetes = segments.find((segment) => segment.text === "Experience with Kubernetes");
+    const restApis = segments.find((segment) => segment.text === "Build and maintain REST APIs");
+    expect([kubernetes?.width, restApis?.width]).toEqual([1, 2]);
   });
 });

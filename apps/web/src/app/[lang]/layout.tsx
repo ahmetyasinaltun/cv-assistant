@@ -21,8 +21,8 @@ export function generateStaticParams() {
   return locales.map((lang) => ({ lang }));
 }
 
-// Matches the mobile browser chrome to the graphite top bar.
-export const viewport: Viewport = { themeColor: "#1c1b19" };
+// Matches the mobile browser chrome to the white top bar.
+export const viewport: Viewport = { themeColor: "#ffffff" };
 
 export async function generateMetadata(): Promise<Metadata> {
   const dictionary = await getDictionary();

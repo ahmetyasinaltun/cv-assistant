@@ -1,34 +1,40 @@
-/* Design tokens and global browser-surface styling for the web client ("editor's contact sheet" world). */
+/* Design tokens and global browser-surface styling for the web client: white cards on a pale teal ground under a deep teal band. */
 
 @import "tailwindcss";
 
 @theme {
-  /* Shell: the darkroom graphite around the work. */
-  --color-shell: #1c1b19;
-  --color-shell-raised: #2a2926;
-  --color-shell-text: #f2f1ee;
-  --color-shell-mute: #b4b2ac;
+  /* Brand: the deep teal band, and the teal accent of primary actions, links and the score. */
+  --color-brand: #0c4a46;
+  --color-on-brand: #ffffff;
+  --color-on-brand-soft: #b5dbd4;
+  --color-accent: #0f766d;
+  --color-accent-hover: #0b5e57;
+  --color-accent-tint: #e0f2ef;
 
-  /* Desk, sheet and ink. */
-  --color-desk: #ecece9;
-  --color-desk-deep: #e1e0dc;
+  /* Ground, cards and ink. "desk" is the page ground the cards sit on. */
+  --color-desk: #edf4f2;
+  --color-desk-deep: #e1ebe8;
   --color-paper: #ffffff;
-  --color-ink: #1c1b19;
-  --color-ink-soft: #3d3b37;
-  --color-mute: #5f5d58;
-  --color-rule: #d6d5d1;
-  --color-rule-strong: #1c1b19;
+  --color-ink: #102321;
+  --color-ink-soft: #384d49;
+  --color-mute: #586c68;
+  --color-rule: #d6e4e0;
 
-  /* The editor's marks. */
-  --color-marker: #b73128;
-  --color-marker-tint: #f7dcd8;
-  --color-edge: #a3500f;
-  --color-partial: #8a6405;
-  --color-partial-tint: #f4e8c8;
+  /* Status. The icon's form carries the state; colour reinforces it. "marker" is red: missing, errors. */
+  --color-ok: #13733a;
+  --color-ok-tint: #e2f3e7;
+  --color-ok-mark: #1e9a4b;
+  --color-partial: #925400;
+  --color-partial-tint: #fcefd4;
+  --color-partial-mark: #d08a0b;
+  --color-marker: #b42318;
+  --color-marker-tint: #fde6e3;
+  --color-marker-mark: #d92d20;
 
   --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
 
-  --shadow-sheet: 0 1px 2px rgb(28 27 25 / 0.08), 0 12px 32px -8px rgb(28 27 25 / 0.14);
+  --radius-card: 14px;
+  --shadow-sheet: 0 1px 2px rgb(16 52 48 / 0.06), 0 12px 32px -14px rgb(16 52 48 / 0.22);
 
   --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
 }
@@ -43,7 +49,7 @@
     background: var(--color-desk);
     color: var(--color-ink);
     font-family: var(--font-sans);
-    font-size: 15px;
+    font-size: 16px;
     line-height: 1.55;
     font-feature-settings: "kern";
     text-rendering: optimizeLegibility;
@@ -59,14 +65,14 @@
   }
 
   ::selection {
-    background: var(--color-marker-tint);
+    background: var(--color-accent-tint);
     color: var(--color-ink);
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-ink);
+    outline: 2px solid var(--color-accent);
     outline-offset: 2px;
-    border-radius: 3px;
+    border-radius: 4px;
   }
 
   a {
@@ -87,7 +93,7 @@
 }
 
 @utility edge-number {
-  /* Film edge print: condensed, tabular, small. Used for evidence ids and scores. */
+  /* Counts and scores: condensed and tabular so digits line up. */
   font-stretch: 72%;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
@@ -100,29 +106,6 @@
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-}
-
-/* Result page layout: fixes lead on narrow screens, three columns on wide ones. */
-.result-grid {
-  display: grid;
-  gap: 28px;
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-areas: "fixes" "requirements" "sheet";
-}
-
-@media (min-width: 1024px) {
-  .result-grid {
-    gap: 28px 32px;
-    grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
-    grid-template-areas: "fixes fixes" "requirements sheet";
-  }
-}
-
-@media (min-width: 1280px) {
-  .result-grid {
-    grid-template-columns: minmax(280px, 330px) minmax(0, 1fr) minmax(300px, 350px);
-    grid-template-areas: "requirements sheet fixes";
-  }
 }
 
 /* Analyses list row: two lines on phones, four aligned columns from tablet width. */
@@ -142,17 +125,34 @@
   }
 }
 
-/* The editor's loop: drawn on once with a fast ease-out, interruptible, instant for keyboard and reduced motion. */
-.loop-reveal {
-  stroke-dashoffset: 0;
-  transition: stroke-dashoffset 260ms var(--ease-out-strong);
+/* The highlighter on the CV sheet: sweeps across the supporting words once, instant for keyboard and reduced motion. */
+.highlight {
+  color: inherit;
+  background-color: transparent;
+  background-image: linear-gradient(var(--highlight), var(--highlight));
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  border-radius: 3px;
+  margin: 0 -1px;
+  padding: 1px 3px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition: background-size 360ms var(--ease-out-strong);
 
   @starting-style {
-    stroke-dashoffset: 1;
+    background-size: 0% 100%;
   }
 }
 
-.loop-reveal[data-instant="true"] {
+.highlight[data-tone="matched"] {
+  --highlight: rgb(30 154 75 / 0.22);
+}
+
+.highlight[data-tone="partial"] {
+  --highlight: rgb(240 172 30 / 0.36);
+}
+
+.highlight[data-instant="true"] {
   transition: none;
 }
 
@@ -188,21 +188,12 @@
     transform: translateX(100%);
   }
 
-  .loop-reveal {
+  .highlight {
     transition: none;
   }
 
   .reveal-in {
     translate: none;
     transition: opacity 150ms ease;
-  }
-
-  .loop-layer {
-    opacity: 1;
-    transition: opacity 150ms ease;
-
-    @starting-style {
-      opacity: 0;
-    }
   }
 }

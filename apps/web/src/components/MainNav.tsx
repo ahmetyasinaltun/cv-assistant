@@ -26,8 +26,8 @@ export function MainNav({ locale, label, items }: MainNavProps) {
   const pathname = usePathname();
 
   return (
-    <nav aria-label={label} className="order-last -mx-1 w-full overflow-x-auto sm:order-none sm:w-auto">
-      <ul className="flex gap-1 pb-2 sm:pb-0">
+    <nav aria-label={label} className="-mx-2.5 min-w-0 overflow-x-auto sm:order-2 sm:ml-4">
+      <ul className="flex gap-1">
         {items.map((item) => {
           const href = `/${locale}${item.href}`;
           const section = `/${locale}${item.section ?? item.href}`;
@@ -39,7 +39,7 @@ export function MainNav({ locale, label, items }: MainNavProps) {
               <Link
                 href={href}
                 aria-current={isCurrent ? "page" : undefined}
-                className="relative flex h-9 items-center rounded px-2.5 text-[14px] whitespace-nowrap text-shell-mute transition-colors duration-150 hover:text-shell-text aria-[current=page]:text-shell-text aria-[current=page]:after:absolute aria-[current=page]:after:inset-x-2.5 aria-[current=page]:after:-bottom-px aria-[current=page]:after:h-0.5 aria-[current=page]:after:bg-marker sm:h-13"
+                className="relative flex h-10 items-center rounded px-2.5 text-[15px] font-medium whitespace-nowrap text-ink-soft transition-colors duration-150 hover:text-ink aria-[current=page]:text-ink aria-[current=page]:after:absolute aria-[current=page]:after:inset-x-2.5 aria-[current=page]:after:-bottom-px aria-[current=page]:after:h-0.5 aria-[current=page]:after:bg-accent sm:h-16"
               >
                 {item.label}
               </Link>

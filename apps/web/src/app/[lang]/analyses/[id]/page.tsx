@@ -49,6 +49,7 @@ async function AnalysisContent({ params }: PageProps<"/[lang]/analyses/[id]">) {
         generateQuestions={generateQuestionsForAnalysis.bind(null, analysis.id)}
         retryAction={rerunAnalysis.bind(null, locale, analysis.id)}
         newAnalysisHref={`/${locale}/analyses/new`}
+        backHref={`/${locale}/analyses`}
       />
     </>
   );

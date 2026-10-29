@@ -1,22 +1,29 @@
 "use client";
 
-// The CV sheet: evidence statements grouped by section, with the selected requirement's support circled and annotated.
+// The CV sheet: every evidence line grouped by section, with the selected requirement's note pinned on top and its
+// supporting words highlighted in the status colour.
 
-import { useEffect, useState, type ReactNode, type RefObject } from "react";
+import { useEffect, useState, type RefObject } from "react";
 
 import type { Dictionary } from "@/i18n/dictionaries";
-import { interpolate, pluralize } from "@/i18n/format";
-import type { CandidateEvidence, RequirementMatch } from "@/lib/api/types";
+import { pluralize } from "@/i18n/format";
+import type { CandidateEvidence, MatchStatus, RequirementMatch } from "@/lib/api/types";
 
-import { GreasePencilLoop } from "./GreasePencilLoop";
-import { groupEvidenceBySection, splitByQuote } from "./view-model";
+import { StatusMark } from "./StatusMark";
+import { groupEvidenceBySection, splitForHighlight } from "./view-model";
+
+const NOTE_TONE: Record<MatchStatus, string> = {
+  matched: "bg-ok-tint",
+  partial: "bg-partial-tint",
+  missing: "bg-marker-tint",
+};
 
 interface EvidenceSheetProps {
   resumeTitle: string;
   evidence: CandidateEvidence[];
-  limitations: string[];
   selected: RequirementMatch | null;
-  instantLoop: boolean;
+  /** Keyboard selection shows the highlight at once instead of sweeping it in. */
+  instantHighlight: boolean;
   labels: Dictionary["result"];
   locale: string;
   contentLang?: string;
@@ -27,116 +34,95 @@ interface EvidenceSheetProps {
 export function EvidenceSheet({
   resumeTitle,
   evidence,
-  limitations,
   selected,
-  instantLoop,
+  instantHighlight,
   labels,
   locale,
   contentLang,
   sheetRef,
 }: EvidenceSheetProps) {
   const quotes = new Map(selected?.evidence.map((reference) => [reference.evidence_id, reference.quote]) ?? []);
-  const lastSupportingId = selected?.evidence.length
-    ? [...evidence].reverse().find((item) => quotes.has(item.id))?.id
-    : undefined;
   const hasMoreBelow = useMoreBelowHint(sheetRef);
 
   return (
     <article
       ref={sheetRef}
       aria-labelledby="sheet-heading"
-      className="relative bg-paper shadow-sheet lg:sticky lg:top-4 lg:max-h-[calc(100dvh-2rem)] lg:overflow-y-auto lg:overscroll-contain"
+      className="relative rounded-card border border-rule bg-paper shadow-sheet lg:sticky lg:top-4 lg:max-h-[calc(100dvh-2rem)] lg:overflow-y-auto lg:overscroll-contain"
     >
-      {/* On wide screens the sheet scrolls inside itself; its title stays pinned above the lines. */}
-      <header className="bg-paper px-5 pt-6 sm:px-10 lg:sticky lg:top-0 lg:z-10">
-        <div className="border-b border-rule pb-4">
-          <h2 id="sheet-heading" className="text-[20px] leading-tight font-semibold tracking-[-0.01em]">
+      {/* On wide screens the sheet scrolls inside itself; its title and the selection note stay pinned on top. */}
+      <header className="rounded-t-card bg-paper px-5 pt-5 sm:px-8 sm:pt-6 lg:sticky lg:top-0 lg:z-10">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-rule pb-3.5">
+          <h2 id="sheet-heading" className="text-[19px] leading-tight font-bold tracking-[-0.01em]">
             {resumeTitle}
           </h2>
-          <p className="mt-1 text-[13px] text-mute">{pluralize(locale, evidence.length, labels.sheetLines)}</p>
+          <p className="text-[14px] text-mute">{pluralize(locale, evidence.length, labels.sheetLines)}</p>
         </div>
-      </header>
-      <div className="px-5 pb-8 sm:px-10">
-        {selected?.status === "missing" && (
-          <EditorNote tone="missing">
-            {interpolate(labels.missingNote, { requirement: selected.text })}{" "}
-            <span lang={contentLang}>{selected.reasoning}</span>
-          </EditorNote>
+        {selected && (
+          <div role="status" className={`mt-4 flex gap-2.5 rounded-[10px] px-3.5 py-3 text-[15px] leading-[1.5] ${NOTE_TONE[selected.status]}`}>
+            <span className="mt-0.5">
+              <StatusMark status={selected.status} />
+            </span>
+            <p className="text-ink">
+              <span className="font-semibold">
+                {selected.text} · {labels.status[selected.status]}.
+              </span>{" "}
+              <span lang={contentLang}>{selected.reasoning}</span>
+            </p>
+          </div>
         )}
+      </header>
 
+      <div className="px-5 pb-7 sm:px-8">
         {evidence.length === 0 ? (
           <p className="mt-6 text-ink-soft">{labels.sheetEmpty}</p>
         ) : (
           // CV lines stay in the CV's own language, which is not detected, so they inherit the page language.
-          <div>
-            {groupEvidenceBySection(evidence).map(({ section, items }) => (
-              <section key={section ?? "other"} className="mt-7">
-                <h3 className="border-b border-rule pb-1.5 text-[13px] font-semibold tracking-[0.01em] text-ink">
-                  {section ?? labels.otherSection}
-                </h3>
-                <ul className="mt-3.5 space-y-4">
-                  {items.map((item) => {
-                    const quote = quotes.get(item.id);
-                    const isSupporting = quote !== undefined;
-                    return (
-                      <li key={item.id} data-evidence-id={item.id}>
-                        <p
-                          data-circled={isSupporting && selected ? "true" : undefined}
-                          className={`relative w-fit max-w-full text-[15px] leading-[1.6] transition-colors duration-200 ${
-                            selected && !isSupporting ? "text-mute" : "text-ink"
-                          }`}
-                        >
-                          {splitByQuote(item.text, quote).map((segment, index) =>
-                            segment.highlighted ? (
-                              <mark
-                                key={index}
-                                className="bg-transparent text-ink underline decoration-marker decoration-2 underline-offset-[5px]"
-                              >
-                                {segment.text}
-                              </mark>
-                            ) : (
-                              <span key={index}>{segment.text}</span>
-                            ),
-                          )}
-                          {isSupporting && selected && (
-                            <GreasePencilLoop
-                              key={`${selected.id}-${item.id}`}
-                              seed={`${selected.id}-${item.id}`}
-                              dashed={selected.status === "partial"}
-                              instant={instantLoop}
-                            />
-                          )}
-                        </p>
-                        {item.id === lastSupportingId && selected && (
-                          <EditorNote tone={selected.status === "partial" ? "partial" : "matched"}>
-                            <span className="font-semibold">{labels.status[selected.status]}.</span>{" "}
-                            <span lang={contentLang}>{selected.reasoning}</span>
-                          </EditorNote>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </section>
-            ))}
-          </div>
-        )}
-
-        {limitations.length > 0 && (
-          <footer className="mt-8 border-t border-rule pt-4">
-            <h3 className="label-caps text-mute">{labels.limitationsTitle}</h3>
-            <ul lang={contentLang} className="mt-2 list-disc space-y-1 pl-4 text-[13px] text-ink-soft marker:text-rule">
-              {limitations.map((limitation) => (
-                <li key={limitation}>{limitation}</li>
-              ))}
-            </ul>
-          </footer>
+          groupEvidenceBySection(evidence).map(({ section, items }) => (
+            <section key={section ?? "other"} className="mt-6">
+              <h3 className="text-[14px] font-semibold text-ink-soft">{section ?? labels.otherSection}</h3>
+              <ul className="mt-1.5">
+                {items.map((item) => {
+                  const quote = quotes.get(item.id);
+                  const isSupporting = quote !== undefined;
+                  return (
+                    <li key={item.id} data-evidence-id={item.id}>
+                      <p
+                        data-highlighted={isSupporting || undefined}
+                        className={`py-[7px] text-[15.5px] leading-[1.55] transition-colors duration-200 ${
+                          selected && !isSupporting ? "text-mute" : "text-ink"
+                        }`}
+                      >
+                        {isSupporting && selected
+                          ? splitForHighlight(item.text, quote).map((segment, index) =>
+                              segment.highlighted ? (
+                                <mark
+                                  // A new selection remounts the mark, so the sweep plays again.
+                                  key={`${selected.id}-${index}`}
+                                  className="highlight"
+                                  data-tone={selected.status}
+                                  data-instant={instantHighlight || undefined}
+                                >
+                                  {segment.text}
+                                </mark>
+                              ) : (
+                                <span key={index}>{segment.text}</span>
+                              ),
+                            )
+                          : item.text}
+                      </p>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          ))
         )}
       </div>
       {hasMoreBelow && (
         <div
           aria-hidden="true"
-          className="pointer-events-none sticky bottom-0 -mt-14 h-14 bg-linear-to-t from-paper to-transparent"
+          className="pointer-events-none sticky bottom-0 -mt-14 h-14 rounded-b-card bg-linear-to-t from-paper to-transparent"
         />
       )}
     </article>
@@ -164,26 +150,4 @@ function useMoreBelowHint(sheetRef: RefObject<HTMLElement | null>) {
   }, [sheetRef]);
 
   return hasMoreBelow;
-}
-
-/** The editor's handwriting-free margin note: an authored hook arrow and one line of reasoning. */
-function EditorNote({ tone, children }: { tone: "matched" | "partial" | "missing"; children: ReactNode }) {
-  return (
-    <p
-      role="status"
-      className={`mt-3 flex gap-2 text-[14px] leading-[1.5] ${tone === "matched" ? "text-ink-soft" : "text-marker"}`}
-    >
-      <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" className="mt-[3px] shrink-0">
-        <path
-          d="M3 1.5v6.5a3 3 0 0 0 3 3h7.5M10.5 8l3 3-3 3"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-      <span>{children}</span>
-    </p>
-  );
 }

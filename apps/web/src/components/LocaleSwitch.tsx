@@ -30,7 +30,7 @@ export function LocaleSwitch({ locale, label }: LocaleSwitchProps) {
   const pathname = usePathname();
 
   return (
-    <div role="group" aria-label={label} className="flex items-center rounded-md bg-shell-raised p-0.5">
+    <div role="group" aria-label={label} className="flex items-center rounded-lg border border-rule p-0.5">
       {locales.map((option) => {
         const isActive = option === locale;
         return (
@@ -41,7 +41,7 @@ export function LocaleSwitch({ locale, label }: LocaleSwitchProps) {
             lang={option}
             aria-current={isActive ? "true" : undefined}
             onClick={isActive ? undefined : () => rememberLocale(option)}
-            className="flex h-8 min-w-10 items-center justify-center rounded-[5px] px-2 text-[12px] font-semibold tracking-[0.06em] text-shell-mute uppercase transition-colors duration-150 [font-stretch:85%] hover:text-shell-text aria-[current=true]:bg-paper aria-[current=true]:text-ink"
+            className="flex h-8 min-w-10 items-center justify-center rounded-md px-2 text-[12.5px] font-semibold tracking-[0.06em] text-mute uppercase transition-colors duration-150 [font-stretch:85%] hover:text-ink aria-[current=true]:bg-accent-tint aria-[current=true]:text-accent-hover"
           >
             {option}
           </Link>
@@ -54,12 +54,12 @@ export function LocaleSwitch({ locale, label }: LocaleSwitchProps) {
 /** Same well while the current path is not known yet (dynamic routes stream it in); not interactive. */
 export function LocaleSwitchPlaceholder({ locale }: { locale: Locale }) {
   return (
-    <div aria-hidden="true" className="flex items-center rounded-md bg-shell-raised p-0.5">
+    <div aria-hidden="true" className="flex items-center rounded-lg border border-rule p-0.5">
       {locales.map((option) => (
         <span
           key={option}
           data-active={option === locale}
-          className="flex h-8 min-w-10 items-center justify-center rounded-[5px] px-2 text-[12px] font-semibold tracking-[0.06em] text-shell-mute uppercase [font-stretch:85%] data-[active=true]:bg-paper data-[active=true]:text-ink"
+          className="flex h-8 min-w-10 items-center justify-center rounded-md px-2 text-[12.5px] font-semibold tracking-[0.06em] text-mute uppercase [font-stretch:85%] data-[active=true]:bg-accent-tint data-[active=true]:text-accent-hover"
         >
           {option}
         </span>

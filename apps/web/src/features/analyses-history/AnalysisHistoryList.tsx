@@ -18,7 +18,7 @@ interface AnalysisHistoryListProps {
 function Outcome({ analysis, labels, fitLabels }: { analysis: AnalysisSummary } & Omit<AnalysisHistoryListProps, "analyses" | "locale">) {
   const outcome = rowOutcome(analysis);
   if (outcome.kind === "progress") {
-    return <span className="label-caps text-edge">{labels.status[outcome.status]}</span>;
+    return <span className="label-caps text-accent-hover">{labels.status[outcome.status]}</span>;
   }
   if (outcome.kind === "failed") {
     return (

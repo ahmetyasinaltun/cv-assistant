@@ -1,11 +1,11 @@
 "use client";
 
-// Analysis result screen: summary, requirements, the circled CV sheet, fixes and interview questions.
-// Owns the selected requirement and keeps the sheet registered with it; all judgements come from the API.
+// Analysis result screen: brand band, summary card, fixes, requirements beside the highlighted CV sheet, and
+// interview questions. Owns the selected requirement and keeps the sheet registered with it; all judgements come from the API.
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { primaryButtonClass } from "@/components/button-styles";
+import { onBrandButtonClass } from "@/components/button-styles";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { AnalysisDetail, InterviewQuestion } from "@/lib/api/types";
 
@@ -16,7 +16,7 @@ import { InterviewQuestions, type QuestionsState } from "./InterviewQuestions";
 import { MatchSummary } from "./MatchSummary";
 import { RequirementList, type SelectionSource } from "./RequirementList";
 import { ResultHeader } from "./ResultHeader";
-import { countByStatus, defaultSelectedRequirementId } from "./view-model";
+import { defaultSelectedRequirementId } from "./view-model";
 
 const WIDE_LAYOUT_QUERY = "(min-width: 1024px)";
 const SHEET_MARGIN = 16;
@@ -39,6 +39,8 @@ interface AnalysisResultViewProps {
   /** Runs the analysis again on the server (real analyses); the sample uses `retryHref` instead. */
   retryAction?: () => Promise<void>;
   newAnalysisHref?: string;
+  /** The analyses list, offered as the way back from a real analysis. */
+  backHref?: string;
 }
 
 function prefersReducedMotion() {
@@ -57,20 +59,20 @@ function afterScrollSettles(callback: () => void) {
   window.setTimeout(run, 450);
 }
 
-/** Scrolls the sheet so the first circled line sits level with the selected row ("registration"). */
+/** Scrolls the sheet so the first highlighted line sits level with the selected row ("registration"). */
 function registerSheet(sheet: HTMLElement, requirementId: string, behavior: ScrollBehavior) {
   const row = document.querySelector(`[data-requirement-id="${requirementId}"]`);
-  const circled = sheet.querySelector("[data-circled='true']") ?? sheet.querySelector("[role='status']");
-  if (!row || !circled) return;
+  const highlighted = sheet.querySelector("[data-highlighted='true']");
+  if (!row || !highlighted) return;
 
   const sheetRect = sheet.getBoundingClientRect();
-  const circledRect = circled.getBoundingClientRect();
-  // The sheet's title is pinned at its top, so the usable area starts below it.
+  const highlightedRect = highlighted.getBoundingClientRect();
+  // The sheet's title and note are pinned at its top, so the usable area starts below them.
   const pinnedHeader = sheet.querySelector("header");
   const minTop = (pinnedHeader?.getBoundingClientRect().bottom ?? sheetRect.top) + SHEET_MARGIN;
-  const maxTop = Math.max(minTop, sheetRect.bottom - circledRect.height - SHEET_MARGIN);
+  const maxTop = Math.max(minTop, sheetRect.bottom - highlightedRect.height - SHEET_MARGIN);
   const targetTop = Math.min(Math.max(row.getBoundingClientRect().top, minTop), maxTop);
-  sheet.scrollBy({ top: circledRect.top - targetTop, behavior });
+  sheet.scrollBy({ top: highlightedRect.top - targetTop, behavior });
 }
 
 export function AnalysisResultView({
@@ -83,6 +85,7 @@ export function AnalysisResultView({
   retryHref,
   retryAction,
   newAnalysisHref,
+  backHref,
 }: AnalysisResultViewProps) {
   const result = analysis.status === "completed" ? analysis.result : null;
   // AI-written text keeps the language the analysis was generated in, which can differ from the interface.
@@ -105,6 +108,10 @@ export function AnalysisResultView({
   const requirementsById = useMemo(
     () => new Map(requirements.map((requirement) => [requirement.id, requirement])),
     [requirements],
+  );
+  const evidenceById = useMemo(
+    () => new Map((result?.candidate_evidence ?? []).map((item) => [item.id, item])),
+    [result],
   );
 
   useEffect(() => {
@@ -145,7 +152,7 @@ export function AnalysisResultView({
     questions.kind === "idle" && generateQuestions ? (
       <button
         type="button"
-        className={primaryButtonClass}
+        className={onBrandButtonClass}
         onClick={() => {
           void startQuestions();
           document.getElementById("interview-questions")?.scrollIntoView({ behavior: "smooth" });
@@ -154,14 +161,14 @@ export function AnalysisResultView({
         {labels.questions.generate}
       </button>
     ) : (
-      <a href="#interview-questions" className={primaryButtonClass}>
+      <a href="#interview-questions" className={onBrandButtonClass}>
         {labels.questions.jump}
       </a>
     )
   ) : null;
 
   return (
-    <main id="main" className="mx-auto max-w-[1520px] px-4 pb-24 sm:px-6">
+    <main id="main" className="pb-24">
       <ResultHeader
         jobTitle={analysis.job_title}
         company={analysis.company}
@@ -170,71 +177,91 @@ export function AnalysisResultView({
         createdAtLabel={createdAtLabel}
         isSample={isSample}
         labels={labels}
+        backHref={backHref}
         action={headerAction}
       />
 
-      {!result ? (
-        <AnalysisStatusPanel
-          status={analysis.status === "completed" ? "failed" : analysis.status}
-          errorCode={analysis.error_code}
-          retryHref={retryHref}
-          retryAction={retryAction}
-          newAnalysisHref={newAnalysisHref}
-          labels={labels}
-        />
-      ) : (
-        <>
-          <MatchSummary
-            overall={result.overall}
-            counts={countByStatus(result.requirements)}
+      <div className="mx-auto max-w-[1280px] px-4 sm:px-8">
+        {!result ? (
+          <AnalysisStatusPanel
+            status={analysis.status === "completed" ? "failed" : analysis.status}
+            errorCode={analysis.error_code}
+            retryHref={retryHref}
+            retryAction={retryAction}
+            newAnalysisHref={newAnalysisHref}
             labels={labels}
-            contentLang={contentLang}
           />
-          <div className="result-grid mt-7">
-            <div className="[grid-area:requirements]">
+        ) : (
+          <>
+            <MatchSummary
+              overall={result.overall}
+              requirements={requirements}
+              labels={labels}
+              locale={locale}
+              contentLang={contentLang}
+            />
+            <FixList
+              suggestions={result.suggestions}
+              requirementsById={requirementsById}
+              selectedId={selection.id}
+              onSelect={selectElsewhere}
+              labels={labels}
+              locale={locale}
+              contentLang={contentLang}
+            />
+            <div className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
               <RequirementList
                 requirements={requirements}
+                evidenceById={evidenceById}
                 selectedId={selection.id}
                 onSelect={selectFromList}
-                labels={labels}
-                contentLang={contentLang}
-              />
-            </div>
-            <div className="min-w-0 [grid-area:sheet]">
-              <EvidenceSheet
-                sheetRef={sheetRef}
-                resumeTitle={analysis.resume_title}
-                evidence={result.candidate_evidence}
-                limitations={result.overall.limitations}
-                selected={selected}
-                instantLoop={selection.source === "keyboard"}
                 labels={labels}
                 locale={locale}
                 contentLang={contentLang}
               />
+              <div className="min-w-0">
+                <EvidenceSheet
+                  sheetRef={sheetRef}
+                  resumeTitle={analysis.resume_title}
+                  evidence={result.candidate_evidence}
+                  selected={selected}
+                  instantHighlight={selection.source === "keyboard"}
+                  labels={labels}
+                  locale={locale}
+                  contentLang={contentLang}
+                />
+              </div>
             </div>
-            <div className="[grid-area:fixes]">
-              <FixList
-                suggestions={result.suggestions}
-                requirementsById={requirementsById}
-                selectedId={selection.id}
-                onSelect={selectElsewhere}
-                labels={labels}
-                contentLang={contentLang}
-              />
-            </div>
-          </div>
-          <InterviewQuestions
-            state={questions}
-            onGenerate={generateQuestions ? () => void startQuestions() : undefined}
-            requirementsById={requirementsById}
-            selectedId={selection.id}
-            onSelect={selectElsewhere}
-            labels={labels.questions}
-            contentLang={contentLang}
-          />
-        </>
-      )}
+            <InterviewQuestions
+              state={questions}
+              onGenerate={generateQuestions ? () => void startQuestions() : undefined}
+              requirementsById={requirementsById}
+              selectedId={selection.id}
+              onSelect={selectElsewhere}
+              labels={labels.questions}
+              contentLang={contentLang}
+            />
+            <Limitations items={result.overall.limitations} title={labels.limitationsTitle} contentLang={contentLang} />
+          </>
+        )}
+      </div>
     </main>
+  );
+}
+
+/** What the analysis cannot know, set quietly under the cards. */
+function Limitations({ items, title, contentLang }: { items: string[]; title: string; contentLang?: string }) {
+  if (items.length === 0) return null;
+  return (
+    <section aria-labelledby="limitations-heading" className="mt-8 px-0.5">
+      <h2 id="limitations-heading" className="text-[15px] font-semibold text-ink-soft">
+        {title}
+      </h2>
+      <ul lang={contentLang} className="mt-2 grid max-w-[80ch] list-disc gap-1 pl-5 text-[14px] text-mute marker:text-rule">
+        {items.map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
+    </section>
   );
 }

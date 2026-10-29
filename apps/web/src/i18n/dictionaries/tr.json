@@ -13,6 +13,7 @@
   "shell": {
     "product": "AI Career Assistant",
     "navLabel": "Ana menü",
+    "menu": "Menü",
     "nav": {
       "analyses": "Analizler",
       "sample": "Örnek analiz"
@@ -40,13 +41,13 @@
     "howScored": "Puan nasıl hesaplanıyor?",
     "limitationsTitle": "Bu analizin bilemeyecekleri",
     "status": {
-      "matched": "Eşleşti",
-      "partial": "Kısmi",
+      "matched": "Karşılandı",
+      "partial": "Kısmen",
       "missing": "Eksik"
     },
     "statusCount": {
-      "matched": "{count} eşleşti",
-      "partial": "{count} kısmi",
+      "matched": "{count} karşılandı",
+      "partial": "{count} kısmen",
       "missing": "{count} eksik"
     },
     "importance": {
@@ -60,7 +61,6 @@
       "other": "Bu CV’den okunan {count} satır"
     },
     "sheetEmpty": "Bu CV’den kanıt cümlesi çıkarılamadı.",
-    "missingNote": "Bu CV’de “{requirement}” şartını destekleyen bir şey yok.",
     "otherSection": "Diğer",
     "fixesTitle": "Neyi düzeltmeli",
     "fixesEmpty": "Bu ilan için önerilen bir değişiklik yok.",
@@ -77,6 +77,19 @@
     },
     "relatedRequirements": "İlgili şartlar",
     "supportingLines": "CV’nden",
+    "breadcrumbLabel": "Sayfa yolu",
+    "backToAnalyses": "Analizler",
+    "summaryTitle": "Kısaca",
+    "requirementCount": {
+      "one": "{count} şart",
+      "other": "{count} şart"
+    },
+    "breakdownCaption": "Puanı oluşturan parçalar",
+    "breakdownNote": "Geniş parçalar zorunlu şartlar; puanda iki kat sayılırlar.",
+    "fixesCount": {
+      "one": "{count} öneri",
+      "other": "{count} öneri"
+    },
     "questions": {
       "title": "Mülakat soruları",
       "intro": "Bu ilana ve yukarıdaki eksiklere göre mülakatta sorulması muhtemel sorular.",

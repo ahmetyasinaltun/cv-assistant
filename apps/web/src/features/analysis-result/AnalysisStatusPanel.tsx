@@ -9,6 +9,12 @@ import { primaryButtonClass } from "@/components/button-styles";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { AnalysisStatus } from "@/lib/api/types";
 
+import { StatusMark } from "./StatusMark";
+
+// The panel takes the summary card's place, overlapping the brand band.
+const panelClass =
+  "relative -mt-[76px] max-w-[760px] rounded-card border border-rule bg-paper px-6 py-7 shadow-sheet sm:-mt-[84px] sm:px-8";
+
 /** Failures that the same CV and posting would hit again: the way forward is new input, not a rerun. */
 const NEEDS_NEW_INPUT = new Set(["no_requirements_extracted", "no_evidence_extracted"]);
 
@@ -47,14 +53,9 @@ export function AnalysisStatusPanel({
   if (status === "failed") {
     const needsNewInput = Boolean(errorCode && NEEDS_NEW_INPUT.has(errorCode) && newAnalysisHref);
     return (
-      <section role="alert" className="max-w-[720px] bg-paper px-6 py-7 shadow-sheet sm:px-8">
-        <h2 className="flex items-center gap-2.5 text-[20px] font-semibold tracking-[-0.01em] text-ink">
-          <svg aria-hidden="true" width="14" height="14" viewBox="0 0 12 12" className="shrink-0">
-            <g fill="none" strokeWidth="1.5" className="stroke-marker">
-              <rect x="0.75" y="0.75" width="10.5" height="10.5" rx="1" />
-              <path d="M1.5 10.5 10.5 1.5" />
-            </g>
-          </svg>
+      <section role="alert" className={panelClass}>
+        <h2 className="flex items-center gap-2.5 text-[21px] font-bold tracking-[-0.015em] text-ink">
+          <StatusMark status="missing" size={20} />
           {labels.failed.title}
         </h2>
         <p className="mt-2 max-w-[60ch] text-ink-soft">{failureBody(labels, errorCode)}</p>
@@ -78,14 +79,14 @@ export function AnalysisStatusPanel({
   }
 
   return (
-    <section role="status" aria-busy="true" className="max-w-[720px] bg-paper px-6 py-7 shadow-sheet sm:px-8">
-      <h2 className="text-[20px] font-semibold tracking-[-0.01em]">{labels.progress.title}</h2>
+    <section role="status" aria-busy="true" className={panelClass}>
+      <h2 className="text-[21px] font-bold tracking-[-0.015em]">{labels.progress.title}</h2>
       <p className="mt-2 max-w-[60ch] text-ink-soft">{labels.progress.body}</p>
       <div className="mt-6 flex items-center gap-4">
-        <div aria-hidden="true" className="relative h-[3px] flex-1 overflow-hidden rounded-full bg-desk-deep">
-          <div className="progress-sweep absolute inset-y-0 w-1/3 rounded-full bg-marker" />
+        <div aria-hidden="true" className="relative h-1 flex-1 overflow-hidden rounded-full bg-desk-deep">
+          <div className="progress-sweep absolute inset-y-0 w-1/3 rounded-full bg-accent" />
         </div>
-        <p className="label-caps text-edge">{labels.progress[status]}</p>
+        <p className="text-[14px] font-semibold text-accent-hover">{labels.progress[status]}</p>
       </div>
     </section>
   );
