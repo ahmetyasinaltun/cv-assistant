@@ -371,7 +371,6 @@ class _RequirementTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final text = AppLocalizations.of(context);
-    final refs = requirement.evidence.map((reference) => evidenceLabel(reference.evidenceId)).join(' ');
     return Semantics(
       button: true,
       label: statusLabel(text, requirement.status),
@@ -394,16 +393,6 @@ class _RequirementTile extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(requirement.text, style: AppText.bodySmall.copyWith(color: Tokens.ink)),
-                ),
-                const SizedBox(width: 8),
-                ExcludeSemantics(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 2),
-                    child: Text(
-                      refs.isEmpty ? '—' : refs,
-                      style: AppText.edgeNumber.copyWith(color: refs.isEmpty ? Tokens.marker : Tokens.edge),
-                    ),
-                  ),
                 ),
               ],
             ),

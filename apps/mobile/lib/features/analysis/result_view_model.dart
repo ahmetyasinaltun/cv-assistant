@@ -20,12 +20,6 @@ class TextSegment {
   final bool highlighted;
 }
 
-/// Turns pipeline ids such as "e3" into the sheet's edge numbering, "E03".
-String evidenceLabel(String id) {
-  final match = RegExp(r'^e(\d+)$', caseSensitive: false).firstMatch(id);
-  return match == null ? id.toUpperCase() : 'E${match.group(1)!.padLeft(2, '0')}';
-}
-
 StatusCounts countByStatus(List<RequirementMatch> requirements) {
   final counts = {for (final status in MatchStatus.values) status: 0};
   for (final requirement in requirements) {

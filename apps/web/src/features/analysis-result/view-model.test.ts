@@ -1,4 +1,4 @@
-// Unit tests for the result page view model: labels, counts, grouping, default selection and quote splitting.
+// Unit tests for the result page view model: counts, grouping, default selection and quote splitting.
 
 import { describe, expect, it } from "vitest";
 
@@ -8,7 +8,6 @@ import { sampleAnalysis } from "./sample-analysis";
 import {
   countByStatus,
   defaultSelectedRequirementId,
-  evidenceLabel,
   groupEvidenceBySection,
   sortSuggestionsByPriority,
   splitByImportance,
@@ -40,17 +39,6 @@ function suggestion(overrides: Partial<Suggestion>): Suggestion {
     ...overrides,
   };
 }
-
-describe("evidenceLabel", () => {
-  it("pads pipeline ids into edge numbers", () => {
-    expect(evidenceLabel("e3")).toBe("E03");
-    expect(evidenceLabel("e12")).toBe("E12");
-  });
-
-  it("falls back to an uppercase id for unexpected formats", () => {
-    expect(evidenceLabel("x-7")).toBe("X-7");
-  });
-});
 
 describe("countByStatus", () => {
   it("counts the sample analysis the same way the server summary does", () => {

@@ -67,6 +67,7 @@ Five hand-labelled cases (`services/api/app/ai/eval/cases/`): a good-fit backend
 | Importance accuracy | must-have vs nice-to-have | 1.0 |
 | Grounded rate | cited quotes appear verbatim in the CV | 1.0 |
 | Language match | generated text is in the requested language | 1.0 |
+| No internal ids | generated text cites the CV by content, never as "e2" or "r3" | 1.0 |
 
 Five cases are a smoke check, not a benchmark, and model output is not deterministic. The set earns its keep by catching regressions: the Turkish case exposed the retrieval miss above (status accuracy 0.83 on that case) before hybrid retrieval fixed it, and the GitHub case guards a fix for links: a real CV's GitHub link was judged missing because the prompt had no "link" evidence type and the project links sat behind PDF icons that text extraction does not return.
 

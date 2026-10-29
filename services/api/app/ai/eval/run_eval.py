@@ -18,6 +18,8 @@ from app.schemas.analysis import AnalysisResult
 from app.services.text_normalization import fold_for_matching
 
 CASES_DIR = Path(__file__).parent / "cases"
+# The ids the pipeline hands the model ("e2", "r10"); readers never see them, so generated text must not use them.
+INTERNAL_ID = re.compile(r"\b[er]\d{1,3}\b")
 
 
 @dataclass
@@ -33,6 +35,7 @@ class CaseReport:
     importance_accuracy: float | None = None
     grounded_rate: float | None = None
     language_match_rate: float | None = None
+    id_free_rate: float | None = None
     score_within_bound: bool | None = None
     notes: list[str] = field(default_factory=list)
 
@@ -104,6 +107,7 @@ def evaluate_case(pipeline: AnalysisPipeline, case: dict) -> CaseReport:
         report.grounded_rate = None
 
     report.language_match_rate = _language_match_rate(result, output_language, report)
+    report.id_free_rate = _id_free_rate(result, report)
 
     max_score = case.get("max_expected_score")
     if max_score is not None:
@@ -137,6 +141,19 @@ def _labelled_accuracy(
                 f"{attribute}: '{expectation['keyword']}' expected {expected}, got {actual}"
             )
     return correct / len(expectations)
+
+
+def _id_free_rate(result: AnalysisResult, report: CaseReport) -> float | None:
+    """Share of generated texts that refer to evidence and requirements by content, not by internal id."""
+    texts = [t for t in _generated_texts(result) if t.strip()]
+    if not texts:
+        return None
+    with_ids = [t for t in texts if INTERNAL_ID.search(t)]
+    if with_ids:
+        report.notes.append(
+            f"{len(with_ids)} generated text(s) mention an internal id, e.g. {with_ids[0][:80]!r}"
+        )
+    return 1 - len(with_ids) / len(texts)
 
 
 def _language_match_rate(result: AnalysisResult, expected: str, report: CaseReport) -> float | None:
@@ -186,7 +203,7 @@ def main(argv: list[str] | None = None) -> int:
     name_width = max(len(r.name) for r in reports) + 2
     header = (
         f"{'case':<{name_width}}{'ok':<4}{'score':<7}{'reqs':<6}{'kw':<7}{'status':<8}{'imp':<7}"
-        f"{'grounded':<10}{'lang':<6}"
+        f"{'grounded':<10}{'lang':<6}{'no-id':<6}"
     )
     print(header)
     print("-" * len(header))
@@ -194,7 +211,7 @@ def main(argv: list[str] | None = None) -> int:
         print(
             f"{r.name:<{name_width}}{'yes' if r.completed else 'NO':<4}{str(r.score):<7}{r.requirement_count:<6}"
             f"{r.keyword_recall:<7.2f}{_fmt(r.status_accuracy):<8}{_fmt(r.importance_accuracy):<7}"
-            f"{_fmt(r.grounded_rate):<10}{_fmt(r.language_match_rate):<6}"
+            f"{_fmt(r.grounded_rate):<10}{_fmt(r.language_match_rate):<6}{_fmt(r.id_free_rate):<6}"
         )
         for note in r.notes:
             print(f"    - {note}")
@@ -209,6 +226,7 @@ def main(argv: list[str] | None = None) -> int:
         "importance_accuracy": _mean([r.importance_accuracy for r in reports]),
         "grounded_rate": _mean([r.grounded_rate for r in reports]),
         "language_match_rate": _mean([r.language_match_rate for r in reports]),
+        "id_free_rate": _mean([r.id_free_rate for r in reports]),
     }
     # With a fallback chain the answering model can change between steps; record which ones did.
     models_used = getattr(provider, "models_used", None)

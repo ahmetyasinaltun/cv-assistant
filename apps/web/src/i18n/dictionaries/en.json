@@ -76,6 +76,7 @@
       "interview_topic": "Interview topic"
     },
     "relatedRequirements": "Related requirements",
+    "supportingLines": "From your CV",
     "questions": {
       "title": "Interview questions",
       "intro": "Questions an interviewer is likely to ask, based on this posting and the gaps above.",

@@ -14,7 +14,7 @@ Return a JSON object with a `judgements` array containing exactly one item per r
 
 - `requirement_id`: the requirement's `id`, copied exactly.
 - `status`: `matched` when the evidence clearly demonstrates the requirement; `partial` when the evidence is related but weaker, older, narrower or less senior than required; `missing` when no candidate supports it.
-- `reasoning`: one or two sentences explaining the decision, referring to the concrete evidence (or its absence).
+- `reasoning`: one or two sentences explaining the decision, referring to the concrete evidence (or its absence) by what it says, e.g. "the Acme internship", never by its id: the reader does not see ids.
 - `supporting_evidence_ids`: the `evidence_id` values that justify the status. Must be empty when the status is `missing`.
 
 ## Rules

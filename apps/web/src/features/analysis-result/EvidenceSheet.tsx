@@ -9,7 +9,7 @@ import { interpolate, pluralize } from "@/i18n/format";
 import type { CandidateEvidence, RequirementMatch } from "@/lib/api/types";
 
 import { GreasePencilLoop } from "./GreasePencilLoop";
-import { evidenceLabel, groupEvidenceBySection, splitByQuote } from "./view-model";
+import { groupEvidenceBySection, splitByQuote } from "./view-model";
 
 interface EvidenceSheetProps {
   resumeTitle: string;
@@ -48,7 +48,7 @@ export function EvidenceSheet({
       className="relative bg-paper shadow-sheet lg:sticky lg:top-4 lg:max-h-[calc(100dvh-2rem)] lg:overflow-y-auto lg:overscroll-contain"
     >
       {/* On wide screens the sheet scrolls inside itself; its title stays pinned above the lines. */}
-      <header className="bg-paper px-5 pt-6 sm:px-8 sm:pl-[72px] lg:sticky lg:top-0 lg:z-10">
+      <header className="bg-paper px-5 pt-6 sm:px-10 lg:sticky lg:top-0 lg:z-10">
         <div className="border-b border-rule pb-4">
           <h2 id="sheet-heading" className="text-[20px] leading-tight font-semibold tracking-[-0.01em]">
             {resumeTitle}
@@ -56,7 +56,7 @@ export function EvidenceSheet({
           <p className="mt-1 text-[13px] text-mute">{pluralize(locale, evidence.length, labels.sheetLines)}</p>
         </div>
       </header>
-      <div className="px-5 pb-8 sm:px-8 sm:pl-[72px]">
+      <div className="px-5 pb-8 sm:px-10">
         {selected?.status === "missing" && (
           <EditorNote tone="missing">
             {interpolate(labels.missingNote, { requirement: selected.text })}{" "}
@@ -86,9 +86,6 @@ export function EvidenceSheet({
                             selected && !isSupporting ? "text-mute" : "text-ink"
                           }`}
                         >
-                          <span translate="no" className="edge-number mr-2 text-[12px] text-edge sm:absolute sm:top-[3px] sm:-left-[52px] sm:mr-0">
-                            {evidenceLabel(item.id)}
-                          </span>
                           {splitByQuote(item.text, quote).map((segment, index) =>
                             segment.highlighted ? (
                               <mark

@@ -34,6 +34,7 @@ Return a JSON object with:
 - Never suggest claiming experience the candidate does not have. Suggestions about the resume must only surface evidence that already exists or propose gaining real experience.
 - Be specific to this role and this resume; avoid generic advice such as "improve your communication skills".
 - Use a supportive, direct tone. No filler.
+- Refer to requirements and resume evidence by their wording, never by ids such as "r3" or "e2"; ids belong only in `related_requirement_ids`.
 
 ## Language
 

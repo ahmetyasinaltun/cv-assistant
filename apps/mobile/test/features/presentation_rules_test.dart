@@ -76,11 +76,6 @@ void main() {
   });
 
   group('result', () {
-    test('evidence ids become edge numbers', () {
-      expect(evidenceLabel('e3'), 'E03');
-      expect(evidenceLabel('e12'), 'E12');
-    });
-
     test('the quoted words are split out case-insensitively', () {
       final segments = splitByQuote('Built REST APIs with FastAPI', 'rest apis');
       expect(segments.map((s) => (s.text, s.highlighted)), [

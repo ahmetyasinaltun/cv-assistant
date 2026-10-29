@@ -27,6 +27,7 @@ Return a JSON object with a `questions` array of 8-12 items. Each has:
 - Base `project` questions only on evidence that actually appears in the input; do not invent projects.
 - Prefer questions that require explanation of trade-offs and decisions over yes/no or trivia questions.
 - Keep each question to one or two sentences.
+- Refer to requirements and resume evidence by their wording, never by ids such as "r3" or "e2"; ids belong only in `related_requirement_ids`.
 
 ## Language
 

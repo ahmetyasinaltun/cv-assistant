@@ -217,7 +217,6 @@ class _EvidenceLine extends StatelessWidget {
       TextSpan(
         style: AppText.bodySheet.copyWith(color: color),
         children: [
-          TextSpan(text: '${evidenceLabel(item.id)}  ', style: AppText.edgeNumber),
           // CV lines stay in the CV's own language, which is not detected, so they carry no locale.
           for (final segment in segments)
             TextSpan(

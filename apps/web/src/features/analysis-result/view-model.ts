@@ -24,12 +24,6 @@ export interface TextSegment {
 
 const PRIORITY_RANK: Record<Priority, number> = { high: 0, medium: 1, low: 2 };
 
-/** Turns pipeline ids such as "e3" into the sheet's edge numbering, "E03". */
-export function evidenceLabel(id: string): string {
-  const match = /^e(\d+)$/i.exec(id);
-  return match ? `E${match[1].padStart(2, "0")}` : id.toUpperCase();
-}
-
 export function countByStatus(requirements: RequirementMatch[]): StatusCounts {
   const counts: StatusCounts = { matched: 0, partial: 0, missing: 0 };
   for (const requirement of requirements) counts[requirement.status] += 1;

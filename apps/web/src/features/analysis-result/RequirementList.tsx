@@ -4,7 +4,7 @@ import type { RequirementMatch } from "@/lib/api/types";
 import type { Dictionary } from "@/i18n/dictionaries";
 
 import { StatusMark } from "./StatusMark";
-import { evidenceLabel, splitByImportance } from "./view-model";
+import { splitByImportance } from "./view-model";
 
 export type SelectionSource = "initial" | "pointer" | "keyboard";
 
@@ -80,7 +80,6 @@ interface RequirementRowProps {
 }
 
 function RequirementRow({ requirement, isSelected, onSelect, labels, contentLang }: RequirementRowProps) {
-  const refs = requirement.evidence.map((reference) => evidenceLabel(reference.evidence_id));
   const detailsId = `requirement-${requirement.id}-details`;
 
   return (
@@ -91,7 +90,7 @@ function RequirementRow({ requirement, isSelected, onSelect, labels, contentLang
         aria-controls={isSelected ? detailsId : undefined}
         // A click fired from the keyboard reports detail 0; keyboard selection skips the draw-on animation.
         onClick={(event) => onSelect(requirement.id, event.detail === 0 ? "keyboard" : "pointer")}
-        className="group grid w-full grid-cols-[14px_minmax(0,1fr)_auto] items-start gap-x-2.5 rounded-[5px] px-2.5 py-2 text-left transition-colors duration-150 hover:bg-desk-deep active:bg-rule aria-pressed:bg-paper aria-pressed:shadow-[0_0_0_1px_var(--color-rule)]"
+        className="group grid w-full grid-cols-[14px_minmax(0,1fr)] items-start gap-x-2.5 rounded-[5px] px-2.5 py-2 text-left transition-colors duration-150 hover:bg-desk-deep active:bg-rule aria-pressed:bg-paper aria-pressed:shadow-[0_0_0_1px_var(--color-rule)]"
       >
         <span className="flex h-[21px] items-center justify-center">
           <StatusMark status={requirement.status} importance={requirement.importance} />
@@ -99,13 +98,6 @@ function RequirementRow({ requirement, isSelected, onSelect, labels, contentLang
         <span className="text-[14px] leading-[1.5] text-ink">
           {requirement.text}
           <span className="sr-only">, {labels.status[requirement.status]}</span>
-        </span>
-        <span
-          translate="no"
-          className={`edge-number pt-px text-[12px] ${refs.length ? "text-edge" : "text-marker"}`}
-          aria-hidden="true"
-        >
-          {refs.length ? refs.join(" ") : "—"}
         </span>
       </button>
       {isSelected && (
@@ -134,16 +126,17 @@ function RequirementDetails({
         <span lang={contentLang}>{requirement.reasoning}</span>
       </p>
       {requirement.evidence.length > 0 && (
-        <ul className="mt-2 space-y-1">
-          {requirement.evidence.map((reference) => (
-            <li key={reference.evidence_id} className="flex gap-2 text-ink">
-              <span translate="no" className="edge-number pt-px text-[12px] text-edge">
-                {evidenceLabel(reference.evidence_id)}
-              </span>
-              <q className="italic">{reference.quote}</q>
-            </li>
-          ))}
-        </ul>
+        <>
+          <h4 className="label-caps mt-3 text-mute">{labels.supportingLines}</h4>
+          {/* Quotes stay in the CV's own language, which is not detected, so they inherit the page language. */}
+          <ul className="mt-1.5 space-y-2">
+            {requirement.evidence.map((reference) => (
+              <li key={reference.evidence_id} className="border-l-2 border-rule pl-3 leading-[1.5] text-ink">
+                <q>{reference.quote}</q>
+              </li>
+            ))}
+          </ul>
+        </>
       )}
     </div>
   );

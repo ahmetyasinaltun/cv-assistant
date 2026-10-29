@@ -42,7 +42,7 @@ abstract final class AppText {
   static final label = _archivo(12, 600, tracking: 0.06, width: 85, color: Tokens.mute);
   static final priorityTag = _archivo(11, 600, tracking: 0.06, width: 85, height: 1.2);
 
-  /// Line ids (E01), counts and the character count: condensed, tabular, Edge-Print Orange by default.
+  /// Counts and the character count: condensed, tabular, Edge-Print Orange by default.
   static final edgeNumber = _archivo(12, 600, tracking: 0.02, width: 72, color: Tokens.edge, tabular: true);
   static final score = _archivo(22, 600, height: 1.1, tracking: 0.02, width: 72, tabular: true);
   static final barProduct = _archivo(15, 600, tracking: -0.01, width: 92, color: Tokens.shellText);

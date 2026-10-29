@@ -76,6 +76,7 @@
       "interview_topic": "Mülakat konusu"
     },
     "relatedRequirements": "İlgili şartlar",
+    "supportingLines": "CV’nden",
     "questions": {
       "title": "Mülakat soruları",
       "intro": "Bu ilana ve yukarıdaki eksiklere göre mülakatta sorulması muhtemel sorular.",
