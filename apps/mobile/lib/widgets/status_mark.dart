@@ -1,83 +1,87 @@
-// The mark that carries a requirement's state by form, not colour (design system: "Status Mark"): a filled graphite
-// disc is matched, a dashed amber ring is partial, a struck red square is missing. Its size carries importance.
-
-import 'dart:ui' show PathMetric;
+// A requirement's match status as an icon whose form carries the state (design system: "Status Mark"): a green disc with
+// a check is matched, a white disc with an amber ring and a filled left half is partial, a red disc with a cross is
+// missing. The chip names the state in words. Colour only reinforces the form, so both read in greyscale.
 
 import 'package:flutter/widgets.dart';
 
 import '../core/api/models.dart';
+import '../core/theme/app_text.dart';
 import '../core/theme/tokens.dart';
 
 class StatusMark extends StatelessWidget {
-  const StatusMark({super.key, required this.status, this.importance = Importance.mustHave});
+  const StatusMark({super.key, required this.status, this.size = 18});
 
   final MatchStatus status;
-  final Importance importance;
-
-  @override
-  Widget build(BuildContext context) {
-    final size = importance == Importance.mustHave ? 12.0 : 9.0;
-    return ExcludeSemantics(
-      child: CustomPaint(size: Size.square(size), painter: _MarkPainter(status, Tokens.marker)),
-    );
-  }
-}
-
-/// The struck square alone, leading form errors and failed states so they read without colour.
-class StruckMark extends StatelessWidget {
-  const StruckMark({super.key, this.size = 10, this.color = Tokens.marker});
-
   final double size;
-  final Color color;
 
   @override
   Widget build(BuildContext context) => ExcludeSemantics(
-    child: CustomPaint(size: Size.square(size), painter: _MarkPainter(MatchStatus.missing, color)),
+    child: CustomPaint(size: Size.square(size), painter: _MarkPainter(status)),
   );
 }
 
 class _MarkPainter extends CustomPainter {
-  _MarkPainter(this.status, this.missingColor);
+  _MarkPainter(this.status);
 
   final MatchStatus status;
-  final Color missingColor;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final scale = size.width / 12;
+    // Drawn on the web's 18-unit grid, scaled to the requested size.
+    final unit = size.width / 18;
     final center = size.center(Offset.zero);
+    Paint stroke(Color color, double width) => Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = width * unit
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
     switch (status) {
       case MatchStatus.matched:
-        canvas.drawCircle(center, size.width / 2, Paint()..color = Tokens.shell);
+        canvas.drawCircle(center, 9 * unit, Paint()..color = Tokens.okMark);
+        final check = Path()
+          ..moveTo(5.2 * unit, 9.3 * unit)
+          ..lineTo(7.7 * unit, 11.7 * unit)
+          ..lineTo(12.9 * unit, 6.4 * unit);
+        canvas.drawPath(check, stroke(Tokens.paper, 1.9));
       case MatchStatus.partial:
-        final stroke = 2 * scale;
-        final ring = Path()..addOval(Rect.fromCircle(center: center, radius: size.width / 2 - stroke / 2));
-        final paint = Paint()
-          ..color = Tokens.partial
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = stroke;
-        for (final metric in ring.computeMetrics()) {
-          _drawDashed(canvas, metric, paint, dash: 3.1 * scale, gap: 2.15 * scale);
-        }
+        canvas.drawCircle(center, 8 * unit, Paint()..color = Tokens.paper);
+        canvas.drawCircle(center, 8 * unit, stroke(Tokens.partialMark, 2));
+        final half = Path()
+          ..moveTo(9 * unit, 3.2 * unit)
+          ..arcToPoint(Offset(9 * unit, 14.8 * unit), radius: Radius.circular(5.8 * unit), clockwise: false)
+          ..close();
+        canvas.drawPath(half, Paint()..color = Tokens.partialMark);
       case MatchStatus.missing:
-        final stroke = 1.5 * scale;
-        final paint = Paint()
-          ..color = missingColor
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = stroke;
-        final frame = (Offset.zero & size).deflate(stroke / 2);
-        canvas.drawRRect(RRect.fromRectAndRadius(frame, Radius.circular(scale)), paint);
-        canvas.drawLine(frame.bottomLeft, frame.topRight, paint);
-    }
-  }
-
-  static void _drawDashed(Canvas canvas, PathMetric metric, Paint paint, {required double dash, required double gap}) {
-    for (var distance = 0.0; distance < metric.length; distance += dash + gap) {
-      canvas.drawPath(metric.extractPath(distance, distance + dash), paint);
+        canvas.drawCircle(center, 9 * unit, Paint()..color = Tokens.markerMark);
+        final cross = stroke(Tokens.paper, 1.9);
+        canvas.drawLine(Offset(6.2 * unit, 6.2 * unit), Offset(11.8 * unit, 11.8 * unit), cross);
+        canvas.drawLine(Offset(11.8 * unit, 6.2 * unit), Offset(6.2 * unit, 11.8 * unit), cross);
     }
   }
 
   @override
-  bool shouldRepaint(_MarkPainter oldDelegate) =>
-      oldDelegate.status != status || oldDelegate.missingColor != missingColor;
+  bool shouldRepaint(_MarkPainter oldDelegate) => oldDelegate.status != status;
+}
+
+/// The status named in a tinted chip: green, amber or red tint with its darker text tone.
+class StatusChip extends StatelessWidget {
+  const StatusChip({super.key, required this.status, required this.label});
+
+  final MatchStatus status;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final (background, foreground) = switch (status) {
+      MatchStatus.matched => (Tokens.okTint, Tokens.ok),
+      MatchStatus.partial => (Tokens.partialTint, Tokens.partial),
+      MatchStatus.missing => (Tokens.markerTint, Tokens.marker),
+    };
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(color: background, borderRadius: const BorderRadius.all(Radius.circular(6))),
+      child: Text(label, style: AppText.chip.copyWith(color: foreground)),
+    );
+  }
 }

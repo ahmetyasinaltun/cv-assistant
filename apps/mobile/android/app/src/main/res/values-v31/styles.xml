@@ -3,7 +3,7 @@
 <resources>
     <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
         <item name="android:windowSplashScreenBackground">@color/desk</item>
-        <item name="android:windowSplashScreenIconBackgroundColor">@color/graphite</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">@color/brand</item>
     </style>
     <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
         <item name="android:windowBackground">@color/desk</item>

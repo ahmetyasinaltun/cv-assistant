@@ -1,5 +1,5 @@
-// Sign-in and registration on one paper slip (design system: "Auth Slip"), with the sample result one tap away
-// for a reviewer who has no account. A successful sign-in lets the app's gate open the analyses list.
+// Sign-in and registration: the brand band says what the product does and offers the sample result to a reviewer
+// who has no account; the form sits in one card over the band. A successful sign-in lets the app's gate open the list.
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -124,33 +124,37 @@ class _AuthScreenState extends State<AuthScreen> {
         actions: const [AccountMenu()],
       ),
       body: SafeArea(
+        top: false,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(16, 40, 16, 32),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 400),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+          padding: const EdgeInsets.only(bottom: 32),
+          child: ReadableWidth(
+            child: BandOverlap(
+              header: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  PaperSheet(
-                    padding: const EdgeInsets.fromLTRB(24, 28, 24, 20),
-                    child: AutofillGroup(child: _slip(text, expired)),
+                  Semantics(
+                    header: true,
+                    child: Text(_isRegister ? text.registerTitle : text.signInTitle, style: AppText.headline),
                   ),
+                  const SizedBox(height: 8),
+                  Text(text.appTagline, style: AppText.bodySmall.copyWith(color: Tokens.onBrandSoft)),
                   const SizedBox(height: 16),
-                  Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    spacing: 6,
-                    children: [
-                      Text(text.authSamplePrompt, style: AppText.meta),
-                      TextAction(
-                        label: text.authSampleLink,
-                        onPressed: () =>
-                            Navigator.of(context)
-                                .push(MaterialPageRoute<void>(builder: (_) => const SampleAnalysisScreen())),
-                      ),
-                    ],
+                  Text(text.authSamplePrompt, style: AppText.meta.copyWith(color: Tokens.onBrandSoft)),
+                  const SizedBox(height: 8),
+                  OutlinedButton(
+                    onPressed: () =>
+                        Navigator.of(context)
+                            .push(MaterialPageRoute<void>(builder: (_) => const SampleAnalysisScreen())),
+                    child: Text(text.authSampleLink),
                   ),
                 ],
+              ),
+              child: Padding(
+                padding: screenPadding,
+                child: PaperSheet(
+                  padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
+                  child: AutofillGroup(child: _slip(text, expired)),
+                ),
               ),
             ),
           ),
@@ -163,11 +167,6 @@ class _AuthScreenState extends State<AuthScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Semantics(
-          header: true,
-          child: Text(_isRegister ? text.registerTitle : text.signInTitle, style: AppText.titleSection),
-        ),
-        const SizedBox(height: 20),
         if (expired && !_isRegister) ...[FormAlert(text.sessionExpired), const SizedBox(height: 16)],
         if (_isRegister) ...[
           LabeledField(
@@ -226,7 +225,6 @@ class _AuthScreenState extends State<AuthScreen> {
             Text(_isRegister ? text.registerSwitchPrompt : text.signInSwitchPrompt, style: AppText.bodySmall),
             TextAction(
               label: _isRegister ? text.registerSwitchLink : text.signInSwitchLink,
-              color: Tokens.ink,
               inline: true,
               onPressed: _submitting ? null : _switchMode,
             ),

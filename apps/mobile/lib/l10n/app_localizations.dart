@@ -248,6 +248,12 @@ abstract class AppLocalizations {
   /// **'Sign in'**
   String get registerSwitchLink;
 
+  /// No description provided for @appTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'See how your CV matches a job posting, with the evidence behind every judgement.'**
+  String get appTagline;
+
   /// No description provided for @authSamplePrompt.
   ///
   /// In en, this message translates to:
@@ -871,6 +877,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Other'**
   String get otherSection;
+
+  /// No description provided for @scoreLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Score: {score} out of 100'**
+  String scoreLabel(int score);
+
+  /// No description provided for @summaryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'In short'**
+  String get summaryTitle;
+
+  /// No description provided for @requirementCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 requirement} other{{count} requirements}}'**
+  String requirementCount(int count);
+
+  /// No description provided for @breakdownCaption.
+  ///
+  /// In en, this message translates to:
+  /// **'What the score is made of'**
+  String get breakdownCaption;
+
+  /// No description provided for @breakdownNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Wide pieces are must-haves; they count twice in the score.'**
+  String get breakdownNote;
+
+  /// No description provided for @fixesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 suggestion} other{{count} suggestions}}'**
+  String fixesCount(int count);
 
   /// No description provided for @showInCv.
   ///

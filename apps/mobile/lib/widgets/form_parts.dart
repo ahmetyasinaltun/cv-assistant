@@ -1,9 +1,11 @@
-// The printed form box and its parts (design system: "Inputs / Fields"): a label above, a hint below, and errors
-// led by the struck mark so they read without colour. Form-level problems sit in one live region.
+// Form fields and their parts (design system: "Form Fields"): a label above, a hint below, and errors led by the missing
+// icon so they read without colour. Form-level problems sit in one live region on a red tint.
 
 import 'package:flutter/material.dart';
 
+import '../core/api/models.dart';
 import '../core/theme/app_text.dart';
+import '../core/theme/app_theme.dart';
 import '../core/theme/tokens.dart';
 import 'status_mark.dart';
 
@@ -20,8 +22,11 @@ class FieldError extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(padding: EdgeInsets.only(top: 4), child: StruckMark()),
-          const SizedBox(width: 6),
+          const Padding(
+            padding: EdgeInsets.only(top: 2),
+            child: StatusMark(status: MatchStatus.missing, size: 15),
+          ),
+          const SizedBox(width: 8),
           Expanded(
             child: Text(message, style: AppText.meta.copyWith(color: Tokens.marker)),
           ),
@@ -40,18 +45,22 @@ class FormAlert extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Semantics(
     liveRegion: true,
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.only(top: 5),
-          child: StruckMark(size: 12, color: Tokens.ink),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(message, style: AppText.bodySmall.copyWith(color: Tokens.ink)),
-        ),
-      ],
+    child: Container(
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+      decoration: const BoxDecoration(color: Tokens.markerTint, borderRadius: controlRadius),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(top: 2),
+            child: StatusMark(status: MatchStatus.missing, size: 17),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(message, style: AppText.bodySmall.copyWith(color: Tokens.ink)),
+          ),
+        ],
+      ),
     ),
   );
 }
@@ -154,7 +163,7 @@ class TextAction extends StatelessWidget {
     super.key,
     required this.label,
     required this.onPressed,
-    this.color = Tokens.inkSoft,
+    this.color = Tokens.accentHover,
     this.inline = false,
   });
 
@@ -179,8 +188,9 @@ class TextAction extends StatelessWidget {
       label,
       style: (inline ? AppText.bodySmall : AppText.meta).copyWith(
         color: color,
+        fontWeight: FontWeight.w500,
         decoration: TextDecoration.underline,
-        decorationColor: Tokens.rule,
+        decorationColor: color.withValues(alpha: 0.35),
       ),
     ),
   );

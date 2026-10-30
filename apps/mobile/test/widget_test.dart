@@ -1,10 +1,10 @@
 // Widget tests for the main flows against a scripted fake API: start-up retry, the account language, sign-in errors,
-// the analyses list states, the sample result (fixes first, CV sheet with a circled line) and form validation.
+// the analyses list states, the sample result (fixes first, CV sheet with highlighted words) and form validation.
 
 import 'package:career_assistant/app.dart';
 import 'package:career_assistant/core/session/session_controller.dart';
+import 'package:career_assistant/core/theme/tokens.dart';
 import 'package:career_assistant/features/analysis/sample_analysis_screen.dart';
-import 'package:career_assistant/widgets/grease_pencil_loop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -100,12 +100,12 @@ void main() {
 
     expect(find.text('Strong fit'), findsOneWidget);
     expect(find.text('77'), findsOneWidget);
-    expect(find.text('ANALYZING'), findsOneWidget);
+    expect(find.text('Analyzing'), findsOneWidget);
     expect(find.text('Could not complete'), findsOneWidget);
     await unmount(tester);
   });
 
-  testWidgets('the sample puts fixes first and a fix opens the CV with its lines circled', (tester) async {
+  testWidgets('the sample puts fixes first and a fix opens the CV with its words highlighted', (tester) async {
     await pumpApp(tester, FakeApi());
     await tester.tap(find.text('Open the sample analysis'));
     await tester.pumpAndSettle();
@@ -114,12 +114,32 @@ void main() {
     final requirements = tester.getTopLeft(find.text('Requirements')).dy;
     expect(fixes, lessThan(requirements));
 
+    // The weighted bar draws one visible segment per requirement (an empty box would collapse to zero height).
+    final matchedSegments = find.byWidgetPredicate(
+      (widget) =>
+          widget is DecoratedBox &&
+          widget.decoration is BoxDecoration &&
+          (widget.decoration as BoxDecoration).color == Tokens.okMark,
+    );
+    expect(matchedSegments, findsWidgets);
+    expect(tester.getSize(matchedSegments.first).height, 14);
+
     final showInCv = find.text('Show in the CV').first;
     await tester.ensureVisible(showInCv);
     await tester.pumpAndSettle();
     await tester.tap(showInCv);
     await tester.pumpAndSettle();
-    expect(find.byType(CircledLine), findsWidgets);
+    // A highlighted CV word is a text span painted with a marker background.
+    final highlighted = find.byWidgetPredicate((widget) {
+      if (widget is! RichText) return false;
+      var found = false;
+      widget.text.visitChildren((span) {
+        if (span is TextSpan && span.style?.background != null) found = true;
+        return !found;
+      });
+      return found;
+    });
+    expect(highlighted, findsWidgets);
     expect(find.byType(SampleAnalysisScreen), findsOneWidget);
   });
 

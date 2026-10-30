@@ -1,4 +1,5 @@
-// Small shared pieces: the priority tag, the label-caps head, and the indeterminate progress sweep.
+// Small shared pieces: the priority chip, a group head inside a card, the sample notice on the brand band, and the
+// indeterminate progress sweep.
 
 import 'package:flutter/material.dart';
 
@@ -6,7 +7,7 @@ import '../core/api/models.dart';
 import '../core/theme/app_text.dart';
 import '../core/theme/tokens.dart';
 
-/// Red for high, amber for medium, Pencil Grey for low: a border in the current colour, no fill.
+/// High is filled teal, medium a teal wash, low a ground shade; priority is never red, which means missing.
 class PriorityTag extends StatelessWidget {
   const PriorityTag({super.key, required this.priority, required this.label});
 
@@ -15,38 +16,61 @@ class PriorityTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = switch (priority) {
-      Priority.high => Tokens.marker,
-      Priority.medium => Tokens.partial,
-      Priority.low => Tokens.mute,
+    final (background, foreground) = switch (priority) {
+      Priority.high => (Tokens.accent, Tokens.paper),
+      Priority.medium => (Tokens.accentTint, Tokens.accentHover),
+      Priority.low => (Tokens.deskDeep, Tokens.inkSoft),
     };
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-      decoration: BoxDecoration(
-        border: Border.all(color: color),
-        borderRadius: const BorderRadius.all(Radius.circular(3)),
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(color: background, borderRadius: const BorderRadius.all(Radius.circular(6))),
       child: Text(
-        upperFor(Localizations.localeOf(context).languageCode, label),
-        style: AppText.priorityTag.copyWith(color: color),
+        label,
+        style: AppText.chip.copyWith(color: foreground, fontWeight: FontWeight.w700),
       ),
     );
   }
 }
 
-/// An uppercase column head set in the interface language (The Locale-Owned Caps Rule).
-class LabelCaps extends StatelessWidget {
-  const LabelCaps(this.text, {super.key, this.color = Tokens.mute});
+/// A group head inside a card with an optional count at the right, in sentence case.
+class GroupHead extends StatelessWidget {
+  const GroupHead(this.text, {super.key, this.count});
 
   final String text;
-  final Color color;
+  final int? count;
 
   @override
-  Widget build(BuildContext context) =>
-      Text(upperFor(Localizations.localeOf(context).languageCode, text), style: AppText.label.copyWith(color: color));
+  Widget build(BuildContext context) => Row(
+    children: [
+      Expanded(
+        child: Semantics(header: true, child: Text(text, style: AppText.groupHead)),
+      ),
+      if (count != null) Text('$count', style: AppText.meta.copyWith(fontWeight: FontWeight.w500)),
+    ],
+  );
 }
 
-/// The running analysis: a red third sweeping a 3px track, parked when the system asks for less motion.
+/// Marks fictional sample content on the brand band, so it is never mistaken for real data.
+class SampleNotice extends StatelessWidget {
+  const SampleNotice(this.message, {super.key});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+    decoration: BoxDecoration(
+      color: Tokens.onBrand.withValues(alpha: 0.12),
+      borderRadius: const BorderRadius.all(Radius.circular(6)),
+    ),
+    child: Text(
+      message,
+      style: AppText.meta.copyWith(color: Tokens.onBrand, fontWeight: FontWeight.w500),
+    ),
+  );
+}
+
+/// The running analysis: a teal third sweeping a 4dp track, parked when the system asks for less motion.
 class ProgressSweep extends StatefulWidget {
   const ProgressSweep({super.key});
 
@@ -80,7 +104,7 @@ class _ProgressSweepState extends State<ProgressSweep> with SingleTickerProvider
   @override
   Widget build(BuildContext context) => ExcludeSemantics(
     child: SizedBox(
-      height: 3,
+      height: 4,
       child: AnimatedBuilder(
         animation: _controller,
         builder: (context, _) => CustomPaint(painter: _SweepPainter(_controller.value)),
@@ -96,13 +120,13 @@ class _SweepPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final track = RRect.fromRectAndRadius(Offset.zero & size, const Radius.circular(1.5));
+    final track = RRect.fromRectAndRadius(Offset.zero & size, const Radius.circular(2));
     canvas.drawRRect(track, Paint()..color = Tokens.deskDeep);
     final width = size.width / 3;
     final left = -width + (size.width + width) * progress;
     canvas.save();
     canvas.clipRRect(track);
-    canvas.drawRect(Rect.fromLTWH(left, 0, width, size.height), Paint()..color = Tokens.marker);
+    canvas.drawRect(Rect.fromLTWH(left, 0, width, size.height), Paint()..color = Tokens.accent);
     canvas.restore();
   }
 

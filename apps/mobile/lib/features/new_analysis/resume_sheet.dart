@@ -1,5 +1,5 @@
 // Parts of the CV sheet on New analysis: a saved-CV row, the in-place delete confirmation that states what goes
-// with the CV, and the PDF picker drawn as the dashed "place a file here" box (design system: "File Drop").
+// with the CV on a red tint, and the PDF picker drawn as the dashed "place a file here" box (design system: "File Drop").
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -34,11 +34,11 @@ class SavedResumeRow extends StatelessWidget {
     final sameYear = created.year == DateTime.now().year;
     final date = (sameYear ? DateFormat.MMMd(language) : DateFormat.yMMMd(language)).format(created);
     return Material(
-      color: selected ? Tokens.desk : Colors.transparent,
-      borderRadius: const BorderRadius.all(Radius.circular(5)),
+      color: selected ? Tokens.accentTint : Colors.transparent,
+      borderRadius: const BorderRadius.all(Radius.circular(10)),
       child: InkWell(
         onTap: onSelect,
-        borderRadius: const BorderRadius.all(Radius.circular(5)),
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 4),
           child: Row(
@@ -86,7 +86,7 @@ class DeleteConfirmBand extends StatelessWidget {
     final text = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
-      decoration: const BoxDecoration(color: Tokens.desk, borderRadius: BorderRadius.all(Radius.circular(5))),
+      decoration: const BoxDecoration(color: Tokens.markerTint, borderRadius: BorderRadius.all(Radius.circular(10))),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -99,6 +99,7 @@ class DeleteConfirmBand extends StatelessWidget {
             children: [
               FilledButton(
                 autofocus: true,
+                style: FilledButton.styleFrom(backgroundColor: Tokens.marker),
                 onPressed: deleting ? null : onConfirm,
                 child: Text(deleting ? text.resumeDeleting : text.resumeDeleteButton),
               ),
@@ -123,7 +124,7 @@ class PdfPicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final text = AppLocalizations.of(context);
-    final edge = error != null ? Tokens.marker : Tokens.mute;
+    final edge = error != null ? Tokens.marker : Tokens.fieldEdge;
     final picked = file;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -133,7 +134,7 @@ class PdfPicker extends StatelessWidget {
           child: InkWell(
             focusNode: focusNode,
             onTap: onPick,
-            borderRadius: const BorderRadius.all(Radius.circular(6)),
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
             child: ConstrainedBox(
               constraints: const BoxConstraints(minHeight: 112),
               child: Padding(
@@ -143,13 +144,15 @@ class PdfPicker extends StatelessWidget {
                       ? Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.upload_file_outlined, size: 20, color: Tokens.inkSoft),
+                            const Icon(Icons.upload_file_outlined, size: 22, color: Tokens.accent),
                             const SizedBox(width: 8),
                             Text(
                               text.resumeChooseFile,
                               style: AppText.bodySmall.copyWith(
-                                color: Tokens.ink,
+                                color: Tokens.accentHover,
+                                fontWeight: FontWeight.w600,
                                 decoration: TextDecoration.underline,
+                                decorationColor: Tokens.accent.withValues(alpha: 0.35),
                               ),
                             ),
                           ],
@@ -198,7 +201,7 @@ class _DashedBorder extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1;
     final outline = Path()
-      ..addRRect(RRect.fromRectAndRadius((Offset.zero & size).deflate(0.5), const Radius.circular(6)));
+      ..addRRect(RRect.fromRectAndRadius((Offset.zero & size).deflate(0.5), const Radius.circular(10)));
     for (final metric in outline.computeMetrics()) {
       for (var distance = 0.0; distance < metric.length; distance += 9) {
         canvas.drawPath(metric.extractPath(distance, distance + 5), paint);

@@ -1,5 +1,5 @@
-// Paper panels for an analysis that is not finished: running (sweep and status label) or failed (a localized
-// reason per error code and the right next step). Also the panel for a screen that could not load.
+// Cards for an analysis that is not finished: running (sweep and status label) or failed (a localized reason per
+// error code and the right next step). Also the card for a screen that could not load.
 
 import 'package:flutter/material.dart';
 
@@ -24,20 +24,23 @@ class RunningPanel extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          LabelCaps(status == AnalysisStatus.pending ? text.progressPending : text.progressRunning, color: Tokens.edge),
-          const SizedBox(height: 10),
           Semantics(liveRegion: true, child: Text(text.progressTitle, style: AppText.title)),
-          const SizedBox(height: 16),
-          const ProgressSweep(),
-          const SizedBox(height: 16),
+          const SizedBox(height: 10),
           Text(text.progressBody, style: AppText.bodySmall),
+          const SizedBox(height: 20),
+          const ProgressSweep(),
+          const SizedBox(height: 10),
+          Text(
+            status == AnalysisStatus.pending ? text.progressPending : text.progressRunning,
+            style: AppText.meta.copyWith(color: Tokens.accentHover, fontWeight: FontWeight.w600),
+          ),
         ],
       ),
     );
   }
 }
 
-/// A failure or load error: struck mark beside the title, a plain explanation, and one graphite action.
+/// A failure or load error: the missing icon beside the title, a plain explanation, and one teal action.
 class ProblemPanel extends StatelessWidget {
   const ProblemPanel({
     super.key,
@@ -61,7 +64,10 @@ class ProblemPanel extends StatelessWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(padding: EdgeInsets.only(top: 5), child: StruckMark(size: 14)),
+            const Padding(
+              padding: EdgeInsets.only(top: 2),
+              child: StatusMark(status: MatchStatus.missing, size: 20),
+            ),
             const SizedBox(width: 10),
             Expanded(
               child: Semantics(liveRegion: true, child: Text(title, style: AppText.title)),

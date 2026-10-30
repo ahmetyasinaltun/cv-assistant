@@ -10,7 +10,6 @@ import '../../core/theme/tokens.dart';
 import '../../l10n/app_localizations.dart';
 import '../../widgets/form_parts.dart';
 import '../../widgets/paper.dart';
-import '../../widgets/small_parts.dart';
 import '../../widgets/status_mark.dart';
 import 'labels.dart';
 
@@ -55,12 +54,11 @@ class _InterviewQuestionsSectionState extends State<InterviewQuestionsSection> {
   @override
   Widget build(BuildContext context) {
     final text = AppLocalizations.of(context);
-    return Padding(
-      padding: screenPadding,
+    return PaperSheet(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Semantics(header: true, child: Text(text.questionsTitle, style: AppText.titleSection)),
+          Semantics(header: true, child: Text(text.questionsTitle, style: AppText.title)),
           const SizedBox(height: 6),
           Text(text.questionsIntro, style: AppText.bodySmall),
           const SizedBox(height: 16),
@@ -114,13 +112,20 @@ class _QuestionItem extends StatelessWidget {
         children: [
           Row(
             children: [
-              LabelCaps(categoryLabel(text, question.category)),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: const BoxDecoration(
+                  color: Tokens.deskDeep,
+                  borderRadius: BorderRadius.all(Radius.circular(6)),
+                ),
+                child: Text(
+                  categoryLabel(text, question.category),
+                  style: AppText.chip.copyWith(color: Tokens.inkSoft),
+                ),
+              ),
               const SizedBox(width: 10),
               for (final id in question.relatedRequirementIds)
-                if (byId[id] != null) ...[
-                  StatusMark(status: byId[id]!.status, importance: byId[id]!.importance),
-                  const SizedBox(width: 4),
-                ],
+                if (byId[id] != null) ...[StatusMark(status: byId[id]!.status, size: 16), const SizedBox(width: 4)],
             ],
           ),
           const SizedBox(height: 8),
@@ -129,7 +134,10 @@ class _QuestionItem extends StatelessWidget {
             style: AppText.question,
           ),
           const SizedBox(height: 8),
-          Text(text.questionsWhy, style: AppText.meta.copyWith(fontWeight: FontWeight.w600)),
+          Text(
+            text.questionsWhy,
+            style: AppText.meta.copyWith(color: Tokens.ink, fontWeight: FontWeight.w600),
+          ),
           const SizedBox(height: 2),
           Text.rich(
             TextSpan(text: question.rationale, locale: contentLocale),

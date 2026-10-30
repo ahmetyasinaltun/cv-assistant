@@ -71,3 +71,25 @@ List<TextSegment> splitByQuote(String text, String? quote) {
     TextSegment(text.substring(end), highlighted: false),
   ].where((segment) => segment.text.isNotEmpty).toList();
 }
+
+/// Like [splitByQuote], for a line that supports the requirement: when the quote is not found, the whole line is marked.
+List<TextSegment> splitForHighlight(String text, String? quote) {
+  final segments = splitByQuote(text, quote);
+  return segments.any((segment) => segment.highlighted) ? segments : [TextSegment(text, highlighted: true)];
+}
+
+class ScoreSegment {
+  const ScoreSegment(this.requirement, this.width);
+
+  final RequirementMatch requirement;
+  final int width;
+}
+
+const _statusRank = {MatchStatus.matched: 0, MatchStatus.partial: 1, MatchStatus.missing: 2};
+
+/// One bar segment per requirement, matched first, so the bar reads as the score's make-up. The widths mirror the
+/// server's importance weights for drawing only; the score itself always comes from the API.
+List<ScoreSegment> scoreSegments(List<RequirementMatch> requirements) => [
+  for (final requirement in requirements)
+    ScoreSegment(requirement, requirement.importance == Importance.mustHave ? 2 : 1),
+]..sort((a, b) => _statusRank[a.requirement.status]!.compareTo(_statusRank[b.requirement.status]!));

@@ -88,6 +88,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get registerSwitchLink => 'Sign in';
 
   @override
+  String get appTagline => 'See how your CV matches a job posting, with the evidence behind every judgement.';
+
+  @override
   String get authSamplePrompt => 'Want to see a result first?';
 
   @override
@@ -450,6 +453,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get otherSection => 'Other';
+
+  @override
+  String scoreLabel(int score) {
+    return 'Score: $score out of 100';
+  }
+
+  @override
+  String get summaryTitle => 'In short';
+
+  @override
+  String requirementCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count requirements',
+      one: '1 requirement',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get breakdownCaption => 'What the score is made of';
+
+  @override
+  String get breakdownNote => 'Wide pieces are must-haves; they count twice in the score.';
+
+  @override
+  String fixesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count suggestions', one: '1 suggestion');
+    return '$_temp0';
+  }
 
   @override
   String get showInCv => 'Show in the CV';

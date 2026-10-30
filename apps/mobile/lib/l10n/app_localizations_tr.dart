@@ -88,6 +88,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get registerSwitchLink => 'Giriş yap';
 
   @override
+  String get appTagline => 'CV’nin bir iş ilanına ne kadar uyduğunu, her kararın dayandığı kanıtla birlikte gör.';
+
+  @override
   String get authSamplePrompt => 'Önce bir sonuç görmek ister misin?';
 
   @override
@@ -438,6 +441,32 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get otherSection => 'Diğer';
+
+  @override
+  String scoreLabel(int score) {
+    return 'Puan: 100 üzerinden $score';
+  }
+
+  @override
+  String get summaryTitle => 'Kısaca';
+
+  @override
+  String requirementCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count şart');
+    return '$_temp0';
+  }
+
+  @override
+  String get breakdownCaption => 'Puanı oluşturan parçalar';
+
+  @override
+  String get breakdownNote => 'Geniş parçalar zorunlu şartlar; puanda iki kat sayılırlar.';
+
+  @override
+  String fixesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count öneri');
+    return '$_temp0';
+  }
 
   @override
   String get showInCv => 'CV’de göster';

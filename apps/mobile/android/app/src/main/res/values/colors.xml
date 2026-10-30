@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Design-system tokens used before Flutter draws: the graphite icon ground and the light-table desk. -->
+<!-- Design-system tokens used before Flutter draws: the deep teal icon ground and the pale teal page ground. -->
 <resources>
-    <color name="graphite">#1C1B19</color>
-    <color name="desk">#ECECE9</color>
+    <color name="brand">#0C4A46</color>
+    <color name="desk">#EDF4F2</color>
 </resources>

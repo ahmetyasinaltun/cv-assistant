@@ -93,7 +93,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
           child: ReadableWidth(
             child: ListView(
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.only(top: 20),
+              padding: EdgeInsets.zero,
               children: [_content(text)],
             ),
           ),
@@ -106,7 +106,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
     final detail = _detail;
     if (detail == null) {
       return Padding(
-        padding: screenPadding,
+        padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
         child: _loadFailed
             ? ProblemPanel(
                 title: text.loadErrorTitle,
@@ -130,31 +130,27 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
     }
     final failed = summary.status == AnalysisStatus.failed;
     final needsNewInputs = needsNewInput.contains(detail.errorCode);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        ResultHeader(summary: summary),
-        const SizedBox(height: 24),
-        Padding(
-          padding: screenPadding,
-          child: failed
-              ? ProblemPanel(
-                  title: text.failedTitle,
-                  body: failureReason(text, detail.errorCode),
-                  actionLabel: _starting
-                      ? text.failedStarting
-                      : (needsNewInputs ? text.failedNewAnalysis : text.failedRetry),
-                  onAction: _starting
-                      ? null
-                      : needsNewInputs
-                      ? () =>
-                            Navigator.of(context)
-                                .pushReplacement(MaterialPageRoute<void>(builder: (_) => const NewAnalysisScreen()))
-                      : () => _rerun(summary),
-                )
-              : RunningPanel(status: summary.status),
-        ),
-      ],
+    return BandOverlap(
+      header: ResultHeader(summary: summary),
+      child: Padding(
+        padding: screenPadding,
+        child: failed
+            ? ProblemPanel(
+                title: text.failedTitle,
+                body: failureReason(text, detail.errorCode),
+                actionLabel: _starting
+                    ? text.failedStarting
+                    : (needsNewInputs ? text.failedNewAnalysis : text.failedRetry),
+                onAction: _starting
+                    ? null
+                    : needsNewInputs
+                    ? () =>
+                          Navigator.of(context)
+                              .pushReplacement(MaterialPageRoute<void>(builder: (_) => const NewAnalysisScreen()))
+                    : () => _rerun(summary),
+              )
+            : RunningPanel(status: summary.status),
+      ),
     );
   }
 }

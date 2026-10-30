@@ -49,7 +49,7 @@ class _StartupScreenState extends State<StartupScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (!_unreachable) const CircularProgressIndicator(color: Tokens.ink, strokeWidth: 2.5),
+                if (!_unreachable) const CircularProgressIndicator(color: Tokens.accent, strokeWidth: 2.5),
                 const SizedBox(height: 16),
                 Semantics(
                   liveRegion: true,

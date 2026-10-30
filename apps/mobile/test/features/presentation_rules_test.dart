@@ -3,7 +3,6 @@
 
 import 'package:career_assistant/core/api/api_client.dart';
 import 'package:career_assistant/core/api/models.dart';
-import 'package:career_assistant/core/theme/app_text.dart';
 import 'package:career_assistant/features/analysis/result_view_model.dart';
 import 'package:career_assistant/features/auth/auth_errors.dart';
 import 'package:career_assistant/features/new_analysis/new_analysis_model.dart';
@@ -131,9 +130,27 @@ void main() {
     expect(looksLikeEmail('ayse@'), isFalse);
   });
 
-  test('label caps follow Turkish casing', () {
-    expect(upperFor('tr', 'Tercih sebebi'), 'TERCİH SEBEBİ');
-    expect(upperFor('tr', 'Kısmi'), 'KISMİ'); // dotless ı → I, dotted i → İ
-    expect(upperFor('en', 'Nice-to-have'), 'NICE-TO-HAVE');
+  test('a supporting line marks the quote, or the whole line when the quote is not in it', () {
+    expect(splitForHighlight('Python, FastAPI, pytest', 'pytest').map((s) => (s.text, s.highlighted)), [
+      ('Python, FastAPI, ', false),
+      ('pytest', true),
+    ]);
+    expect(splitForHighlight('Python, FastAPI', 'Django').map((s) => (s.text, s.highlighted)), [
+      ('Python, FastAPI', true),
+    ]);
+  });
+
+  test('score segments put matched first and draw must-haves twice as wide', () {
+    final niceMissing = RequirementMatch(
+      id: 'r3',
+      text: 'Kubernetes',
+      category: 'tool',
+      importance: Importance.niceToHave,
+      status: MatchStatus.missing,
+      reasoning: '',
+      evidence: const [],
+    );
+    final segments = scoreSegments([niceMissing, requirement('r1', MatchStatus.partial), requirement('r2', MatchStatus.matched)]);
+    expect(segments.map((s) => (s.requirement.id, s.width)), [('r2', 2), ('r1', 2), ('r3', 1)]);
   });
 }

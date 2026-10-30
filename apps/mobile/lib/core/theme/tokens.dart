@@ -1,35 +1,51 @@
-// Colour tokens of the "editor's contact sheet" design system, copied from the web's globals.css so web and mobile read
+// Colour tokens of the teal design system, copied from the web's globals.css so web and mobile read
 // as one product. Change a value there first, then here.
 
 import 'package:flutter/painting.dart';
 
 abstract final class Tokens {
-  /// Darkroom Graphite: the top bar, primary buttons, body ink and the filled "matched" disc.
-  static const shell = Color(0xFF1C1B19);
-  static const shellRaised = Color(0xFF2A2926);
-  static const shellText = Color(0xFFF2F1EE);
-  static const shellMute = Color(0xFFB4B2AC);
+  /// Deep teal: the app bar, the brand band at the top of a screen and the app icon.
+  static const brand = Color(0xFF0C4A46);
+  static const onBrand = Color(0xFFFFFFFF);
 
-  /// Light-Table Grey: the desk every sheet sits on.
-  static const desk = Color(0xFFECECE9);
-  static const deskDeep = Color(0xFFE1E0DC);
+  /// Secondary text on the brand band.
+  static const onBrandSoft = Color(0xFFB5DBD4);
 
-  /// Print White: the CV sheet and other paper objects.
+  /// Working teal: primary actions, links, the score, the current place and focus.
+  static const accent = Color(0xFF0F766D);
+  static const accentHover = Color(0xFF0B5E57);
+
+  /// Teal wash: selected rows, the medium-priority chip and the sample notice.
+  static const accentTint = Color(0xFFE0F2EF);
+
+  /// Pale teal ground every card sits on, and its pressed shade.
+  static const desk = Color(0xFFEDF4F2);
+  static const deskDeep = Color(0xFFE1EBE8);
+
   static const paper = Color(0xFFFFFFFF);
-  static const ink = Color(0xFF1C1B19);
-  static const inkSoft = Color(0xFF3D3B37);
+  static const ink = Color(0xFF102321);
+  static const inkSoft = Color(0xFF384D49);
 
-  /// Pencil Grey: metadata, hints and the 1px edge of form controls.
-  static const mute = Color(0xFF5F5D58);
-  static const rule = Color(0xFFD6D5D1);
+  /// Teal grey: counts, captions, dates and placeholders.
+  static const mute = Color(0xFF586C68);
 
-  /// China-Marker Red: only where the editor acted (circled, missing, high priority, failed, current).
-  static const marker = Color(0xFFB73128);
-  static const markerTint = Color(0xFFF7DCD8);
+  /// Teal hairline: the 1px edge of every card and the dividers inside cards.
+  static const rule = Color(0xFFD6E4E0);
 
-  /// Edge-Print Orange: CV line ids and the running label. It names, it never judges.
-  static const edge = Color(0xFFA3500F);
+  /// The 1px edge of form controls: 3.3:1 on white, above the 3:1 a control boundary needs.
+  static const fieldEdge = Color(0xFF7F938E);
 
-  /// Darkroom Amber: the partial state and medium priority.
-  static const partial = Color(0xFF8A6405);
+  /// Status triplets (text tone, tint, mark). The icon's form carries the state; colour reinforces it.
+  static const ok = Color(0xFF13733A);
+  static const okTint = Color(0xFFE2F3E7);
+  static const okMark = Color(0xFF1E9A4B);
+  static const partial = Color(0xFF925400);
+  static const partialTint = Color(0xFFFCEFD4);
+  static const partialMark = Color(0xFFD08A0B);
+
+  /// Red: missing requirements and errors only.
+  static const marker = Color(0xFFB42318);
+  static const markerTint = Color(0xFFFDE6E3);
+  static const markerMark = Color(0xFFD92D20);
+  static const markerHover = Color(0xFF8F1C13);
 }

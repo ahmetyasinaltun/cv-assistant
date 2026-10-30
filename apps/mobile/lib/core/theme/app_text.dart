@@ -1,5 +1,5 @@
-// Type roles of the design system set in Archivo. Words use the normal width; ids, counts and scores use the condensed
-// width with tabular figures (The Two Widths Rule). Sizes are logical pixels that follow the system font scale.
+// Type roles of the design system set in Archivo: bold headings, roomy reading text and tabular figures for numbers.
+// Sizes are logical pixels that follow the system font scale.
 
 import 'package:flutter/painting.dart';
 
@@ -26,31 +26,30 @@ abstract final class AppText {
     fontFeatures: tabular ? const [FontFeature.tabularFigures()] : null,
   );
 
-  static final headline = _archivo(26, 600, height: 1.15, tracking: -0.025);
-  static final titleSection = _archivo(22, 600, height: 1.25, tracking: -0.02);
-  static final title = _archivo(20, 600, height: 1.25, tracking: -0.01);
-  static final titleFit = _archivo(19, 600, height: 1.25, tracking: -0.01);
-  static final body = _archivo(15, 400, height: 1.55);
-  static final bodySheet = _archivo(15, 400, height: 1.6);
-  static final bodySmall = _archivo(14, 400, color: Tokens.inkSoft);
-  static final question = _archivo(16, 500);
-  static final fieldLabel = _archivo(14, 500);
-  static final button = _archivo(14, 500);
-  static final meta = _archivo(13, 400, color: Tokens.mute);
+  /// The job title on the brand band.
+  static final headline = _archivo(28, 700, height: 1.12, tracking: -0.025, color: Tokens.onBrand);
+  static final titleSection = _archivo(22, 700, height: 1.25, tracking: -0.015);
+  static final title = _archivo(20, 700, height: 1.25, tracking: -0.015);
+  static final titleCard = _archivo(17, 600, height: 1.4, tracking: -0.005);
+  static final body = _archivo(16, 400, height: 1.55);
+  static final bodySheet = _archivo(15.5, 400, height: 1.55);
+  static final bodySmall = _archivo(15, 400, color: Tokens.inkSoft);
+  static final question = _archivo(16.5, 500);
+  static final fieldLabel = _archivo(15, 600);
+  static final button = _archivo(15, 600);
+  static final meta = _archivo(14, 400, color: Tokens.mute);
 
-  /// Uppercase column heads; pass text through [upperFor] so Turkish i becomes İ.
-  static final label = _archivo(12, 600, tracking: 0.06, width: 85, color: Tokens.mute);
-  static final priorityTag = _archivo(11, 600, tracking: 0.06, width: 85, height: 1.2);
+  /// Group heads inside a card (must-have, nice-to-have, CV sections), in sentence case.
+  static final groupHead = _archivo(14, 600, color: Tokens.inkSoft);
 
-  /// Counts and the character count: condensed, tabular, Edge-Print Orange by default.
-  static final edgeNumber = _archivo(12, 600, tracking: 0.02, width: 72, color: Tokens.edge, tabular: true);
-  static final score = _archivo(22, 600, height: 1.1, tracking: 0.02, width: 72, tabular: true);
-  static final barProduct = _archivo(15, 600, tracking: -0.01, width: 92, color: Tokens.shellText);
-}
+  /// Status, priority and category chips.
+  static final chip = _archivo(12.5, 600, height: 1.5);
 
-/// Locale-aware uppercase for interface labels. Dart's toUpperCase maps "i" to "I", which is wrong in
-/// Turkish ("tercih" must become "TERCİH"); AI-written text is never passed here.
-String upperFor(String languageCode, String text) {
-  if (languageCode != 'tr') return text.toUpperCase();
-  return text.replaceAll('i', 'İ').replaceAll('ı', 'I').toUpperCase();
+  /// The score on the summary card and in list rows; always Working Teal.
+  static final score = _archivo(52, 700, height: 0.95, tracking: -0.03, color: Tokens.accent, tabular: true);
+  static final scoreSmall = _archivo(16, 700, height: 1.2, color: Tokens.accent, tabular: true);
+
+  /// The EN / TR options, the one place the condensed width survives.
+  static final localeCode = _archivo(12.5, 600, tracking: 0.06, width: 85);
+  static final barProduct = _archivo(17, 700, tracking: -0.01, color: Tokens.onBrand);
 }

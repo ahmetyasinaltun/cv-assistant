@@ -22,7 +22,7 @@ class AccountMenu extends StatelessWidget {
     final signedIn = session.status == SessionStatus.signedIn;
     return PopupMenuButton<_MenuChoice>(
       tooltip: signedIn ? text.account : text.language,
-      icon: Icon(signedIn ? Icons.account_circle_outlined : Icons.translate, color: Tokens.shellText),
+      icon: Icon(signedIn ? Icons.account_circle_outlined : Icons.translate, color: Tokens.onBrand),
       onSelected: (choice) => _select(context, choice),
       itemBuilder: (context) => [
         if (signedIn)
@@ -39,18 +39,22 @@ class AccountMenu extends StatelessWidget {
     );
   }
 
-  PopupMenuItem<_MenuChoice> _languageItem(_MenuChoice value, String code, String label, String current) =>
-      PopupMenuItem<_MenuChoice>(
-        value: value,
-        child: Row(
-          children: [
-            SizedBox(width: 24, child: code == current ? const Icon(Icons.check, size: 18, color: Tokens.ink) : null),
-            const SizedBox(width: 8),
-            // Each language name is read in its own language.
-            Text.rich(TextSpan(text: label, locale: Locale(code))),
-          ],
-        ),
-      );
+  PopupMenuItem<_MenuChoice> _languageItem(
+    _MenuChoice value,
+    String code,
+    String label,
+    String current,
+  ) => PopupMenuItem<_MenuChoice>(
+    value: value,
+    child: Row(
+      children: [
+        SizedBox(width: 24, child: code == current ? const Icon(Icons.check, size: 18, color: Tokens.accent) : null),
+        const SizedBox(width: 8),
+        // Each language name is read in its own language.
+        Text.rich(TextSpan(text: label, locale: Locale(code))),
+      ],
+    ),
+  );
 
   Future<void> _select(BuildContext context, _MenuChoice choice) async {
     final session = AppScope.of(context).session;

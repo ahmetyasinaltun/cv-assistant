@@ -14,6 +14,7 @@ import '../../core/theme/tokens.dart';
 import '../../l10n/app_localizations.dart';
 import '../../widgets/form_parts.dart';
 import '../../widgets/paper.dart';
+import '../../widgets/small_parts.dart';
 import '../analysis/analysis_screen.dart';
 import '../analysis/status_panel.dart';
 import 'new_analysis_model.dart';
@@ -284,8 +285,8 @@ class _NewAnalysisScreenState extends State<NewAnalysisScreen> {
           actions: [
             TextButton(
               onPressed: _resumes == null || _submitting ? null : _fillSample,
-              style: TextButton.styleFrom(foregroundColor: Tokens.shellText),
-              child: Text(text.fillSample, style: AppText.button.copyWith(color: Tokens.shellText)),
+              style: TextButton.styleFrom(foregroundColor: Tokens.onBrand),
+              child: Text(text.fillSample, style: AppText.button.copyWith(color: Tokens.onBrand)),
             ),
             const SizedBox(width: 8),
           ],
@@ -298,53 +299,78 @@ class _NewAnalysisScreenState extends State<NewAnalysisScreen> {
   Widget _body(AppLocalizations text) {
     if (_resumes == null) {
       return ListView(
-        padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
+        padding: const EdgeInsets.only(bottom: 32),
         children: [
-          if (_loadFailed)
-            ProblemPanel(
-              title: text.loadErrorTitle,
-              body: text.loadErrorBody,
-              actionLabel: text.tryAgain,
-              onAction: () {
-                setState(() => _loadFailed = false);
-                _load(fillSample: widget.fillWithSample);
-              },
-            )
-          else ...[
-            // Blank sheets in the final layout while the saved CVs load.
-            const PaperSheet(child: SizedBox(height: 180)),
-            const SizedBox(height: 20),
-            const PaperSheet(child: SizedBox(height: 260)),
-          ],
+          BandOverlap(
+            overlap: 40,
+            child: Padding(
+              padding: screenPadding,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (_loadFailed)
+                    ProblemPanel(
+                      title: text.loadErrorTitle,
+                      body: text.loadErrorBody,
+                      actionLabel: text.tryAgain,
+                      onAction: () {
+                        setState(() => _loadFailed = false);
+                        _load(fillSample: widget.fillWithSample);
+                      },
+                    )
+                  else ...[
+                    // Blank sheets in the final layout while the saved CVs load.
+                    const PaperSheet(child: SizedBox(height: 180)),
+                    const SizedBox(height: 16),
+                    const PaperSheet(child: SizedBox(height: 260)),
+                  ],
+                ],
+              ),
+            ),
+          ),
         ],
       );
     }
     return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 40),
+      padding: const EdgeInsets.only(bottom: 40),
       children: [
-        Text(text.newAnalysisIntro, style: AppText.bodySmall),
-        if (_sampleFilled) ...[
-          const SizedBox(height: 12),
-          Semantics(
-            liveRegion: true,
-            child: Text(text.sampleFilled, style: AppText.meta.copyWith(color: Tokens.inkSoft)),
+        BandOverlap(
+          overlap: 40,
+          header: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(text.newAnalysisIntro, style: AppText.bodySmall.copyWith(color: Tokens.onBrandSoft)),
+              if (_sampleFilled) ...[
+                const SizedBox(height: 12),
+                Semantics(liveRegion: true, child: SampleNotice(text.sampleFilled)),
+              ],
+            ],
           ),
-        ],
-        const SizedBox(height: 16),
-        _resumeSheet(text),
-        const SizedBox(height: 20),
-        _postingSheet(text),
-        if (_formProblem != null) ...[
-          const SizedBox(height: 20),
-          FormAlert(_formProblem == FormProblem.unavailable ? text.errorStartUnavailable : text.errorStartGeneric),
-        ],
-        const SizedBox(height: 20),
-        FilledButton(
-          onPressed: _submitting ? null : _submit,
-          child: Text(_submitting ? text.submittingAnalysis : text.submitAnalysis),
+          child: Padding(padding: screenPadding, child: _resumeSheet(text)),
         ),
-        const SizedBox(height: 8),
-        Text(text.submitNote, style: AppText.meta),
+        const SizedBox(height: 16),
+        Padding(padding: screenPadding, child: _postingSheet(text)),
+        Padding(
+          padding: screenPadding,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (_formProblem != null) ...[
+                const SizedBox(height: 20),
+                FormAlert(
+                  _formProblem == FormProblem.unavailable ? text.errorStartUnavailable : text.errorStartGeneric,
+                ),
+              ],
+              const SizedBox(height: 20),
+              FilledButton(
+                onPressed: _submitting ? null : _submit,
+                child: Text(_submitting ? text.submittingAnalysis : text.submitAnalysis),
+              ),
+              const SizedBox(height: 8),
+              Text(text.submitNote, style: AppText.meta),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -361,7 +387,7 @@ class _NewAnalysisScreenState extends State<NewAnalysisScreen> {
           Semantics(header: true, child: Text(text.resumeSheetTitle, style: AppText.title)),
           const SizedBox(height: 12),
           if (resumes.isNotEmpty) ...[
-            Text(text.resumeLegend, style: AppText.fieldLabel),
+            Text(text.resumeLegend, style: AppText.bodySmall),
             const SizedBox(height: 6),
             RadioGroup<String>(
               groupValue: _choice,
@@ -395,11 +421,11 @@ class _NewAnalysisScreenState extends State<NewAnalysisScreen> {
                             ),
                     ),
                   Material(
-                    color: addingNew ? Tokens.desk : Colors.transparent,
-                    borderRadius: const BorderRadius.all(Radius.circular(5)),
+                    color: addingNew ? Tokens.accentTint : Colors.transparent,
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
                     child: InkWell(
                       onTap: () => setState(() => _choice = _newResume),
-                      borderRadius: const BorderRadius.all(Radius.circular(5)),
+                      borderRadius: const BorderRadius.all(Radius.circular(10)),
                       child: Row(
                         children: [
                           const Radio<String>(value: _newResume),
@@ -453,11 +479,11 @@ class _NewAnalysisScreenState extends State<NewAnalysisScreen> {
           style: SegmentedButton.styleFrom(
             backgroundColor: Tokens.desk,
             foregroundColor: Tokens.inkSoft,
-            selectedBackgroundColor: Tokens.paper,
-            selectedForegroundColor: Tokens.ink,
+            selectedBackgroundColor: Tokens.accentTint,
+            selectedForegroundColor: Tokens.accentHover,
             side: const BorderSide(color: Tokens.rule),
             textStyle: AppText.button,
-            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(6))),
+            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
           ),
         ),
         const SizedBox(height: 16),
@@ -549,7 +575,11 @@ class _NewAnalysisScreenState extends State<NewAnalysisScreen> {
                 ),
                 Text(
                   text.characterCount(numbers.format(count), max),
-                  style: AppText.edgeNumber.copyWith(fontSize: 13, color: color),
+                  style: AppText.meta.copyWith(
+                    fontSize: 13,
+                    color: color,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
                 ),
               ],
             ),
