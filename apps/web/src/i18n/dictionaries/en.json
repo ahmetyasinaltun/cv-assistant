@@ -235,6 +235,11 @@
     "submit": "Start analysis",
     "submitting": "Starting…",
     "submitNote": "You can leave this page while it runs; the result is saved under Analyses.",
+    "startCard": {
+      "title": "What will be compared",
+      "resumeUnnamed": "New CV, not named yet",
+      "postingMissing": "Not added yet"
+    },
     "errors": {
       "resumeTitleMissing": "Give this CV a name.",
       "resumeTextMissing": "Paste the text of your CV.",

@@ -235,6 +235,11 @@
     "submit": "Analizi başlat",
     "submitting": "Başlatılıyor…",
     "submitNote": "Analiz sürerken bu sayfadan ayrılabilirsin; sonuç Analizler altında saklanır.",
+    "startCard": {
+      "title": "Neler karşılaştırılacak",
+      "resumeUnnamed": "Yeni CV, henüz adı yok",
+      "postingMissing": "Henüz eklenmedi"
+    },
     "errors": {
       "resumeTitleMissing": "Bu CV’ye bir ad ver.",
       "resumeTextMissing": "CV’nin metnini yapıştır.",

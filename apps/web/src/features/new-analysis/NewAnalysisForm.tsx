@@ -1,18 +1,17 @@
 "use client";
 
-// New-analysis form: the CV sheet and the posting sheet side by side, one start action below.
+// New-analysis form: the CV sheet and the posting sheet side by side, closed by a start card placed without gaps.
 // Fields are controlled so a failed attempt never empties a pasted CV; the server action does the work.
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition, type FormEvent } from "react";
 
-import { primaryButtonClass } from "@/components/button-styles";
-import { FormAlert } from "@/components/form/FormAlert";
 import type { Dictionary } from "@/i18n/dictionaries";
 
 import { startAnalysis } from "./actions";
 import {
   NEW_RESUME,
+  comparisonSummary,
   validateDraft,
   type FieldErrors,
   type NewAnalysisDraft,
@@ -21,6 +20,7 @@ import {
 } from "./new-analysis-model";
 import { PostingSheet } from "./PostingSheet";
 import { ResumeSheet } from "./ResumeSheet";
+import { StartCard } from "./StartCard";
 
 /** Order in which the first invalid field receives focus after a failed submit. */
 const FIELD_IDS: [keyof FieldErrors, string][] = [
@@ -38,6 +38,32 @@ interface NewAnalysisFormProps {
   locale: string;
   labels: Dictionary["newAnalysis"];
 }
+
+/**
+ * Wide-screen grid cells. The start card closes the form where it leaves no gap of page ground: under the CV when a
+ * saved CV is picked (the short column), under the posting when a new CV is typed below the saved ones (the CV
+ * column is then the long one), and across both when there is no saved CV and the two sheets are about as tall.
+ */
+const PLACEMENTS = {
+  savedCv: {
+    resume: "lg:col-start-1 lg:row-start-1",
+    posting: "lg:col-start-2 lg:row-span-2 lg:row-start-1",
+    start: "lg:col-start-1 lg:row-start-2",
+    wideStart: false,
+  },
+  newCvBelowSaved: {
+    resume: "lg:col-start-1 lg:row-span-2 lg:row-start-1",
+    posting: "lg:col-start-2 lg:row-start-1",
+    start: "lg:col-start-2 lg:row-start-2",
+    wideStart: false,
+  },
+  firstCv: {
+    resume: "lg:col-start-1 lg:row-start-1",
+    posting: "lg:col-start-2 lg:row-start-1",
+    start: "lg:col-span-2 lg:row-start-2",
+    wideStart: true,
+  },
+};
 
 const TYPED_FIELDS = ["resumeTitle", "resumeText", "jobTitle", "company", "jobText"] as const;
 
@@ -72,6 +98,13 @@ export function NewAnalysisForm({ resumes, analysisCounts, initialDraft, locale,
   const effectiveDraft: NewAnalysisDraft = choiceExists
     ? draft
     : { ...draft, resumeChoice: resumes[0]?.id ?? NEW_RESUME };
+
+  const placement =
+    effectiveDraft.resumeChoice !== NEW_RESUME
+      ? PLACEMENTS.savedCv
+      : resumes.length > 0
+        ? PLACEMENTS.newCvBelowSaved
+        : PLACEMENTS.firstCv;
 
   function update(patch: Partial<NewAnalysisDraft>) {
     setDraft((current) => ({ ...current, ...patch }));
@@ -113,27 +146,31 @@ export function NewAnalysisForm({ resumes, analysisCounts, initialDraft, locale,
 
   return (
     <form noValidate onSubmit={handleSubmit} aria-busy={isStarting}>
-      <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
-        <ResumeSheet
-          resumes={resumes}
-          analysisCounts={analysisCounts}
-          draft={effectiveDraft}
-          onChange={update}
-          onFileChange={updateFile}
-          errors={errors}
-          locale={locale}
-          labels={labels}
-        />
-        <PostingSheet draft={effectiveDraft} onChange={update} errors={errors} locale={locale} labels={labels} />
-      </div>
-
-      <div className="mt-7 flex flex-col gap-4">
-        <FormAlert message={formError ? labels.errors[formError] : null} />
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
-          <button type="submit" disabled={isStarting} className={primaryButtonClass}>
-            {isStarting ? labels.submitting : labels.submit}
-          </button>
-          <p className="max-w-[60ch] text-[14px] text-mute">{labels.submitNote}</p>
+      {/* Source order (CV, posting, start) is the reading, tab and phone order; wide screens only place the cells. */}
+      <div className="grid gap-6 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:items-start">
+        <div className={placement.resume}>
+          <ResumeSheet
+            resumes={resumes}
+            analysisCounts={analysisCounts}
+            draft={effectiveDraft}
+            onChange={update}
+            onFileChange={updateFile}
+            errors={errors}
+            locale={locale}
+            labels={labels}
+          />
+        </div>
+        <div className={placement.posting}>
+          <PostingSheet draft={effectiveDraft} onChange={update} errors={errors} locale={locale} labels={labels} />
+        </div>
+        <div className={`lg:sticky lg:top-4 ${placement.start}`}>
+          <StartCard
+            summary={comparisonSummary(effectiveDraft, resumes)}
+            formError={formError ? labels.errors[formError] : null}
+            isStarting={isStarting}
+            wide={placement.wideStart}
+            labels={labels}
+          />
         </div>
       </div>
     </form>

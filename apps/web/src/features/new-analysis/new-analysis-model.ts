@@ -99,6 +99,28 @@ export function submitErrorResult(
   return result;
 }
 
+/** What the start card names before the user starts; null where the draft does not say yet. */
+export interface ComparisonSummary {
+  resume: string | null;
+  posting: string | null;
+}
+
+export function comparisonSummary(
+  draft: NewAnalysisDraft,
+  resumes: Pick<ResumeSummary, "id" | "title">[],
+): ComparisonSummary {
+  const resume =
+    draft.resumeChoice === NEW_RESUME
+      ? draft.resumeTitle.trim()
+      : (resumes.find((saved) => saved.id === draft.resumeChoice)?.title ?? "");
+  const jobTitle = draft.jobTitle.trim();
+  const company = draft.company.trim();
+  return {
+    resume: resume || null,
+    posting: jobTitle ? [jobTitle, company].filter(Boolean).join(" · ") : null,
+  };
+}
+
 /** How many analyses were made with each CV; deleting a CV deletes these too. */
 export function analysesPerResume(analyses: AnalysisSummary[]): Map<string, number> {
   const counts = new Map<string, number>();

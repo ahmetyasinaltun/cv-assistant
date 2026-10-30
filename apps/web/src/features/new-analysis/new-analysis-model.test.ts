@@ -12,6 +12,7 @@ import {
   NEW_RESUME,
   analysesPerResume,
   checkPdf,
+  comparisonSummary,
   defaultResumeChoice,
   submitErrorResult,
   validateDraft,
@@ -93,6 +94,31 @@ describe("submitErrorResult", () => {
     const offline = submitErrorResult("analysis", new ApiError(NETWORK_ERROR_STATUS, "network_error", ""), null);
     expect(offline.formError).toBe("unavailable");
     expect(submitErrorResult("analysis", new Error("boom"), null).formError).toBe("generic");
+  });
+});
+
+describe("comparisonSummary", () => {
+  const saved = [{ id: "resume-1", title: "CV, October 2026" }];
+
+  it("names the saved CV that is picked and the posting with its company", () => {
+    expect(comparisonSummary(draft({ company: " Acme " }), saved)).toEqual({
+      resume: "CV, October 2026",
+      posting: "Junior Backend Developer · Acme",
+    });
+  });
+
+  it("uses the typed name of a new CV and leaves out a missing company", () => {
+    expect(comparisonSummary(draft({ resumeChoice: NEW_RESUME, resumeTitle: " My CV " }), saved)).toEqual({
+      resume: "My CV",
+      posting: "Junior Backend Developer",
+    });
+  });
+
+  it("reports what is not given yet as null", () => {
+    expect(comparisonSummary(draft({ resumeChoice: NEW_RESUME, jobTitle: "  " }), saved)).toEqual({
+      resume: null,
+      posting: null,
+    });
   });
 });
 
