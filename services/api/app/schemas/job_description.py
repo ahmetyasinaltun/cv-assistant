@@ -1,4 +1,4 @@
-# Request/response schemas for creating and listing job descriptions.
+# Request/response schemas for creating, listing and importing (from a link) job descriptions.
 
 from datetime import datetime
 from uuid import UUID
@@ -14,6 +14,20 @@ class JobDescriptionCreateRequest(BaseModel):
     text: str = Field(
         min_length=50, description="Plain job posting text; whitespace is normalized."
     )
+
+
+class JobDescriptionImportRequest(BaseModel):
+    url: str = Field(
+        min_length=1, max_length=2000, description="Link to a public job posting or post."
+    )
+
+
+class JobDescriptionDraftResponse(BaseModel):
+    """What the link held, for the user to check; it is not saved."""
+
+    title: str | None
+    company: str | None
+    text: str
 
 
 class JobDescriptionResponse(ORMModel):

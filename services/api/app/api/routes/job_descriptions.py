@@ -1,17 +1,21 @@
-# HTTP routes for creating, listing, reading and deleting job descriptions.
+# HTTP routes for creating, listing, reading and deleting job descriptions, and drafting one from a link.
 
+from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Depends, status
 
 from app.api.deps import CurrentUser, DbSession
 from app.models.job_description import JobDescription
 from app.schemas.job_description import (
     JobDescriptionCreateRequest,
     JobDescriptionDetailResponse,
+    JobDescriptionDraftResponse,
+    JobDescriptionImportRequest,
     JobDescriptionResponse,
 )
 from app.services.document_service import JobDescriptionService
+from app.services.posting_import.service import PostingImportService
 
 router = APIRouter(prefix="/job-descriptions", tags=["job-descriptions"])
 
@@ -38,6 +42,22 @@ def create_job_description(
         current_user.id, payload.title, payload.company, payload.text
     )
     return _to_detail(job)
+
+
+def get_posting_import_service() -> PostingImportService:
+    return PostingImportService()
+
+
+@router.post("/import", response_model=JobDescriptionDraftResponse)
+def import_job_description(
+    payload: JobDescriptionImportRequest,
+    _: CurrentUser,
+    importer: Annotated[PostingImportService, Depends(get_posting_import_service)],
+) -> JobDescriptionDraftResponse:
+    """Reads the posting behind a link so the client can fill its form; nothing is saved. Signed-in users only,
+    so the endpoint is not an open proxy."""
+    draft = importer.draft_from_link(payload.url)
+    return JobDescriptionDraftResponse(title=draft.title, company=draft.company, text=draft.text)
 
 
 @router.get("", response_model=list[JobDescriptionResponse])

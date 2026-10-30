@@ -45,6 +45,13 @@ class AIProviderError(AppError):
     code = "ai_provider_error"
 
 
+class ExternalPageError(AppError):
+    """A web page the user linked to could not be read: the site refused, failed or did not answer."""
+
+    status_code = 502
+    code = "link_unreachable"
+
+
 def _error_body(code: str, message: str, details: object | None = None) -> dict:
     body: dict = {"error": {"code": code, "message": message}}
     if details is not None:
