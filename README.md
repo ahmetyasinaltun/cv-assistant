@@ -6,18 +6,20 @@ Instead of an unexplained "87% fit", every judgement points at the CV lines it r
 
 **Live demo:** [ai-career-assistant-seven-delta.vercel.app](https://ai-career-assistant-seven-delta.vercel.app) opens the sample result without an account. Register to run the fictional sample CV and posting live. The API runs on a free tier that sleeps when idle, so the first request after a quiet spell can take about a minute, and an analysis can take a couple of minutes when the free AI models are busy.
 
-![Web: the sample result. Requirements on the left, the CV sheet with the supporting lines circled in the middle, what to fix on the right.](docs/screenshots/web-result.png)
+![Web: the sample result. The score with its fit level and a bar of every requirement, a short summary, and what to fix first as priority cards.](docs/screenshots/web-result.png)
+
+![Web: every requirement with its status beside the CV. The selected requirement's reason is pinned on the CV and the words that support it are highlighted.](docs/screenshots/web-evidence.png)
 
 <p>
-  <img src="docs/screenshots/mobile-result.png" width="250" alt="Android: result with the summary band and what to fix first">
-  <img src="docs/screenshots/mobile-cv-sheet.png" width="250" alt="Android: the CV sheet in a bottom sheet with the supporting lines circled">
+  <img src="docs/screenshots/mobile-result.png" width="250" alt="Android: the sample result with the score, the summary and the requirement bar">
+  <img src="docs/screenshots/mobile-cv-sheet.png" width="250" alt="Android: the CV in a bottom sheet with the requirement's reason and the supporting words highlighted">
   <img src="docs/screenshots/mobile-result-tr.png" width="250" alt="Android: a Turkish analysis in the Turkish interface">
 </p>
 
 <details>
 <summary>More screens</summary>
 
-![Web: new analysis, filled with the fictional sample. A saved CV is picked on the left, the posting is pasted on the right.](docs/screenshots/web-new-analysis.png)
+![Web: new analysis, filled with the fictional sample. A saved CV is picked, the posting is pasted beside it, and a card under the CV names what will be compared.](docs/screenshots/web-new-analysis.png)
 
 </details>
 
@@ -84,7 +86,7 @@ services/api    FastAPI backend: auth, documents, AI pipeline, persistence
 - **Backend:** Python 3.12+, FastAPI, SQLAlchemy 2, Alembic, PostgreSQL. Analyses run as background tasks; clients poll until they finish (the mobile app pauses polling in the background).
 - **AI:** Google Gemini free tier for structured LLM output and embeddings, behind a provider interface.
 - **Auth:** email/password with bcrypt and JWT bearer tokens; every query is scoped to the signed-in user.
-- **Design:** one visual system for both clients ("the editor's contact sheet": paper on a light table, a red grease pencil for the editor's marks). Status is carried by mark shape (filled disc, dashed ring, struck square), never by colour alone.
+- **Design:** one visual system for both clients (a deep teal brand band, white cards on a pale teal ground, green / amber / red for matched / partial / missing). Status is also carried by the icon's shape (check, half disc, cross), never by colour alone.
 
 ## Key decisions
 
