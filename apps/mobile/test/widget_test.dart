@@ -5,6 +5,7 @@ import 'package:career_assistant/app.dart';
 import 'package:career_assistant/core/session/session_controller.dart';
 import 'package:career_assistant/core/theme/tokens.dart';
 import 'package:career_assistant/features/analysis/sample_analysis_screen.dart';
+import 'package:career_assistant/widgets/paper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -109,6 +110,9 @@ void main() {
     await pumpApp(tester, FakeApi());
     await tester.tap(find.text('Open the sample analysis'));
     await tester.pumpAndSettle();
+
+    // The brand band continues the app bar without a gap of page ground between them.
+    expect(tester.getTopLeft(find.byType(BandOverlap).first).dy, tester.getBottomLeft(find.byType(AppBar)).dy);
 
     final fixes = tester.getTopLeft(find.text('What to fix')).dy;
     final requirements = tester.getTopLeft(find.text('Requirements')).dy;

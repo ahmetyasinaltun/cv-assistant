@@ -39,7 +39,7 @@ class _SampleAnalysisScreenState extends State<SampleAnalysisScreen> {
             if (detail == null) return const Center(child: CircularProgressIndicator());
             return ReadableWidth(
               child: ListView(
-                padding: const EdgeInsets.only(top: 20),
+                padding: EdgeInsets.zero,
                 children: [AnalysisResultView(detail: detail, result: detail.result!, isSample: true)],
               ),
             );
