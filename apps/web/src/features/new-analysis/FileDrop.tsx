@@ -1,13 +1,13 @@
 "use client";
 
-// PDF picker that also accepts a dropped file; the native file input stays the real control.
+// CV file picker (PDF or Word) that also accepts a dropped file; the native file input stays the real control.
 
 import { useRef, useState, type DragEvent } from "react";
 
 import { FieldError } from "@/components/form/FieldError";
 import type { Dictionary } from "@/i18n/dictionaries";
 
-import type { NewAnalysisDraft } from "./new-analysis-model";
+import { UPLOAD_ACCEPT, type NewAnalysisDraft } from "./new-analysis-model";
 
 interface FileDropProps {
   id: string;
@@ -52,7 +52,7 @@ export function FileDrop({ id, name, file, onFileChange, labels, locale, error }
         id={id}
         name={name}
         type="file"
-        accept="application/pdf,.pdf"
+        accept={UPLOAD_ACCEPT}
         className="peer sr-only"
         aria-invalid={error ? true : undefined}
         aria-describedby={[errorId, `${id}-hint`].filter(Boolean).join(" ")}

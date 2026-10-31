@@ -1,6 +1,6 @@
 "use client";
 
-// The CV sheet: pick a saved CV, or add a new one by pasting text or uploading a PDF.
+// The CV sheet: pick a saved CV, or add a new one by pasting text or uploading a PDF or Word file.
 
 import { SegmentedChoice } from "@/components/form/SegmentedChoice";
 import { TextAreaField } from "@/components/form/TextAreaField";

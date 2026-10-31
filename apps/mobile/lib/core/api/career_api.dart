@@ -40,15 +40,16 @@ class CareerApi {
   Future<ResumeSummary> createResumeFromText(String title, String text) async =>
       ResumeSummary.fromJson(await _client.post('/resumes', json: {'title': title, 'text': text}));
 
-  Future<ResumeSummary> uploadResume(String title, List<int> pdfBytes, String filename) async => ResumeSummary.fromJson(
-    await _client.upload(
-      '/resumes/upload',
-      fields: {'title': title},
-      fileField: 'file',
-      bytes: pdfBytes,
-      filename: filename,
-    ),
-  );
+  Future<ResumeSummary> uploadResume(String title, List<int> fileBytes, String filename) async =>
+      ResumeSummary.fromJson(
+        await _client.upload(
+          '/resumes/upload',
+          fields: {'title': title},
+          fileField: 'file',
+          bytes: fileBytes,
+          filename: filename,
+        ),
+      );
 
   Future<void> deleteResume(String resumeId) => _client.delete('/resumes/${_segment(resumeId)}');
 

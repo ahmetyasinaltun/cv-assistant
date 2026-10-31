@@ -8,10 +8,10 @@ import { ApiError, NETWORK_ERROR_STATUS } from "@/lib/api/client";
 import type { AnalysisSummary } from "@/lib/api/types";
 
 import {
-  MAX_PDF_BYTES,
+  MAX_UPLOAD_BYTES,
   NEW_RESUME,
   analysesPerResume,
-  checkPdf,
+  checkUpload,
   comparisonSummary,
   defaultResumeChoice,
   linkErrorKey,
@@ -77,11 +77,13 @@ describe("validateDraft", () => {
   });
 });
 
-describe("checkPdf", () => {
+describe("checkUpload", () => {
   it("rejects files that are not PDFs or are too large", () => {
-    expect(checkPdf({ name: "cv.docx", size: 1000, type: "application/msword" })).toBe("fileType");
-    expect(checkPdf({ name: "cv.pdf", size: MAX_PDF_BYTES + 1, type: "application/pdf" })).toBe("fileTooLarge");
-    expect(checkPdf({ name: "CV.PDF", size: 1000, type: "" })).toBeUndefined();
+    expect(checkUpload({ name: "cv.doc", size: 1000, type: "application/msword" })).toBe("fileType");
+    expect(checkUpload({ name: "cv.txt", size: 1000, type: "text/plain" })).toBe("fileType");
+    expect(checkUpload({ name: "cv.pdf", size: MAX_UPLOAD_BYTES + 1, type: "application/pdf" })).toBe("fileTooLarge");
+    expect(checkUpload({ name: "CV.PDF", size: 1000, type: "" })).toBeUndefined();
+    expect(checkUpload({ name: "CV.docx", size: 1000, type: "" })).toBeUndefined();
   });
 });
 

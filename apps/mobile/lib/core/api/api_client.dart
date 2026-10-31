@@ -46,7 +46,7 @@ class ApiClient {
 
   Future<dynamic> delete(String path) => _send('DELETE', path);
 
-  /// Multipart upload, used for PDF CVs.
+  /// Multipart upload, used for PDF and Word CVs.
   Future<dynamic> upload(
     String path, {
     required Map<String, String> fields,

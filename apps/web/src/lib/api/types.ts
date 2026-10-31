@@ -112,7 +112,7 @@ export interface TokenResponse {
 export interface ResumeSummary {
   id: string;
   title: string;
-  source_type: "text" | "pdf";
+  source_type: "text" | "pdf" | "docx";
   original_filename: string | null;
   character_count: number;
   created_at: string;

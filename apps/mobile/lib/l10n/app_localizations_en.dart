@@ -215,6 +215,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resumeSourcePdf => 'PDF';
 
   @override
+  String get resumeSourceWord => 'Word';
+
+  @override
   String get resumeSourceText => 'Pasted text';
 
   @override
@@ -250,7 +253,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resumePaste => 'Paste text';
 
   @override
-  String get resumeUpload => 'Upload PDF';
+  String get resumeUpload => 'Upload PDF or Word';
 
   @override
   String get resumeTextLabel => 'CV text';
@@ -259,10 +262,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resumeTextPlaceholder => 'Paste the full text of your CV…';
 
   @override
-  String get resumeChooseFile => 'Choose a PDF';
+  String get resumeChooseFile => 'Choose a PDF or Word file';
 
   @override
-  String get resumeFileHint => 'PDF up to 5 MB, with selectable text (not a scan).';
+  String get resumeFileHint => 'PDF or Word (.docx) up to 5 MB. A PDF needs selectable text (not a scan).';
 
   @override
   String get resumeReplaceFile => 'Choose another file';
@@ -351,10 +354,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorTooShort => 'Add more text: at least 50 characters are needed for an analysis.';
 
   @override
-  String get errorFileMissing => 'Choose a PDF file.';
+  String get errorFileMissing => 'Choose a PDF or Word file.';
 
   @override
-  String get errorFileType => 'Only PDF files can be uploaded.';
+  String get errorFileType => 'Only PDF and Word (.docx) files can be uploaded. Save an older .doc file as .docx.';
 
   @override
   String get errorFileTooLarge => 'This file is larger than 5 MB.';
@@ -367,6 +370,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorPdfEncrypted => 'This PDF is password-protected. Remove the password or paste the text instead.';
+
+  @override
+  String get errorDocxInvalid => 'This Word file could not be read. Try another file, or paste the text instead.';
+
+  @override
+  String get errorDocxNoText => 'This Word file has no text. Paste the text instead.';
 
   @override
   String get errorStartUnavailable =>

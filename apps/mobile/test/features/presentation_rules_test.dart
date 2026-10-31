@@ -13,7 +13,7 @@ NewAnalysisDraft draft({
   ResumeSource source = ResumeSource.paste,
   String resumeTitle = '',
   String resumeText = '',
-  PickedPdf? file,
+  PickedCvFile? file,
   String jobTitle = '',
   String jobText = '',
 }) => NewAnalysisDraft(
@@ -51,10 +51,14 @@ void main() {
     });
 
     test('a PDF must be a .pdf of at most 5 MB', () {
-      expect(checkPdf(null), FieldProblem.fileMissing);
-      expect(checkPdf(const PickedPdf(name: 'cv.docx', bytes: [1])), FieldProblem.fileType);
-      expect(checkPdf(PickedPdf(name: 'cv.PDF', bytes: List.filled(maxPdfBytes + 1, 0))), FieldProblem.fileTooLarge);
-      expect(checkPdf(const PickedPdf(name: 'cv.pdf', bytes: [1])), isNull);
+      expect(checkUpload(null), FieldProblem.fileMissing);
+      expect(checkUpload(const PickedCvFile(name: 'cv.doc', bytes: [1])), FieldProblem.fileType);
+      expect(checkUpload(const PickedCvFile(name: 'CV.docx', bytes: [1])), isNull);
+      expect(
+        checkUpload(PickedCvFile(name: 'cv.PDF', bytes: List.filled(maxUploadBytes + 1, 0))),
+        FieldProblem.fileTooLarge,
+      );
+      expect(checkUpload(const PickedCvFile(name: 'cv.pdf', bytes: [1])), isNull);
     });
 
     test('API failures land on the field of the step that failed', () {
@@ -172,7 +176,11 @@ void main() {
       reasoning: '',
       evidence: const [],
     );
-    final segments = scoreSegments([niceMissing, requirement('r1', MatchStatus.partial), requirement('r2', MatchStatus.matched)]);
+    final segments = scoreSegments([
+      niceMissing,
+      requirement('r1', MatchStatus.partial),
+      requirement('r2', MatchStatus.matched),
+    ]);
     expect(segments.map((s) => (s.requirement.id, s.width)), [('r2', 2), ('r1', 2), ('r3', 1)]);
   });
 }

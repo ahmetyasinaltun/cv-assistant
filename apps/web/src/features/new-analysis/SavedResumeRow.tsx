@@ -38,7 +38,7 @@ export function SavedResumeRow({ resume, checked, onSelect, analysisCount, local
   }, [isConfirming]);
 
   const meta = [
-    resume.source_type === "pdf" ? labels.pdf : labels.text,
+    resume.source_type === "pdf" ? labels.pdf : resume.source_type === "docx" ? labels.word : labels.text,
     pluralize(locale, resume.character_count, labels.characters),
     resume.createdAtLabel,
   ].join(" · ");

@@ -215,6 +215,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get resumeSourcePdf => 'PDF';
 
   @override
+  String get resumeSourceWord => 'Word';
+
+  @override
   String get resumeSourceText => 'Yapıştırılmış metin';
 
   @override
@@ -245,7 +248,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get resumePaste => 'Metni yapıştır';
 
   @override
-  String get resumeUpload => 'PDF yükle';
+  String get resumeUpload => 'PDF ya da Word yükle';
 
   @override
   String get resumeTextLabel => 'CV metni';
@@ -254,10 +257,11 @@ class AppLocalizationsTr extends AppLocalizations {
   String get resumeTextPlaceholder => 'CV’nin tam metnini buraya yapıştır…';
 
   @override
-  String get resumeChooseFile => 'PDF seç';
+  String get resumeChooseFile => 'PDF ya da Word dosyası seç';
 
   @override
-  String get resumeFileHint => 'En fazla 5 MB, metni seçilebilen bir PDF (taranmış görüntü değil).';
+  String get resumeFileHint =>
+      'En fazla 5 MB, PDF ya da Word (.docx). PDF’in metni seçilebilir olmalı (taranmış görüntü değil).';
 
   @override
   String get resumeReplaceFile => 'Başka bir dosya seç';
@@ -346,10 +350,11 @@ class AppLocalizationsTr extends AppLocalizations {
   String get errorTooShort => 'Biraz daha metin ekle: analiz için en az 50 karakter gerekiyor.';
 
   @override
-  String get errorFileMissing => 'Bir PDF dosyası seç.';
+  String get errorFileMissing => 'Bir PDF ya da Word dosyası seç.';
 
   @override
-  String get errorFileType => 'Yalnızca PDF dosyaları yüklenebilir.';
+  String get errorFileType =>
+      'Yalnızca PDF ve Word (.docx) dosyaları yüklenebilir. Eski bir .doc dosyasını .docx olarak kaydet.';
 
   @override
   String get errorFileTooLarge => 'Bu dosya 5 MB’tan büyük.';
@@ -362,6 +367,12 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get errorPdfEncrypted => 'Bu PDF şifreli. Şifreyi kaldır ya da metni yapıştır.';
+
+  @override
+  String get errorDocxInvalid => 'Bu Word dosyası okunamadı. Başka bir dosya dene ya da metni yapıştır.';
+
+  @override
+  String get errorDocxNoText => 'Bu Word dosyasında metin yok. Metni yapıştır.';
 
   @override
   String get errorStartUnavailable => 'Servise şu an ulaşılamıyor. Metnin hâlâ burada; bir dakika sonra tekrar dene.';

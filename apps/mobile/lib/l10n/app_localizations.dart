@@ -482,6 +482,12 @@ abstract class AppLocalizations {
   /// **'PDF'**
   String get resumeSourcePdf;
 
+  /// No description provided for @resumeSourceWord.
+  ///
+  /// In en, this message translates to:
+  /// **'Word'**
+  String get resumeSourceWord;
+
   /// No description provided for @resumeSourceText.
   ///
   /// In en, this message translates to:
@@ -533,7 +539,7 @@ abstract class AppLocalizations {
   /// No description provided for @resumeUpload.
   ///
   /// In en, this message translates to:
-  /// **'Upload PDF'**
+  /// **'Upload PDF or Word'**
   String get resumeUpload;
 
   /// No description provided for @resumeTextLabel.
@@ -551,13 +557,13 @@ abstract class AppLocalizations {
   /// No description provided for @resumeChooseFile.
   ///
   /// In en, this message translates to:
-  /// **'Choose a PDF'**
+  /// **'Choose a PDF or Word file'**
   String get resumeChooseFile;
 
   /// No description provided for @resumeFileHint.
   ///
   /// In en, this message translates to:
-  /// **'PDF up to 5 MB, with selectable text (not a scan).'**
+  /// **'PDF or Word (.docx) up to 5 MB. A PDF needs selectable text (not a scan).'**
   String get resumeFileHint;
 
   /// No description provided for @resumeReplaceFile.
@@ -713,13 +719,13 @@ abstract class AppLocalizations {
   /// No description provided for @errorFileMissing.
   ///
   /// In en, this message translates to:
-  /// **'Choose a PDF file.'**
+  /// **'Choose a PDF or Word file.'**
   String get errorFileMissing;
 
   /// No description provided for @errorFileType.
   ///
   /// In en, this message translates to:
-  /// **'Only PDF files can be uploaded.'**
+  /// **'Only PDF and Word (.docx) files can be uploaded. Save an older .doc file as .docx.'**
   String get errorFileType;
 
   /// No description provided for @errorFileTooLarge.
@@ -745,6 +751,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This PDF is password-protected. Remove the password or paste the text instead.'**
   String get errorPdfEncrypted;
+
+  /// No description provided for @errorDocxInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'This Word file could not be read. Try another file, or paste the text instead.'**
+  String get errorDocxInvalid;
+
+  /// No description provided for @errorDocxNoText.
+  ///
+  /// In en, this message translates to:
+  /// **'This Word file has no text. Paste the text instead.'**
+  String get errorDocxNoText;
 
   /// No description provided for @errorStartUnavailable.
   ///

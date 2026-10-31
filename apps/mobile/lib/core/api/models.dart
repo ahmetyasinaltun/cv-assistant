@@ -87,7 +87,7 @@ class ResumeSummary {
   final String id;
   final String title;
 
-  /// "text" (pasted) or "pdf" (uploaded).
+  /// "text" (pasted), "pdf" or "docx" (uploaded).
   final String sourceType;
   final String? originalFilename;
   final int characterCount;

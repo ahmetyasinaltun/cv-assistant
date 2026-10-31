@@ -29,7 +29,11 @@ class SavedResumeRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final text = AppLocalizations.of(context);
     final language = Localizations.localeOf(context).toLanguageTag();
-    final source = resume.sourceType == 'pdf' ? text.resumeSourcePdf : text.resumeSourceText;
+    final source = switch (resume.sourceType) {
+      'pdf' => text.resumeSourcePdf,
+      'docx' => text.resumeSourceWord,
+      _ => text.resumeSourceText,
+    };
     final created = resume.createdAt.toLocal();
     final sameYear = created.year == DateTime.now().year;
     final date = (sameYear ? DateFormat.MMMd(language) : DateFormat.yMMMd(language)).format(created);
@@ -113,10 +117,10 @@ class DeleteConfirmBand extends StatelessWidget {
   }
 }
 
-class PdfPicker extends StatelessWidget {
-  const PdfPicker({super.key, required this.file, required this.error, required this.onPick, this.focusNode});
+class CvFilePicker extends StatelessWidget {
+  const CvFilePicker({super.key, required this.file, required this.error, required this.onPick, this.focusNode});
 
-  final PickedPdf? file;
+  final PickedCvFile? file;
   final String? error;
   final VoidCallback onPick;
   final FocusNode? focusNode;

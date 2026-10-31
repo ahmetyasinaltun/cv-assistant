@@ -8,7 +8,14 @@ import type { AnalysisSummary, JobDescriptionDraft, ResumeSummary } from "@/lib/
 /** Mirrors the API: shorter documents are rejected, longer ones are cut to the limit. */
 export const MIN_DOCUMENT_CHARS = 50;
 export const MAX_DOCUMENT_CHARS = 30_000;
-export const MAX_PDF_BYTES = 5 * 1024 * 1024;
+export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
+
+/** PDF and Word (.docx); the API tells them apart by content, so these only catch an obvious wrong pick. */
+const UPLOAD_TYPES = [
+  { mime: "application/pdf", extension: ".pdf" },
+  { mime: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", extension: ".docx" },
+];
+export const UPLOAD_ACCEPT = UPLOAD_TYPES.flatMap(({ mime, extension }) => [mime, extension]).join(",");
 
 export const NEW_RESUME = "new";
 
@@ -45,11 +52,12 @@ function checkDocument(text: string, missing: FieldErrorKey): FieldErrorKey | un
   return undefined;
 }
 
-export function checkPdf(file: NewAnalysisDraft["resumeFile"]): FieldErrorKey | undefined {
+export function checkUpload(file: NewAnalysisDraft["resumeFile"]): FieldErrorKey | undefined {
   if (!file) return "fileMissing";
-  const looksLikePdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
-  if (!looksLikePdf) return "fileType";
-  if (file.size > MAX_PDF_BYTES) return "fileTooLarge";
+  const name = file.name.toLowerCase();
+  const supported = UPLOAD_TYPES.some(({ mime, extension }) => file.type === mime || name.endsWith(extension));
+  if (!supported) return "fileType";
+  if (file.size > MAX_UPLOAD_BYTES) return "fileTooLarge";
   return undefined;
 }
 
@@ -60,7 +68,7 @@ export function validateDraft(draft: NewAnalysisDraft): FieldErrors {
     if (draft.resumeSource === "paste") {
       errors.resumeText = checkDocument(draft.resumeText, "resumeTextMissing");
     } else {
-      errors.resumeFile = checkPdf(draft.resumeFile);
+      errors.resumeFile = checkUpload(draft.resumeFile);
     }
   }
   if (!draft.jobTitle.trim()) errors.jobTitle = "jobTitleMissing";
@@ -74,6 +82,8 @@ const UPLOAD_ERRORS: Record<string, FieldErrorKey> = {
   pdf_invalid: "pdfInvalid",
   pdf_encrypted: "pdfEncrypted",
   pdf_no_text: "pdfNoText",
+  docx_invalid: "docxInvalid",
+  docx_no_text: "docxNoText",
   document_too_short: "pdfNoText",
 };
 

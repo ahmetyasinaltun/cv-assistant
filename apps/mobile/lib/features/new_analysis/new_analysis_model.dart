@@ -7,7 +7,10 @@ import '../../core/api/models.dart';
 /// Mirrors the API: shorter documents are rejected, longer ones are cut to the limit.
 const minDocumentChars = 50;
 const maxDocumentChars = 30000;
-const maxPdfBytes = 5 * 1024 * 1024;
+const maxUploadBytes = 5 * 1024 * 1024;
+
+/// CV files the upload takes: PDF and Word (.docx).
+const uploadExtensions = ['pdf', 'docx'];
 
 enum Field { resumeTitle, resumeText, resumeFile, jobTitle, jobText }
 
@@ -23,14 +26,16 @@ enum FieldProblem {
   pdfInvalid,
   pdfNoText,
   pdfEncrypted,
+  docxInvalid,
+  docxNoText,
 }
 
 enum FormProblem { unavailable, rateLimited, generic }
 
 enum ResumeSource { paste, upload }
 
-class PickedPdf {
-  const PickedPdf({required this.name, required this.bytes});
+class PickedCvFile {
+  const PickedCvFile({required this.name, required this.bytes});
 
   final String name;
   final List<int> bytes;
@@ -53,7 +58,7 @@ class NewAnalysisDraft {
   final ResumeSource resumeSource;
   final String resumeTitle;
   final String resumeText;
-  final PickedPdf? resumeFile;
+  final PickedCvFile? resumeFile;
   final String jobTitle;
   final String company;
   final String jobText;
@@ -66,10 +71,13 @@ FieldProblem? _checkDocument(String text, FieldProblem missing) {
   return null;
 }
 
-FieldProblem? checkPdf(PickedPdf? file) {
+FieldProblem? checkUpload(PickedCvFile? file) {
   if (file == null) return FieldProblem.fileMissing;
-  if (!file.name.toLowerCase().endsWith('.pdf')) return FieldProblem.fileType;
-  if (file.bytes.length > maxPdfBytes) return FieldProblem.fileTooLarge;
+  // The API tells PDF and Word apart by content; the name only catches an obvious wrong pick.
+  if (!uploadExtensions.any((extension) => file.name.toLowerCase().endsWith('.$extension'))) {
+    return FieldProblem.fileType;
+  }
+  if (file.bytes.length > maxUploadBytes) return FieldProblem.fileTooLarge;
   return null;
 }
 
@@ -81,7 +89,7 @@ Map<Field, FieldProblem> validateDraft(NewAnalysisDraft draft) {
     if (draft.resumeSource == ResumeSource.paste) {
       problems[Field.resumeText] = _checkDocument(draft.resumeText, FieldProblem.resumeTextMissing);
     } else {
-      problems[Field.resumeFile] = checkPdf(draft.resumeFile);
+      problems[Field.resumeFile] = checkUpload(draft.resumeFile);
     }
   }
   if (draft.jobTitle.trim().isEmpty) problems[Field.jobTitle] = FieldProblem.jobTitleMissing;
@@ -101,6 +109,8 @@ const _uploadProblems = {
   'pdf_invalid': FieldProblem.pdfInvalid,
   'pdf_encrypted': FieldProblem.pdfEncrypted,
   'pdf_no_text': FieldProblem.pdfNoText,
+  'docx_invalid': FieldProblem.docxInvalid,
+  'docx_no_text': FieldProblem.docxNoText,
   'document_too_short': FieldProblem.pdfNoText,
 };
 
@@ -149,7 +159,9 @@ LinkProblem linkProblemFor(ApiException error) => _linkProblems[error.code] ?? L
 String? siteName(String link) {
   final trimmed = link.trim();
   if (trimmed.isEmpty || RegExp(r'\s').hasMatch(trimmed)) return null;
-  final withScheme = RegExp(r'^[a-z][a-z0-9+.-]*:', caseSensitive: false).hasMatch(trimmed) ? trimmed : 'https://$trimmed';
+  final withScheme = RegExp(r'^[a-z][a-z0-9+.-]*:', caseSensitive: false).hasMatch(trimmed)
+      ? trimmed
+      : 'https://$trimmed';
   final host = Uri.tryParse(withScheme)?.host ?? '';
   return host.isEmpty ? null : host.replaceFirst(RegExp(r'^www\.'), '');
 }

@@ -51,7 +51,7 @@ class _NewAnalysisScreenState extends State<NewAnalysisScreen> {
 
   String _choice = _newResume;
   ResumeSource _source = ResumeSource.paste;
-  PickedPdf? _file;
+  PickedCvFile? _file;
   Map<Field, FieldProblem> _problems = {};
   FormProblem? _formProblem;
   bool _submitting = false;
@@ -127,14 +127,14 @@ class _NewAnalysisScreenState extends State<NewAnalysisScreen> {
     }
   }
 
-  Future<void> _pickPdf() async {
-    final file = await FilePicker.pickFile(type: FileType.custom, allowedExtensions: const ['pdf']);
+  Future<void> _pickFile() async {
+    final file = await FilePicker.pickFile(type: FileType.custom, allowedExtensions: uploadExtensions);
     if (file == null) return;
     final bytes = await file.readAsBytes();
     if (!mounted) return;
     setState(() {
-      _file = PickedPdf(name: file.name, bytes: bytes);
-      final problem = checkPdf(_file);
+      _file = PickedCvFile(name: file.name, bytes: bytes);
+      final problem = checkUpload(_file);
       _problems = {..._problems}..remove(Field.resumeFile);
       if (problem != null) _problems[Field.resumeFile] = problem;
     });
@@ -263,6 +263,8 @@ class _NewAnalysisScreenState extends State<NewAnalysisScreen> {
     FieldProblem.pdfInvalid => text.errorPdfInvalid,
     FieldProblem.pdfNoText => text.errorPdfNoText,
     FieldProblem.pdfEncrypted => text.errorPdfEncrypted,
+    FieldProblem.docxInvalid => text.errorDocxInvalid,
+    FieldProblem.docxNoText => text.errorDocxNoText,
   };
 
   String? _error(AppLocalizations text, Field field) {
@@ -522,11 +524,11 @@ class _NewAnalysisScreenState extends State<NewAnalysisScreen> {
             placeholder: text.resumeTextPlaceholder,
           )
         else
-          PdfPicker(
+          CvFilePicker(
             file: _file,
             focusNode: _focus[Field.resumeFile],
             error: _error(text, Field.resumeFile),
-            onPick: _pickPdf,
+            onPick: _pickFile,
           ),
       ],
     ),
