@@ -9,6 +9,7 @@ from app.core.errors import NotFoundError, ValidationFailedError
 from app.models.job_description import JobDescription
 from app.models.resume import Resume
 from app.repositories.document_repository import JobDescriptionRepository, ResumeRepository
+from app.services.docx_extraction import extract_text_from_docx, is_docx
 from app.services.pdf_extraction import extract_text_from_pdf
 from app.services.text_normalization import normalize_document_text
 
@@ -39,22 +40,28 @@ class ResumeService:
             )
         )
 
-    def create_from_pdf(
+    def create_from_upload(
         self, user_id: UUID, title: str, filename: str, file_bytes: bytes
     ) -> Resume:
+        """A PDF or Word (.docx) CV, told apart by its content, not by the name or type the client claims."""
         if len(file_bytes) > self.settings.max_upload_size_bytes:
             raise ValidationFailedError("The uploaded file is too large.", code="file_too_large")
-        if not file_bytes.startswith(b"%PDF"):
+        if file_bytes.startswith(b"%PDF"):
+            source_type, text = "pdf", extract_text_from_pdf(file_bytes)
+        elif is_docx(file_bytes):
+            source_type, text = "docx", extract_text_from_docx(file_bytes)
+        else:
             raise ValidationFailedError(
-                "Only PDF uploads are supported.", code="unsupported_file_type"
+                "Only PDF and Word (.docx) uploads are supported; save an older .doc file as .docx.",
+                code="unsupported_file_type",
             )
         return self.resumes.add(
             Resume(
                 user_id=user_id,
                 title=title.strip(),
-                source_type="pdf",
+                source_type=source_type,
                 original_filename=filename[:255],
-                raw_text=normalize_or_reject(extract_text_from_pdf(file_bytes)),
+                raw_text=normalize_or_reject(text),
             )
         )
 

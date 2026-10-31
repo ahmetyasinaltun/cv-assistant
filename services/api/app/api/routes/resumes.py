@@ -1,4 +1,4 @@
-# HTTP routes for creating (text or PDF upload), listing, reading and deleting resumes.
+# HTTP routes for creating (text, or a PDF or Word upload), listing, reading and deleting resumes.
 
 from typing import Annotated
 from uuid import UUID
@@ -38,7 +38,7 @@ def create_resume_from_text(
 
 
 @router.post("/upload", response_model=ResumeDetailResponse, status_code=status.HTTP_201_CREATED)
-async def upload_resume_pdf(
+async def upload_resume_file(
     current_user: CurrentUser,
     db: DbSession,
     file: Annotated[UploadFile, File()],
@@ -46,8 +46,8 @@ async def upload_resume_pdf(
 ) -> ResumeDetailResponse:
     # One byte past the limit is enough to know the file is too large; the rest is never held in memory.
     file_bytes = await file.read(get_settings().max_upload_size_bytes + 1)
-    resume = ResumeService(db).create_from_pdf(
-        current_user.id, title, file.filename or "resume.pdf", file_bytes
+    resume = ResumeService(db).create_from_upload(
+        current_user.id, title, file.filename or "resume", file_bytes
     )
     return _to_detail(resume)
 

@@ -15,7 +15,7 @@ class Resume(UUIDPrimaryKeyMixin, TimestampMixin, Base):
         ForeignKey("users.id", ondelete="CASCADE"), index=True, nullable=False
     )
     title: Mapped[str] = mapped_column(String(150), nullable=False)
-    source_type: Mapped[str] = mapped_column(String(20), nullable=False)  # "text" | "pdf"
+    source_type: Mapped[str] = mapped_column(String(20), nullable=False)  # "text" | "pdf" | "docx"
     original_filename: Mapped[str | None] = mapped_column(String(255), nullable=True)
     raw_text: Mapped[str] = mapped_column(Text, nullable=False)
 
