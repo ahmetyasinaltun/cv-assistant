@@ -155,6 +155,7 @@
     "errors": {
       "invalidCredentials": "This email and password do not match an account. Check them and try again.",
       "emailTaken": "An account with this email already exists. Sign in instead, or use another email.",
+      "passwordTooLong": "This password is too long. Choose a shorter one.",
       "invalidInput": "Check the fields: a valid email address and a password of at least 8 characters.",
       "unavailable": "The service is not reachable right now. Try again in a minute.",
       "generic": "Something went wrong. Try again."

@@ -7,7 +7,13 @@ from urllib.parse import urlsplit
 import httpx
 
 from app.core.errors import ExternalPageError, ValidationFailedError
-from app.services.posting_import.urls import Resolver, ensure_public_host, parse_link, resolve_host
+from app.services.posting_import.urls import (
+    Resolver,
+    ensure_public_host,
+    is_public_address,
+    parse_link,
+    resolve_host,
+)
 
 MAX_REDIRECTS = 5
 MAX_PAGE_BYTES = 3 * 1024 * 1024
@@ -44,6 +50,7 @@ def fetch_page(
             ensure_public_host(url, resolve)
             try:
                 with client.stream("GET", url) as response:
+                    _ensure_connected_to_public_address(response)
                     location = response.headers.get("location")
                     if response.is_redirect and location:
                         url = parse_link(str(response.url.join(location)))
@@ -61,6 +68,15 @@ def fetch_page(
                     "The site could not be reached.", code="link_unreachable"
                 ) from exc
     raise ExternalPageError("The link redirects too many times.", code="link_unreachable")
+
+
+def _ensure_connected_to_public_address(response: httpx.Response) -> None:
+    """The host was checked before connecting, but DNS can answer differently a moment later (DNS rebinding),
+    so the address actually connected to is checked again before anything of the response is used."""
+    stream = response.extensions.get("network_stream")
+    peer = stream.get_extra_info("server_addr") if stream is not None else None
+    if peer and not is_public_address(peer[0]):
+        raise ValidationFailedError("This address cannot be fetched.", code="link_not_allowed")
 
 
 def _check_response(response: httpx.Response) -> None:

@@ -37,6 +37,7 @@
   "authPasswordShort": "En az 8 karakter kullan.",
   "authErrorInvalidCredentials": "Bu e-posta ve şifreyle eşleşen bir hesap yok. Kontrol edip tekrar dene.",
   "authErrorEmailTaken": "Bu e-postayla açılmış bir hesap zaten var. Giriş yap ya da başka bir e-posta kullan.",
+  "authErrorPasswordTooLong": "Bu şifre çok uzun. Daha kısa bir şifre seç.",
   "authErrorInvalidInput": "Alanları kontrol et: geçerli bir e-posta adresi ve en az 8 karakterlik bir şifre gerekiyor.",
   "authErrorUnavailable": "Servise şu an ulaşılamıyor. Bir dakika sonra tekrar dene.",
   "authErrorGeneric": "Bir şeyler ters gitti. Tekrar dene.",

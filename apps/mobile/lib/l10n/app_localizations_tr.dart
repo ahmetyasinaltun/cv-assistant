@@ -119,6 +119,9 @@ class AppLocalizationsTr extends AppLocalizations {
       'Bu e-postayla açılmış bir hesap zaten var. Giriş yap ya da başka bir e-posta kullan.';
 
   @override
+  String get authErrorPasswordTooLong => 'Bu şifre çok uzun. Daha kısa bir şifre seç.';
+
+  @override
   String get authErrorInvalidInput =>
       'Alanları kontrol et: geçerli bir e-posta adresi ve en az 8 karakterlik bir şifre gerekiyor.';
 

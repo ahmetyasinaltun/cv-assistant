@@ -109,6 +109,7 @@ class _AuthScreenState extends State<AuthScreen> {
   String _problemText(AppLocalizations text, AuthProblem problem) => switch (problem) {
     AuthProblem.invalidCredentials => text.authErrorInvalidCredentials,
     AuthProblem.emailTaken => text.authErrorEmailTaken,
+    AuthProblem.passwordTooLong => text.authErrorPasswordTooLong,
     AuthProblem.invalidInput => text.authErrorInvalidInput,
     AuthProblem.unavailable => text.authErrorUnavailable,
     AuthProblem.generic => text.authErrorGeneric,

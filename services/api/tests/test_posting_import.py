@@ -174,6 +174,28 @@ def test_fetch_maps_each_failure_to_a_stable_code(answer, code):
     )
 
 
+class ConnectedTo:
+    """Stands in for the network stream httpx exposes, reporting the address the connection reached."""
+
+    def __init__(self, address: str):
+        self.address = address
+
+    def get_extra_info(self, key: str):
+        return (self.address, 443) if key == "server_addr" else None
+
+
+def test_a_connection_that_lands_on_a_private_address_is_refused():
+    # DNS rebinding: the check before connecting saw a public address, the connection reached an internal one.
+    answer = httpx.Response(
+        200,
+        headers=HTML,
+        content=b"<p>internal</p>",
+        extensions={"network_stream": ConnectedTo("10.0.0.5")},
+    )
+    routes = {"https://jobs.example/x": answer}
+    assert error_code(lambda: fetch("https://jobs.example/x", routes)) == "link_not_allowed"
+
+
 def test_a_login_wall_counts_as_refused():
     routes = {
         "https://www.linkedin.com/jobs/view/1/": httpx.Response(

@@ -6,6 +6,7 @@ from uuid import UUID
 from fastapi import APIRouter, File, Form, UploadFile, status
 
 from app.api.deps import CurrentUser, DbSession
+from app.core.config import get_settings
 from app.models.resume import Resume
 from app.schemas.resume import ResumeCreateTextRequest, ResumeDetailResponse, ResumeResponse
 from app.services.document_service import ResumeService
@@ -43,7 +44,8 @@ async def upload_resume_pdf(
     file: Annotated[UploadFile, File()],
     title: Annotated[str, Form(min_length=1, max_length=150)],
 ) -> ResumeDetailResponse:
-    file_bytes = await file.read()
+    # One byte past the limit is enough to know the file is too large; the rest is never held in memory.
+    file_bytes = await file.read(get_settings().max_upload_size_bytes + 1)
     resume = ResumeService(db).create_from_pdf(
         current_user.id, title, file.filename or "resume.pdf", file_bytes
     )

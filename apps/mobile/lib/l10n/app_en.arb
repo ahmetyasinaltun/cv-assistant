@@ -37,6 +37,7 @@
   "authPasswordShort": "Use at least 8 characters.",
   "authErrorInvalidCredentials": "This email and password do not match an account. Check them and try again.",
   "authErrorEmailTaken": "An account with this email already exists. Sign in instead, or use another email.",
+  "authErrorPasswordTooLong": "This password is too long. Choose a shorter one.",
   "authErrorInvalidInput": "Check the fields: a valid email address and a password of at least 8 characters.",
   "authErrorUnavailable": "The service is not reachable right now. Try again in a minute.",
   "authErrorGeneric": "Something went wrong. Try again.",

@@ -90,3 +90,30 @@ def test_preferred_language_can_be_changed_and_is_validated(client, auth_headers
     assert unsupported.status_code == 422
     assert client.get("/me", headers=auth_headers).json()["preferred_language"] == "tr"
     assert client.patch("/me", json={"preferred_language": "en"}).status_code == 401
+
+
+def test_a_password_longer_than_bcrypt_reads_is_refused_not_a_crash(client):
+    # 40 × "ş" is 80 bytes: within the 128-character field limit, beyond what bcrypt accepts.
+    response = client.post(
+        "/auth/register",
+        json={"email": "long@example.com", "full_name": "Long", "password": "ş" * 40},
+    )
+    assert response.status_code == 422
+    assert response.json()["error"]["code"] == "password_too_long"
+
+    register_user(client)
+    login = client.post("/auth/login", json={"email": "jane@example.com", "password": "ş" * 40})
+    assert login.status_code == 401
+    assert login.json()["error"]["code"] == "invalid_credentials"
+
+
+def test_an_unknown_email_fails_like_a_wrong_password(client):
+    register_user(client)
+    unknown = client.post(
+        "/auth/login", json={"email": "nobody@example.com", "password": "whatever-pw"}
+    )
+    wrong = client.post(
+        "/auth/login", json={"email": "jane@example.com", "password": "whatever-pw"}
+    )
+    assert unknown.status_code == wrong.status_code == 401
+    assert unknown.json() == wrong.json()

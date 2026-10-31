@@ -119,6 +119,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authErrorEmailTaken => 'An account with this email already exists. Sign in instead, or use another email.';
 
   @override
+  String get authErrorPasswordTooLong => 'This password is too long. Choose a shorter one.';
+
+  @override
   String get authErrorInvalidInput =>
       'Check the fields: a valid email address and a password of at least 8 characters.';
 

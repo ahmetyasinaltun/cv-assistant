@@ -308,6 +308,12 @@ abstract class AppLocalizations {
   /// **'An account with this email already exists. Sign in instead, or use another email.'**
   String get authErrorEmailTaken;
 
+  /// No description provided for @authErrorPasswordTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'This password is too long. Choose a shorter one.'**
+  String get authErrorPasswordTooLong;
+
   /// No description provided for @authErrorInvalidInput.
   ///
   /// In en, this message translates to:

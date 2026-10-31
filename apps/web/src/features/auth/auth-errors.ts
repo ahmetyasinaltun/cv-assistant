@@ -2,7 +2,13 @@
 
 import { ApiError, NETWORK_ERROR_STATUS } from "@/lib/api/client";
 
-export type AuthErrorKey = "invalidCredentials" | "emailTaken" | "invalidInput" | "unavailable" | "generic";
+export type AuthErrorKey =
+  | "invalidCredentials"
+  | "emailTaken"
+  | "passwordTooLong"
+  | "invalidInput"
+  | "unavailable"
+  | "generic";
 
 export interface AuthFormState {
   error: AuthErrorKey | null;
@@ -17,6 +23,7 @@ export function authErrorKey(error: unknown): AuthErrorKey {
   if (!(error instanceof ApiError)) return "generic";
   if (error.code === "invalid_credentials") return "invalidCredentials";
   if (error.code === "email_taken") return "emailTaken";
+  if (error.code === "password_too_long") return "passwordTooLong";
   if (error.status === 422) return "invalidInput";
   if (error.status === NETWORK_ERROR_STATUS || error.status >= 500) return "unavailable";
   return "generic";

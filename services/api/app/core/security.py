@@ -8,13 +8,33 @@ import jwt
 
 from app.core.config import get_settings
 
+# bcrypt reads at most 72 bytes, and the bcrypt package refuses longer input instead of cutting it. A Turkish
+# letter such as "ş" takes two bytes, so this is not the same as 72 characters.
+MAX_PASSWORD_BYTES = 72
+
+
+def password_fits(plain_password: str) -> bool:
+    return len(plain_password.encode("utf-8")) <= MAX_PASSWORD_BYTES
+
 
 def hash_password(plain_password: str) -> str:
     return bcrypt.hashpw(plain_password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
 
 def verify_password(plain_password: str, password_hash: str) -> bool:
+    # Registration refuses longer passwords, so no stored hash can match one.
+    if not password_fits(plain_password):
+        return False
     return bcrypt.checkpw(plain_password.encode("utf-8"), password_hash.encode("utf-8"))
+
+
+# Checked when the email is unknown, so a failed sign-in takes as long either way and its timing does not tell
+# which emails have an account.
+_UNUSED_HASH = hash_password("timing-equalizer-for-unknown-accounts")
+
+
+def spend_password_check_time(plain_password: str) -> None:
+    verify_password(plain_password, _UNUSED_HASH)
 
 
 def create_access_token(user_id: UUID) -> str:

@@ -185,6 +185,7 @@ describe("authErrorKey", () => {
   it("maps the API's auth error codes to form messages", () => {
     expect(authErrorKey(new ApiError(401, "invalid_credentials", ""))).toBe("invalidCredentials");
     expect(authErrorKey(new ApiError(409, "email_taken", ""))).toBe("emailTaken");
+    expect(authErrorKey(new ApiError(422, "password_too_long", ""))).toBe("passwordTooLong");
     expect(authErrorKey(new ApiError(422, "validation_failed", ""))).toBe("invalidInput");
     expect(authErrorKey(new ApiError(503, "http_503", ""))).toBe("unavailable");
     expect(authErrorKey(new TypeError("x"))).toBe("generic");

@@ -125,6 +125,7 @@ void main() {
   test('auth failures map to what the form says', () {
     expect(authProblemFor(const ApiException(401, 'invalid_credentials', '')), AuthProblem.invalidCredentials);
     expect(authProblemFor(const ApiException(409, 'email_taken', '')), AuthProblem.emailTaken);
+    expect(authProblemFor(const ApiException(422, 'password_too_long', '')), AuthProblem.passwordTooLong);
     expect(authProblemFor(const ApiException(0, 'network_error', '')), AuthProblem.unavailable);
     expect(looksLikeEmail('ayse@example.com'), isTrue);
     expect(looksLikeEmail('ayse@'), isFalse);

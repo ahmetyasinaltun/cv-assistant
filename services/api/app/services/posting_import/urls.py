@@ -66,7 +66,7 @@ def ensure_public_host(url: str, resolve: Resolver) -> None:
         raise ExternalPageError(
             "The site's address could not be found.", code="link_unreachable"
         ) from exc
-    if not addresses or not all(_is_public(address) for address in addresses):
+    if not addresses or not all(is_public_address(address) for address in addresses):
         raise ValidationFailedError("This address cannot be fetched.", code="link_not_allowed")
 
 
@@ -82,7 +82,7 @@ def _linkedin_job_id(path: str, query: str) -> str | None:
     return current if current.isdigit() else None
 
 
-def _is_public(address: str) -> bool:
+def is_public_address(address: str) -> bool:
     try:
         ip = ipaddress.ip_address(address)
     except ValueError:
