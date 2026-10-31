@@ -25,7 +25,7 @@ Instead of an unexplained "87% fit", every judgement points at the CV lines it r
 
 ## What it does
 
-1. Paste or upload a CV (PDF; clickable links such as project repositories are read too) and paste a job posting.
+1. Paste or upload a CV (PDF; clickable links such as project repositories are read too) and paste a job posting, or fill the posting from its link (LinkedIn jobs and posts, Kariyer.net, Youthall and other pages with job data); on Android, share the link from the LinkedIn or Kariyer.net app.
 2. The posting's requirements are extracted and labelled must-have or nice-to-have.
 3. Each requirement is matched against the CV's own lines and judged **matched**, **partial** or **missing**, with the lines quoted.
 4. A score is computed from those labels (must-have counts double), with the formula shown next to it.

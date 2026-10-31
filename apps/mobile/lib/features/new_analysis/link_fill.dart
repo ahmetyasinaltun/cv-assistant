@@ -15,9 +15,12 @@ import '../../widgets/status_mark.dart';
 import 'new_analysis_model.dart';
 
 class LinkFill extends StatefulWidget {
-  const LinkFill({super.key, required this.onFilled});
+  const LinkFill({super.key, required this.onFilled, this.initialLink});
 
   final ValueChanged<JobDescriptionDraft> onFilled;
+
+  /// Filled in and read at once (a link shared from another app).
+  final String? initialLink;
 
   @override
   State<LinkFill> createState() => _LinkFillState();
@@ -29,6 +32,17 @@ class _LinkFillState extends State<LinkFill> {
   LinkProblem? _problem;
   String _site = '';
   ({String site, bool hasTitle})? _filled;
+
+  @override
+  void initState() {
+    super.initState();
+    final link = widget.initialLink;
+    if (link == null) return;
+    _link.text = link;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _fill();
+    });
+  }
 
   @override
   void dispose() {

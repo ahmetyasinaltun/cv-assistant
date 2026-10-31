@@ -8,6 +8,7 @@ import '../../app_scope.dart';
 import '../../core/api/api_client.dart';
 import '../../core/api/models.dart';
 import '../../core/polling.dart';
+import '../../core/share/shared_links.dart';
 import '../../core/theme/app_text.dart';
 import '../../core/theme/tokens.dart';
 import '../../l10n/app_localizations.dart';
@@ -34,18 +35,30 @@ class _AnalysesScreenState extends State<AnalysesScreen> {
   bool _loadFailed = false;
   bool _started = false;
 
+  SharedLinks? _links;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_started) return;
     _started = true;
     _load();
+    // The list is home once signed in, so it is where a shared link opens New analysis, also one shared
+    // before signing in.
+    _links = AppScope.of(context).links?..addListener(_openSharedLink);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _openSharedLink());
   }
 
   @override
   void dispose() {
+    _links?.removeListener(_openSharedLink);
     _poller.dispose();
     super.dispose();
+  }
+
+  void _openSharedLink() {
+    final link = mounted ? _links?.take() : null;
+    if (link != null) _open(NewAnalysisScreen(sharedLink: link));
   }
 
   Future<void> _load() async {

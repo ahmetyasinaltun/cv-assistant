@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'app_scope.dart';
 import 'core/api/career_api.dart';
 import 'core/session/session_controller.dart';
+import 'core/share/shared_links.dart';
 import 'core/theme/app_theme.dart';
 import 'features/analyses/analyses_screen.dart';
 import 'features/auth/auth_screen.dart';
@@ -13,10 +14,11 @@ import 'features/startup/startup_screen.dart';
 import 'l10n/app_localizations.dart';
 
 class CareerAssistantApp extends StatefulWidget {
-  const CareerAssistantApp({super.key, required this.api, required this.session});
+  const CareerAssistantApp({super.key, required this.api, required this.session, this.links});
 
   final CareerApi api;
   final SessionController session;
+  final SharedLinks? links;
 
   @override
   State<CareerAssistantApp> createState() => _CareerAssistantAppState();
@@ -53,6 +55,7 @@ class _CareerAssistantAppState extends State<CareerAssistantApp> {
     return AppScope(
       api: widget.api,
       session: session,
+      links: widget.links,
       child: ListenableBuilder(
         listenable: session,
         builder: (context, _) => MaterialApp(

@@ -1,16 +1,21 @@
-// Gives every screen the shared API client and the session without threading them through each constructor.
+// Gives every screen the shared API client, the session and links shared from other apps without threading them
+// through each constructor.
 
 import 'package:flutter/widgets.dart';
 
 import 'core/api/api_client.dart';
 import 'core/api/career_api.dart';
 import 'core/session/session_controller.dart';
+import 'core/share/shared_links.dart';
 
 class AppScope extends InheritedWidget {
-  const AppScope({super.key, required this.api, required this.session, required super.child});
+  const AppScope({super.key, required this.api, required this.session, this.links, required super.child});
 
   final CareerApi api;
   final SessionController session;
+
+  /// Null where nothing can be shared into the app (tests that do not cover sharing).
+  final SharedLinks? links;
 
   static AppScope of(BuildContext context) {
     final scope = context.getInheritedWidgetOfExactType<AppScope>();
@@ -30,5 +35,6 @@ class AppScope extends InheritedWidget {
   }
 
   @override
-  bool updateShouldNotify(AppScope oldWidget) => api != oldWidget.api || session != oldWidget.session;
+  bool updateShouldNotify(AppScope oldWidget) =>
+      api != oldWidget.api || session != oldWidget.session || links != oldWidget.links;
 }

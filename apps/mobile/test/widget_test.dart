@@ -3,10 +3,12 @@
 
 import 'package:career_assistant/app.dart';
 import 'package:career_assistant/core/session/session_controller.dart';
+import 'package:career_assistant/core/share/shared_links.dart';
 import 'package:career_assistant/core/theme/tokens.dart';
 import 'package:career_assistant/features/analysis/sample_analysis_screen.dart';
 import 'package:career_assistant/widgets/paper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'core/fake_api.dart';
@@ -26,10 +28,16 @@ Map<String, Object?> summaryJson(String id, String status, {int? score, String? 
   'completed_at': null,
 };
 
-Future<FakeApi> pumpApp(WidgetTester tester, FakeApi fake, {String? token, String device = 'en'}) async {
+Future<FakeApi> pumpApp(
+  WidgetTester tester,
+  FakeApi fake, {
+  String? token,
+  String device = 'en',
+  SharedLinks? links,
+}) async {
   final api = fake.build();
   final session = SessionController(api: api, tokens: MemoryTokenStore(token), deviceLanguage: device);
-  await tester.pumpWidget(CareerAssistantApp(api: api, session: session));
+  await tester.pumpWidget(CareerAssistantApp(api: api, session: session, links: links));
   await tester.pumpAndSettle();
   return fake;
 }
@@ -187,11 +195,43 @@ void main() {
     await tester.tap(fill);
     await tester.pumpAndSettle();
     expect(
-      find.text('This page could not be read: kariyer.net does not allow it. Copy the posting text and paste it below.'),
+      find.text(
+        'This page could not be read: kariyer.net does not allow it. Copy the posting text and paste it below.',
+      ),
       findsOneWidget,
     );
     // A refused link leaves the fields as they were.
     expect(find.text('Backend Intern'), findsOneWidget);
+    await unmount(tester);
+  });
+
+  testWidgets('a link shared from another app opens New analysis and reads the posting', (tester) async {
+    const channel = MethodChannel('career_assistant/share');
+    final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    messenger.setMockMethodCallHandler(
+      channel,
+      (call) async => 'Bu ilana göz at: https://www.kariyer.net/is-ilani/x-1',
+    );
+    addTearDown(() => messenger.setMockMethodCallHandler(channel, null));
+    final links = SharedLinks();
+    await links.start();
+
+    final fake = FakeApi()
+      ..on('GET /me', 200, userJson())
+      ..on('GET /analyses', 200, [])
+      ..on('GET /resumes', 200, [])
+      ..on('POST /job-descriptions/import', 200, {
+        'title': 'Kimya Mühendisi',
+        'company': 'Beyköyü Gıda',
+        'text': 'Gıda sektöründe faaliyet gösteren firmamızda bir Kimya Mühendisi arıyoruz; kalite süreçleri.',
+        'source_url': 'https://www.kariyer.net/is-ilani/x-1',
+      });
+    await pumpApp(tester, fake, token: 'token-1', links: links);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Kimya Mühendisi'), findsOneWidget);
+    expect(find.text('Filled from kariyer.net. Check the job title and the text before you start.'), findsOneWidget);
+    expect(links.pending, isNull);
     await unmount(tester);
   });
 

@@ -24,10 +24,13 @@ import 'resume_sheet.dart';
 const _newResume = '';
 
 class NewAnalysisScreen extends StatefulWidget {
-  const NewAnalysisScreen({super.key, this.fillWithSample = false});
+  const NewAnalysisScreen({super.key, this.fillWithSample = false, this.sharedLink});
 
   /// Opened from the empty list's "try it with the sample": fill the form once it has loaded.
   final bool fillWithSample;
+
+  /// A link shared from another app: read it into the posting fields as soon as the form shows.
+  final String? sharedLink;
 
   @override
   State<NewAnalysisScreen> createState() => _NewAnalysisScreenState();
@@ -535,7 +538,7 @@ class _NewAnalysisScreenState extends State<NewAnalysisScreen> {
       children: [
         Semantics(header: true, child: Text(text.postingSheetTitle, style: AppText.title)),
         const SizedBox(height: 12),
-        LinkFill(onFilled: _applyLink),
+        LinkFill(onFilled: _applyLink, initialLink: widget.sharedLink),
         const SizedBox(height: 16),
         LabeledField(
           label: text.postingTitleLabel,

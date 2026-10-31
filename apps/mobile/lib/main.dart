@@ -1,4 +1,4 @@
-// Entry point: wires the shared API client, secure token storage and the session, then starts the app.
+// Entry point: wires the shared API client, secure token storage, the session and shared links, then starts the app.
 
 import 'dart:ui' show PlatformDispatcher;
 
@@ -10,6 +10,7 @@ import 'core/api/career_api.dart';
 import 'core/config.dart';
 import 'core/session/session_controller.dart';
 import 'core/session/token_store.dart';
+import 'core/share/shared_links.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,5 +20,6 @@ void main() {
     tokens: SecureTokenStore(),
     deviceLanguage: PlatformDispatcher.instance.locale.languageCode,
   );
-  runApp(CareerAssistantApp(api: api, session: session));
+  final links = SharedLinks()..start();
+  runApp(CareerAssistantApp(api: api, session: session, links: links));
 }
