@@ -17,6 +17,7 @@ import '../../widgets/paper.dart';
 import '../../widgets/small_parts.dart';
 import '../analysis/analysis_screen.dart';
 import '../analysis/status_panel.dart';
+import 'link_fill.dart';
 import 'new_analysis_model.dart';
 import 'resume_sheet.dart';
 
@@ -267,6 +268,21 @@ class _NewAnalysisScreenState extends State<NewAnalysisScreen> {
   }
 
   /// Editing a field clears its error.
+  /// All three posting fields take what the link held, so the form shows that posting and nothing older.
+  void _applyLink(JobDescriptionDraft draft) {
+    setState(() {
+      _jobTitle.text = draft.title ?? '';
+      _company.text = draft.company ?? '';
+      _jobText.text = draft.text;
+      _problems = {..._problems}
+        ..remove(Field.jobTitle)
+        ..remove(Field.jobText);
+      _formProblem = null;
+    });
+    // A post has no job title: send the user straight to the field they still have to fill.
+    if ((draft.title ?? '').isEmpty) _focus[Field.jobTitle]?.requestFocus();
+  }
+
   void _clear(Field field) {
     if (_problems.containsKey(field)) setState(() => _problems = {..._problems}..remove(field));
   }
@@ -331,49 +347,54 @@ class _NewAnalysisScreenState extends State<NewAnalysisScreen> {
         ],
       );
     }
-    return ListView(
+    // Every part stays built (unlike a lazy ListView), so a failed start can focus the first missing field even
+    // when it sits far above the button, and focusing it scrolls it into view.
+    return SingleChildScrollView(
       padding: const EdgeInsets.only(bottom: 40),
-      children: [
-        BandOverlap(
-          overlap: 40,
-          header: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(text.newAnalysisIntro, style: AppText.bodySmall.copyWith(color: Tokens.onBrandSoft)),
-              if (_sampleFilled) ...[
-                const SizedBox(height: 12),
-                Semantics(liveRegion: true, child: SampleNotice(text.sampleFilled)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          BandOverlap(
+            overlap: 40,
+            header: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(text.newAnalysisIntro, style: AppText.bodySmall.copyWith(color: Tokens.onBrandSoft)),
+                if (_sampleFilled) ...[
+                  const SizedBox(height: 12),
+                  Semantics(liveRegion: true, child: SampleNotice(text.sampleFilled)),
+                ],
               ],
-            ],
+            ),
+            child: Padding(padding: screenPadding, child: _resumeSheet(text)),
           ),
-          child: Padding(padding: screenPadding, child: _resumeSheet(text)),
-        ),
-        const SizedBox(height: 16),
-        Padding(padding: screenPadding, child: _postingSheet(text)),
-        Padding(
-          padding: screenPadding,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (_formProblem != null) ...[
+          const SizedBox(height: 16),
+          Padding(padding: screenPadding, child: _postingSheet(text)),
+          Padding(
+            padding: screenPadding,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (_formProblem != null) ...[
+                  const SizedBox(height: 20),
+                  FormAlert(switch (_formProblem!) {
+                    FormProblem.unavailable => text.errorStartUnavailable,
+                    FormProblem.rateLimited => text.errorStartRateLimited,
+                    FormProblem.generic => text.errorStartGeneric,
+                  }),
+                ],
                 const SizedBox(height: 20),
-                FormAlert(switch (_formProblem!) {
-                  FormProblem.unavailable => text.errorStartUnavailable,
-                  FormProblem.rateLimited => text.errorStartRateLimited,
-                  FormProblem.generic => text.errorStartGeneric,
-                }),
+                FilledButton(
+                  onPressed: _submitting ? null : _submit,
+                  child: Text(_submitting ? text.submittingAnalysis : text.submitAnalysis),
+                ),
+                const SizedBox(height: 8),
+                Text(text.submitNote, style: AppText.meta),
               ],
-              const SizedBox(height: 20),
-              FilledButton(
-                onPressed: _submitting ? null : _submit,
-                child: Text(_submitting ? text.submittingAnalysis : text.submitAnalysis),
-              ),
-              const SizedBox(height: 8),
-              Text(text.submitNote, style: AppText.meta),
-            ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -514,6 +535,8 @@ class _NewAnalysisScreenState extends State<NewAnalysisScreen> {
       children: [
         Semantics(header: true, child: Text(text.postingSheetTitle, style: AppText.title)),
         const SizedBox(height: 12),
+        LinkFill(onFilled: _applyLink),
+        const SizedBox(height: 16),
         LabeledField(
           label: text.postingTitleLabel,
           controller: _jobTitle,

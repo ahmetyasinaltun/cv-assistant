@@ -582,4 +582,66 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get reasonNoEvidence =>
       'CV’den kullanılabilir bir ifade okunamadı. CV metnini kontrol et, sonra yeni bir analiz başlat.';
+
+  @override
+  String get linkLabel => 'İlanın bağlantısı';
+
+  @override
+  String get linkPlaceholder => 'https://www.linkedin.com/jobs/view/…';
+
+  @override
+  String get linkHint =>
+      'LinkedIn ilanları ve gönderileri, Kariyer.net, Youthall ve çoğu ilan sayfası. Açılmayan sitelerde metni aşağıya yapıştır.';
+
+  @override
+  String get linkFill => 'Doldur';
+
+  @override
+  String get linkFilling => 'Okunuyor…';
+
+  @override
+  String get linkDivider => 'ya da kendin doldur';
+
+  @override
+  String linkFilled(String site) {
+    return 'Alanlar $site sayfasından dolduruldu. Başlamadan önce pozisyonu ve metni kontrol et.';
+  }
+
+  @override
+  String linkFilledNoTitle(String site) {
+    return 'Alanlar $site sayfasından dolduruldu. Sayfada pozisyon adı yok: kendin yaz ve metni kontrol et.';
+  }
+
+  @override
+  String get linkErrorMissing => 'Önce ilanın bağlantısını yapıştır.';
+
+  @override
+  String get linkErrorInvalid =>
+      'Bu bir web adresine benzemiyor. Bağlantıyı paylaş menüsünden ya da adres çubuğundan kopyala.';
+
+  @override
+  String get linkErrorNotAllowed => 'Bu adres okunamaz. İlanın herkese açık bağlantısını kullan.';
+
+  @override
+  String linkErrorBlocked(String site) {
+    return 'Bu sayfa okunamadı: $site buna izin vermiyor. İlanın metnini kopyalayıp aşağıya yapıştır.';
+  }
+
+  @override
+  String get linkErrorNotFound => 'Bu sayfa artık yok; ilan kaldırılmış olabilir.';
+
+  @override
+  String linkErrorUnreachable(String site) {
+    return 'Şu an $site yanıt vermiyor. Biraz sonra yeniden dene ya da metni aşağıya yapıştır.';
+  }
+
+  @override
+  String get linkErrorNoPosting => 'Bu sayfada ilan metni bulamadık. İlanın metnini kopyalayıp aşağıya yapıştır.';
+
+  @override
+  String get linkErrorTooMany =>
+      'Son bir saatte çok sayıda bağlantı okundu. Biraz sonra yeniden dene ya da metni aşağıya yapıştır.';
+
+  @override
+  String get linkErrorUnavailable => 'Bağlantı şu an okunamıyor. İlanın metnini aşağıya yapıştırabilirsin.';
 }

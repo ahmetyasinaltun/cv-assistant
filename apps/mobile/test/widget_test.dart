@@ -147,6 +147,54 @@ void main() {
     expect(find.byType(SampleAnalysisScreen), findsOneWidget);
   });
 
+  testWidgets('a link fills the posting fields, and a refusing site points to pasting', (tester) async {
+    final fake = FakeApi()
+      ..on('GET /me', 200, userJson())
+      ..on('GET /analyses', 200, [])
+      ..on('GET /resumes', 200, [])
+      ..on('POST /job-descriptions/import', 200, {
+        'title': 'Backend Intern',
+        'company': 'Acme',
+        'text': 'We are looking for a backend intern who writes Python services and their tests.',
+        'source_url': 'https://www.linkedin.com/jobs/view/4475250238/',
+      });
+    await pumpApp(tester, fake, token: 'token-1');
+    await tester.tap(find.text('New analysis'));
+    await tester.pumpAndSettle();
+
+    final link = find.widgetWithText(TextField, 'https://www.linkedin.com/jobs/view/…');
+    final fill = find.widgetWithText(OutlinedButton, 'Fill in');
+    await tester.ensureVisible(fill);
+    await tester.pumpAndSettle();
+    await tester.enterText(link, 'https://lnkd.in/x');
+    await tester.tap(fill);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Backend Intern'), findsOneWidget);
+    expect(find.text('Acme'), findsOneWidget);
+    // The note names the page the text came from, not the short link that was pasted.
+    expect(find.text('Filled from linkedin.com. Check the job title and the text before you start.'), findsOneWidget);
+    expect(fake.requests.where((request) => request.url.path == '/job-descriptions/import'), hasLength(1));
+
+    fake.on('POST /job-descriptions/import', 502, {
+      'error': {'code': 'link_blocked', 'message': ''},
+    });
+    // The hint gives way to the note, so the field is found by what it now holds.
+    final filledLink = find.widgetWithText(TextField, 'https://lnkd.in/x');
+    await tester.ensureVisible(fill);
+    await tester.pumpAndSettle();
+    await tester.enterText(filledLink, 'https://www.kariyer.net/is-ilani/x-1');
+    await tester.tap(fill);
+    await tester.pumpAndSettle();
+    expect(
+      find.text('This page could not be read: kariyer.net does not allow it. Copy the posting text and paste it below.'),
+      findsOneWidget,
+    );
+    // A refused link leaves the fields as they were.
+    expect(find.text('Backend Intern'), findsOneWidget);
+    await unmount(tester);
+  });
+
   testWidgets('starting an empty new analysis names each missing field', (tester) async {
     final fake = FakeApi()
       ..on('GET /me', 200, userJson())

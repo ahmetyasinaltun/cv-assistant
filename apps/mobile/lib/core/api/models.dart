@@ -108,6 +108,25 @@ class JobDescriptionSummary {
   final String? company;
 }
 
+/// What a link held, to fill the posting fields; the API does not save it.
+class JobDescriptionDraft {
+  const JobDescriptionDraft({required this.title, required this.company, required this.text, required this.sourceUrl});
+
+  factory JobDescriptionDraft.fromJson(Json json) => JobDescriptionDraft(
+    title: json['title'] as String?,
+    company: json['company'] as String?,
+    text: json['text'] as String,
+    sourceUrl: json['source_url'] as String,
+  );
+
+  final String? title;
+  final String? company;
+  final String text;
+
+  /// The page the text was read from, after redirects (a short lnkd.in link ends on linkedin.com).
+  final String sourceUrl;
+}
+
 class EvidenceReference {
   const EvidenceReference({required this.evidenceId, required this.quote, required this.similarity});
 

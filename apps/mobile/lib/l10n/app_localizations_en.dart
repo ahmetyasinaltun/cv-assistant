@@ -599,4 +599,65 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get reasonNoEvidence =>
       'No usable statements could be read from the CV. Check the CV text, then start a new analysis.';
+
+  @override
+  String get linkLabel => 'Link to the posting';
+
+  @override
+  String get linkPlaceholder => 'https://www.linkedin.com/jobs/view/…';
+
+  @override
+  String get linkHint =>
+      'LinkedIn jobs and posts, Kariyer.net, Youthall and most job pages. If a site does not open, paste the text below.';
+
+  @override
+  String get linkFill => 'Fill in';
+
+  @override
+  String get linkFilling => 'Reading…';
+
+  @override
+  String get linkDivider => 'or fill it in yourself';
+
+  @override
+  String linkFilled(String site) {
+    return 'Filled from $site. Check the job title and the text before you start.';
+  }
+
+  @override
+  String linkFilledNoTitle(String site) {
+    return 'Filled from $site. The page has no job title: add it and check the text.';
+  }
+
+  @override
+  String get linkErrorMissing => 'Paste the link to the posting first.';
+
+  @override
+  String get linkErrorInvalid =>
+      'This does not look like a web address. Copy the link from the share menu or the address bar.';
+
+  @override
+  String get linkErrorNotAllowed => 'This address cannot be read. Use the public link to the posting.';
+
+  @override
+  String linkErrorBlocked(String site) {
+    return 'This page could not be read: $site does not allow it. Copy the posting text and paste it below.';
+  }
+
+  @override
+  String get linkErrorNotFound => 'This page no longer exists; the posting may have been taken down.';
+
+  @override
+  String linkErrorUnreachable(String site) {
+    return 'Right now $site is not answering. Try again in a moment or paste the text below.';
+  }
+
+  @override
+  String get linkErrorNoPosting => 'We found no posting text on this page. Copy the posting text and paste it below.';
+
+  @override
+  String get linkErrorTooMany => 'Many links were read in the last hour. Try again later or paste the text below.';
+
+  @override
+  String get linkErrorUnavailable => 'The link cannot be read right now. Paste the posting text below instead.';
 }

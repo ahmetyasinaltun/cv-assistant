@@ -1129,6 +1129,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No usable statements could be read from the CV. Check the CV text, then start a new analysis.'**
   String get reasonNoEvidence;
+
+  /// No description provided for @linkLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Link to the posting'**
+  String get linkLabel;
+
+  /// No description provided for @linkPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'https://www.linkedin.com/jobs/view/…'**
+  String get linkPlaceholder;
+
+  /// No description provided for @linkHint.
+  ///
+  /// In en, this message translates to:
+  /// **'LinkedIn jobs and posts, Kariyer.net, Youthall and most job pages. If a site does not open, paste the text below.'**
+  String get linkHint;
+
+  /// No description provided for @linkFill.
+  ///
+  /// In en, this message translates to:
+  /// **'Fill in'**
+  String get linkFill;
+
+  /// No description provided for @linkFilling.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading…'**
+  String get linkFilling;
+
+  /// No description provided for @linkDivider.
+  ///
+  /// In en, this message translates to:
+  /// **'or fill it in yourself'**
+  String get linkDivider;
+
+  /// No description provided for @linkFilled.
+  ///
+  /// In en, this message translates to:
+  /// **'Filled from {site}. Check the job title and the text before you start.'**
+  String linkFilled(String site);
+
+  /// No description provided for @linkFilledNoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filled from {site}. The page has no job title: add it and check the text.'**
+  String linkFilledNoTitle(String site);
+
+  /// No description provided for @linkErrorMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste the link to the posting first.'**
+  String get linkErrorMissing;
+
+  /// No description provided for @linkErrorInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'This does not look like a web address. Copy the link from the share menu or the address bar.'**
+  String get linkErrorInvalid;
+
+  /// No description provided for @linkErrorNotAllowed.
+  ///
+  /// In en, this message translates to:
+  /// **'This address cannot be read. Use the public link to the posting.'**
+  String get linkErrorNotAllowed;
+
+  /// No description provided for @linkErrorBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'This page could not be read: {site} does not allow it. Copy the posting text and paste it below.'**
+  String linkErrorBlocked(String site);
+
+  /// No description provided for @linkErrorNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'This page no longer exists; the posting may have been taken down.'**
+  String get linkErrorNotFound;
+
+  /// No description provided for @linkErrorUnreachable.
+  ///
+  /// In en, this message translates to:
+  /// **'Right now {site} is not answering. Try again in a moment or paste the text below.'**
+  String linkErrorUnreachable(String site);
+
+  /// No description provided for @linkErrorNoPosting.
+  ///
+  /// In en, this message translates to:
+  /// **'We found no posting text on this page. Copy the posting text and paste it below.'**
+  String get linkErrorNoPosting;
+
+  /// No description provided for @linkErrorTooMany.
+  ///
+  /// In en, this message translates to:
+  /// **'Many links were read in the last hour. Try again later or paste the text below.'**
+  String get linkErrorTooMany;
+
+  /// No description provided for @linkErrorUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'The link cannot be read right now. Paste the posting text below instead.'**
+  String get linkErrorUnavailable;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

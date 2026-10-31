@@ -57,6 +57,9 @@ class CareerApi {
         await _client.post('/job-descriptions', json: {'title': title, 'company': company, 'text': text}),
       );
 
+  Future<JobDescriptionDraft> importJobDescription(String url) async =>
+      JobDescriptionDraft.fromJson(await _client.post('/job-descriptions/import', json: {'url': url}));
+
   Future<List<AnalysisSummary>> listAnalyses() async =>
       _parseList(await _client.get('/analyses'), AnalysisSummary.fromJson);
 

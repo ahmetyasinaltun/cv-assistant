@@ -78,6 +78,22 @@ void main() {
     });
   });
 
+  group('fill from a link', () {
+    test('maps each API code to its message and anything unexpected to a general one', () {
+      expect(linkProblemFor(const ApiException(502, 'link_blocked', '')), LinkProblem.blocked);
+      expect(linkProblemFor(const ApiException(422, 'link_no_posting', '')), LinkProblem.noPosting);
+      expect(linkProblemFor(const ApiException(422, 'validation_failed', '')), LinkProblem.invalid);
+      expect(linkProblemFor(const ApiException(429, 'rate_limited', '')), LinkProblem.tooMany);
+      expect(linkProblemFor(const ApiException(0, 'network_error', '')), LinkProblem.unavailable);
+    });
+
+    test('names the site by its host without www', () {
+      expect(siteName('https://www.kariyer.net/is-ilani/x-1'), 'kariyer.net');
+      expect(siteName('tr.linkedin.com/jobs/view/1'), 'tr.linkedin.com');
+      expect(siteName('not a link'), isNull);
+    });
+  });
+
   group('result', () {
     test('the quoted words are split out case-insensitively', () {
       final segments = splitByQuote('Built REST APIs with FastAPI', 'rest apis');

@@ -179,5 +179,22 @@
   "failedStarting": "Başlatılıyor…",
   "reasonAiQuotaExhausted": "Ücretsiz yapay zeka kotası şimdilik doldu. Kota her gün yenilenir; daha sonra tekrar dene. CV’n ve ilan kayıtlı.",
   "reasonNoRequirements": "İş ilanında hiç gereksinim bulunamadı. İlanın tam metninin yapıştırıldığını kontrol et, sonra yeni bir analiz başlat.",
-  "reasonNoEvidence": "CV’den kullanılabilir bir ifade okunamadı. CV metnini kontrol et, sonra yeni bir analiz başlat."
+  "reasonNoEvidence": "CV’den kullanılabilir bir ifade okunamadı. CV metnini kontrol et, sonra yeni bir analiz başlat.",
+  "linkLabel": "İlanın bağlantısı",
+  "linkPlaceholder": "https://www.linkedin.com/jobs/view/…",
+  "linkHint": "LinkedIn ilanları ve gönderileri, Kariyer.net, Youthall ve çoğu ilan sayfası. Açılmayan sitelerde metni aşağıya yapıştır.",
+  "linkFill": "Doldur",
+  "linkFilling": "Okunuyor…",
+  "linkDivider": "ya da kendin doldur",
+  "linkFilled": "Alanlar {site} sayfasından dolduruldu. Başlamadan önce pozisyonu ve metni kontrol et.",
+  "linkFilledNoTitle": "Alanlar {site} sayfasından dolduruldu. Sayfada pozisyon adı yok: kendin yaz ve metni kontrol et.",
+  "linkErrorMissing": "Önce ilanın bağlantısını yapıştır.",
+  "linkErrorInvalid": "Bu bir web adresine benzemiyor. Bağlantıyı paylaş menüsünden ya da adres çubuğundan kopyala.",
+  "linkErrorNotAllowed": "Bu adres okunamaz. İlanın herkese açık bağlantısını kullan.",
+  "linkErrorBlocked": "Bu sayfa okunamadı: {site} buna izin vermiyor. İlanın metnini kopyalayıp aşağıya yapıştır.",
+  "linkErrorNotFound": "Bu sayfa artık yok; ilan kaldırılmış olabilir.",
+  "linkErrorUnreachable": "Şu an {site} yanıt vermiyor. Biraz sonra yeniden dene ya da metni aşağıya yapıştır.",
+  "linkErrorNoPosting": "Bu sayfada ilan metni bulamadık. İlanın metnini kopyalayıp aşağıya yapıştır.",
+  "linkErrorTooMany": "Son bir saatte çok sayıda bağlantı okundu. Biraz sonra yeniden dene ya da metni aşağıya yapıştır.",
+  "linkErrorUnavailable": "Bağlantı şu an okunamıyor. İlanın metnini aşağıya yapıştırabilirsin."
 }

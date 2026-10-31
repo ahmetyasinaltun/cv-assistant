@@ -129,6 +129,31 @@ SubmitFailure submitFailureFor(SubmitStep step, ApiException error) {
   return SubmitFailure(formProblem: unreachable ? FormProblem.unavailable : FormProblem.generic);
 }
 
+/// Why a fill from a link did not work; each maps to a sentence that names the next step (usually: paste).
+enum LinkProblem { missing, invalid, notAllowed, blocked, notFound, unreachable, noPosting, tooMany, unavailable }
+
+const _linkProblems = {
+  'link_invalid': LinkProblem.invalid,
+  'validation_failed': LinkProblem.invalid,
+  'link_not_allowed': LinkProblem.notAllowed,
+  'link_blocked': LinkProblem.blocked,
+  'link_not_found': LinkProblem.notFound,
+  'link_unreachable': LinkProblem.unreachable,
+  'link_no_posting': LinkProblem.noPosting,
+  'rate_limited': LinkProblem.tooMany,
+};
+
+LinkProblem linkProblemFor(ApiException error) => _linkProblems[error.code] ?? LinkProblem.unavailable;
+
+/// "kariyer.net" for messages that name the site; null when the text is not a link.
+String? siteName(String link) {
+  final trimmed = link.trim();
+  if (trimmed.isEmpty || RegExp(r'\s').hasMatch(trimmed)) return null;
+  final withScheme = RegExp(r'^[a-z][a-z0-9+.-]*:', caseSensitive: false).hasMatch(trimmed) ? trimmed : 'https://$trimmed';
+  final host = Uri.tryParse(withScheme)?.host ?? '';
+  return host.isEmpty ? null : host.replaceFirst(RegExp(r'^www\.'), '');
+}
+
 /// How many analyses were made with each CV; deleting a CV deletes these too.
 Map<String, int> analysesPerResume(List<AnalysisSummary> analyses) {
   final counts = <String, int>{};
