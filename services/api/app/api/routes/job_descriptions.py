@@ -6,6 +6,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, status
 
 from app.api.deps import CurrentUser, DbSession
+from app.core.rate_limit import LINK_IMPORTS
 from app.models.job_description import JobDescription
 from app.schemas.job_description import (
     JobDescriptionCreateRequest,
@@ -51,11 +52,13 @@ def get_posting_import_service() -> PostingImportService:
 @router.post("/import", response_model=JobDescriptionDraftResponse)
 def import_job_description(
     payload: JobDescriptionImportRequest,
-    _: CurrentUser,
+    current_user: CurrentUser,
     importer: Annotated[PostingImportService, Depends(get_posting_import_service)],
 ) -> JobDescriptionDraftResponse:
     """Reads the posting behind a link so the client can fill its form; nothing is saved. Signed-in users only,
     so the endpoint is not an open proxy."""
+    # Every attempt counts: each one makes the server fetch a page from another site.
+    LINK_IMPORTS.hit(str(current_user.id))
     draft = importer.draft_from_link(payload.url)
     return JobDescriptionDraftResponse(
         title=draft.title, company=draft.company, text=draft.text, source_url=draft.source_url

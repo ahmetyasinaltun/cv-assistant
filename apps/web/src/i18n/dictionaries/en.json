@@ -156,6 +156,7 @@
       "invalidCredentials": "This email and password do not match an account. Check them and try again.",
       "emailTaken": "An account with this email already exists. Sign in instead, or use another email.",
       "passwordTooLong": "This password is too long. Choose a shorter one.",
+      "tooManyAttempts": "Too many failed attempts for this email. Wait 15 minutes and try again.",
       "invalidInput": "Check the fields: a valid email address and a password of at least 8 characters.",
       "unavailable": "The service is not reachable right now. Try again in a minute.",
       "generic": "Something went wrong. Try again."
@@ -253,6 +254,7 @@
         "notFound": "This page no longer exists; the posting may have been taken down.",
         "unreachable": "Right now {site} is not answering. Try again in a moment or paste the text below.",
         "noPosting": "We found no posting text on this page. Copy the posting text and paste it below.",
+        "tooMany": "Many links were read in the last hour. Try again later or paste the text below.",
         "unavailable": "The link cannot be read right now. Paste the posting text below instead."
       }
     },
@@ -274,6 +276,7 @@
       "pdfNoText": "This PDF has no selectable text (it may be a scan). Paste the text instead.",
       "pdfEncrypted": "This PDF is password-protected. Remove the password or paste the text instead.",
       "unavailable": "The service is not reachable right now. Your text is still here; try again in a minute.",
+      "rateLimited": "You have reached the limit of 20 analyses a day. Your text is still here; try again later.",
       "generic": "The analysis could not be started. Your text is still here; try again."
     }
   }

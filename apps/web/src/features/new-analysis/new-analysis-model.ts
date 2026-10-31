@@ -22,7 +22,7 @@ export type FieldErrorKey = keyof Dictionary["newAnalysis"]["errors"];
 export type FieldErrors = Partial<Record<FieldName, FieldErrorKey>>;
 
 export interface StartAnalysisResult {
-  formError: "unavailable" | "generic" | null;
+  formError: "unavailable" | "rateLimited" | "generic" | null;
   fieldErrors: FieldErrors;
   /** A CV saved before a later step failed; the form selects it so a retry does not save it twice. */
   savedResumeId: string | null;
@@ -86,6 +86,10 @@ export function submitErrorResult(
   savedResumeId: string | null,
 ): StartAnalysisResult {
   const result: StartAnalysisResult = { formError: null, fieldErrors: {}, savedResumeId };
+  if (error instanceof ApiError && error.status === 429) {
+    result.formError = "rateLimited";
+    return result;
+  }
   if (error instanceof ApiError && error.status === 422) {
     if (step === "resumeUpload") result.fieldErrors.resumeFile = UPLOAD_ERRORS[error.code] ?? "pdfInvalid";
     else if (step === "resumeText") result.fieldErrors.resumeText = "tooShort";
@@ -109,6 +113,7 @@ const LINK_ERRORS: Record<string, LinkErrorKey> = {
   link_not_found: "notFound",
   link_unreachable: "unreachable",
   link_no_posting: "noPosting",
+  rate_limited: "tooMany",
 };
 
 /** The message for a failed fill; an unknown failure or an unreachable API gets the general "paste instead". */

@@ -357,9 +357,11 @@ class _NewAnalysisScreenState extends State<NewAnalysisScreen> {
             children: [
               if (_formProblem != null) ...[
                 const SizedBox(height: 20),
-                FormAlert(
-                  _formProblem == FormProblem.unavailable ? text.errorStartUnavailable : text.errorStartGeneric,
-                ),
+                FormAlert(switch (_formProblem!) {
+                  FormProblem.unavailable => text.errorStartUnavailable,
+                  FormProblem.rateLimited => text.errorStartRateLimited,
+                  FormProblem.generic => text.errorStartGeneric,
+                }),
               ],
               const SizedBox(height: 20),
               FilledButton(

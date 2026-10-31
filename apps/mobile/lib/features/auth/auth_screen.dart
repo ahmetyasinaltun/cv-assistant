@@ -110,6 +110,7 @@ class _AuthScreenState extends State<AuthScreen> {
     AuthProblem.invalidCredentials => text.authErrorInvalidCredentials,
     AuthProblem.emailTaken => text.authErrorEmailTaken,
     AuthProblem.passwordTooLong => text.authErrorPasswordTooLong,
+    AuthProblem.tooManyAttempts => text.authErrorTooManyAttempts,
     AuthProblem.invalidInput => text.authErrorInvalidInput,
     AuthProblem.unavailable => text.authErrorUnavailable,
     AuthProblem.generic => text.authErrorGeneric,

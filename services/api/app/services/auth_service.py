@@ -3,6 +3,7 @@
 from sqlalchemy.orm import Session
 
 from app.core.errors import ConflictError, UnauthorizedError, ValidationFailedError
+from app.core.rate_limit import LOGIN_FAILURES
 from app.core.security import (
     MAX_PASSWORD_BYTES,
     create_access_token,
@@ -39,12 +40,16 @@ class AuthService:
         return self._token_for(user)
 
     def login(self, payload: LoginRequest) -> TokenResponse:
-        user = self.users.get_by_email(payload.email.lower())
+        email = payload.email.lower()
+        # Counted per email, so guessing one account's password is slowed wherever the guesses come from.
+        LOGIN_FAILURES.check(email)
+        user = self.users.get_by_email(email)
         # Same error and about the same time for an unknown email and a wrong password, so the endpoint does
         # not leak which emails exist.
         if user is None:
             spend_password_check_time(payload.password)
         if user is None or not verify_password(payload.password, user.password_hash):
+            LOGIN_FAILURES.record(email)
             raise UnauthorizedError("Invalid email or password.", code="invalid_credentials")
         return self._token_for(user)
 

@@ -45,6 +45,17 @@ class AIProviderError(AppError):
     code = "ai_provider_error"
 
 
+class TooManyRequestsError(AppError):
+    """A per-user or per-account limit is used up; clients learn from Retry-After when to try again."""
+
+    status_code = 429
+    code = "rate_limited"
+
+    def __init__(self, message: str, *, retry_after_seconds: int):
+        super().__init__(message)
+        self.retry_after_seconds = retry_after_seconds
+
+
 class ExternalPageError(AppError):
     """A web page the user linked to could not be read: the site refused, failed or did not answer."""
 
@@ -63,6 +74,8 @@ def register_error_handlers(app: FastAPI) -> None:
     @app.exception_handler(AppError)
     async def handle_app_error(_: Request, exc: AppError) -> JSONResponse:
         headers = {"WWW-Authenticate": "Bearer"} if exc.status_code == 401 else None
+        if isinstance(exc, TooManyRequestsError):
+            headers = {"Retry-After": str(exc.retry_after_seconds)}
         return JSONResponse(
             status_code=exc.status_code,
             content=_error_body(exc.code, exc.message),

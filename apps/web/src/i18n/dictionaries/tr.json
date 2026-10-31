@@ -156,6 +156,7 @@
       "invalidCredentials": "Bu e-posta ve şifreyle eşleşen bir hesap yok. Kontrol edip tekrar dene.",
       "emailTaken": "Bu e-postayla açılmış bir hesap zaten var. Giriş yap ya da başka bir e-posta kullan.",
       "passwordTooLong": "Bu şifre çok uzun. Daha kısa bir şifre seç.",
+      "tooManyAttempts": "Bu e-posta için çok fazla hatalı deneme yapıldı. 15 dakika bekleyip tekrar dene.",
       "invalidInput": "Alanları kontrol et: geçerli bir e-posta adresi ve en az 8 karakterlik bir şifre gerekiyor.",
       "unavailable": "Servise şu an ulaşılamıyor. Bir dakika sonra tekrar dene.",
       "generic": "Bir şeyler ters gitti. Tekrar dene."
@@ -253,6 +254,7 @@
         "notFound": "Bu sayfa artık yok; ilan kaldırılmış olabilir.",
         "unreachable": "Şu an {site} yanıt vermiyor. Biraz sonra yeniden dene ya da metni aşağıya yapıştır.",
         "noPosting": "Bu sayfada ilan metni bulamadık. İlanın metnini kopyalayıp aşağıya yapıştır.",
+        "tooMany": "Son bir saatte çok sayıda bağlantı okundu. Biraz sonra yeniden dene ya da metni aşağıya yapıştır.",
         "unavailable": "Bağlantı şu an okunamıyor. İlanın metnini aşağıya yapıştırabilirsin."
       }
     },
@@ -274,6 +276,7 @@
       "pdfNoText": "Bu PDF’te seçilebilir metin yok (taranmış olabilir). Metni yapıştır.",
       "pdfEncrypted": "Bu PDF şifreli. Şifreyi kaldır ya da metni yapıştır.",
       "unavailable": "Servise şu an ulaşılamıyor. Metnin hâlâ burada; bir dakika sonra tekrar dene.",
+      "rateLimited": "Günde 20 analiz sınırına ulaştın. Metnin hâlâ burada; daha sonra tekrar dene.",
       "generic": "Analiz başlatılamadı. Metnin hâlâ burada; tekrar dene."
     }
   }

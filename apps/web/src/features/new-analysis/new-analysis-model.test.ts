@@ -97,6 +97,11 @@ describe("submitErrorResult", () => {
     const offline = submitErrorResult("analysis", new ApiError(NETWORK_ERROR_STATUS, "network_error", ""), null);
     expect(offline.formError).toBe("unavailable");
     expect(submitErrorResult("analysis", new Error("boom"), null).formError).toBe("generic");
+    expect(submitErrorResult("analysis", new ApiError(429, "rate_limited", ""), "r1")).toEqual({
+      formError: "rateLimited",
+      fieldErrors: {},
+      savedResumeId: "r1",
+    });
   });
 });
 
@@ -105,6 +110,7 @@ describe("filling from a link", () => {
     expect(linkErrorKey(new ApiError(502, "link_blocked", ""))).toBe("blocked");
     expect(linkErrorKey(new ApiError(422, "link_no_posting", ""))).toBe("noPosting");
     expect(linkErrorKey(new ApiError(422, "link_invalid", ""))).toBe("invalid");
+    expect(linkErrorKey(new ApiError(429, "rate_limited", ""))).toBe("tooMany");
     expect(linkErrorKey(new ApiError(422, "validation_failed", ""))).toBe("invalid");
     expect(linkErrorKey(new ApiError(NETWORK_ERROR_STATUS, "network_error", ""))).toBe("unavailable");
     expect(linkErrorKey(new ApiError(500, "http_500", ""))).toBe("unavailable");
@@ -186,6 +192,7 @@ describe("authErrorKey", () => {
     expect(authErrorKey(new ApiError(401, "invalid_credentials", ""))).toBe("invalidCredentials");
     expect(authErrorKey(new ApiError(409, "email_taken", ""))).toBe("emailTaken");
     expect(authErrorKey(new ApiError(422, "password_too_long", ""))).toBe("passwordTooLong");
+    expect(authErrorKey(new ApiError(429, "rate_limited", ""))).toBe("tooManyAttempts");
     expect(authErrorKey(new ApiError(422, "validation_failed", ""))).toBe("invalidInput");
     expect(authErrorKey(new ApiError(503, "http_503", ""))).toBe("unavailable");
     expect(authErrorKey(new TypeError("x"))).toBe("generic");

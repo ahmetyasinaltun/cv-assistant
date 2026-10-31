@@ -6,6 +6,7 @@ export type AuthErrorKey =
   | "invalidCredentials"
   | "emailTaken"
   | "passwordTooLong"
+  | "tooManyAttempts"
   | "invalidInput"
   | "unavailable"
   | "generic";
@@ -24,6 +25,7 @@ export function authErrorKey(error: unknown): AuthErrorKey {
   if (error.code === "invalid_credentials") return "invalidCredentials";
   if (error.code === "email_taken") return "emailTaken";
   if (error.code === "password_too_long") return "passwordTooLong";
+  if (error.code === "rate_limited") return "tooManyAttempts";
   if (error.status === 422) return "invalidInput";
   if (error.status === NETWORK_ERROR_STATUS || error.status >= 500) return "unavailable";
   return "generic";

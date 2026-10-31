@@ -122,6 +122,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get authErrorPasswordTooLong => 'Bu şifre çok uzun. Daha kısa bir şifre seç.';
 
   @override
+  String get authErrorTooManyAttempts =>
+      'Bu e-posta için çok fazla hatalı deneme yapıldı. 15 dakika bekleyip tekrar dene.';
+
+  @override
   String get authErrorInvalidInput =>
       'Alanları kontrol et: geçerli bir e-posta adresi ve en az 8 karakterlik bir şifre gerekiyor.';
 
@@ -361,6 +365,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get errorStartUnavailable => 'Servise şu an ulaşılamıyor. Metnin hâlâ burada; bir dakika sonra tekrar dene.';
+
+  @override
+  String get errorStartRateLimited => 'Günde 20 analiz sınırına ulaştın. Metnin hâlâ burada; daha sonra tekrar dene.';
 
   @override
   String get errorStartGeneric => 'Analiz başlatılamadı. Metnin hâlâ burada; tekrar dene.';

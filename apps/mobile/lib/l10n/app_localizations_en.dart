@@ -122,6 +122,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authErrorPasswordTooLong => 'This password is too long. Choose a shorter one.';
 
   @override
+  String get authErrorTooManyAttempts => 'Too many failed attempts for this email. Wait 15 minutes and try again.';
+
+  @override
   String get authErrorInvalidInput =>
       'Check the fields: a valid email address and a password of at least 8 characters.';
 
@@ -368,6 +371,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorStartUnavailable =>
       'The service is not reachable right now. Your text is still here; try again in a minute.';
+
+  @override
+  String get errorStartRateLimited =>
+      'You have reached the limit of 20 analyses a day. Your text is still here; try again later.';
 
   @override
   String get errorStartGeneric => 'The analysis could not be started. Your text is still here; try again.';

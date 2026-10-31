@@ -12,6 +12,7 @@ from sqlalchemy import create_engine  # noqa: E402
 from sqlalchemy.orm import sessionmaker  # noqa: E402
 from sqlalchemy.pool import StaticPool  # noqa: E402
 
+from app.core.rate_limit import ALL_LIMITERS  # noqa: E402
 from app.db.base import Base  # noqa: E402
 from app.db.session import get_db, get_session_factory  # noqa: E402
 from app.main import create_app  # noqa: E402
@@ -41,6 +42,14 @@ Requirements
 - Experience with Kubernetes is a plus
 - Good communication skills
 """
+
+
+@pytest.fixture(autouse=True)
+def fresh_rate_limits():
+    """The limiters keep counts in memory for the whole process; every test starts from zero."""
+    for limiter in ALL_LIMITERS:
+        limiter.reset()
+    yield
 
 
 @pytest.fixture

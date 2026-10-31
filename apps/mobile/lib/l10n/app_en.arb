@@ -38,6 +38,7 @@
   "authErrorInvalidCredentials": "This email and password do not match an account. Check them and try again.",
   "authErrorEmailTaken": "An account with this email already exists. Sign in instead, or use another email.",
   "authErrorPasswordTooLong": "This password is too long. Choose a shorter one.",
+  "authErrorTooManyAttempts": "Too many failed attempts for this email. Wait 15 minutes and try again.",
   "authErrorInvalidInput": "Check the fields: a valid email address and a password of at least 8 characters.",
   "authErrorUnavailable": "The service is not reachable right now. Try again in a minute.",
   "authErrorGeneric": "Something went wrong. Try again.",
@@ -117,6 +118,7 @@
   "errorPdfNoText": "This PDF has no selectable text (it may be a scan). Paste the text instead.",
   "errorPdfEncrypted": "This PDF is password-protected. Remove the password or paste the text instead.",
   "errorStartUnavailable": "The service is not reachable right now. Your text is still here; try again in a minute.",
+  "errorStartRateLimited": "You have reached the limit of 20 analyses a day. Your text is still here; try again later.",
   "errorStartGeneric": "The analysis could not be started. Your text is still here; try again.",
 
   "analysisTitle": "Analysis",

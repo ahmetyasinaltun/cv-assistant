@@ -314,6 +314,12 @@ abstract class AppLocalizations {
   /// **'This password is too long. Choose a shorter one.'**
   String get authErrorPasswordTooLong;
 
+  /// No description provided for @authErrorTooManyAttempts.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many failed attempts for this email. Wait 15 minutes and try again.'**
+  String get authErrorTooManyAttempts;
+
   /// No description provided for @authErrorInvalidInput.
   ///
   /// In en, this message translates to:
@@ -745,6 +751,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The service is not reachable right now. Your text is still here; try again in a minute.'**
   String get errorStartUnavailable;
+
+  /// No description provided for @errorStartRateLimited.
+  ///
+  /// In en, this message translates to:
+  /// **'You have reached the limit of 20 analyses a day. Your text is still here; try again later.'**
+  String get errorStartRateLimited;
 
   /// No description provided for @errorStartGeneric.
   ///

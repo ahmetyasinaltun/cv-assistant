@@ -25,7 +25,7 @@ enum FieldProblem {
   pdfEncrypted,
 }
 
-enum FormProblem { unavailable, generic }
+enum FormProblem { unavailable, rateLimited, generic }
 
 enum ResumeSource { paste, upload }
 
@@ -113,6 +113,7 @@ class SubmitFailure {
 }
 
 SubmitFailure submitFailureFor(SubmitStep step, ApiException error) {
+  if (error.statusCode == 429) return const SubmitFailure(formProblem: FormProblem.rateLimited);
   if (error.statusCode == 422) {
     return switch (step) {
       SubmitStep.resumeUpload => SubmitFailure(

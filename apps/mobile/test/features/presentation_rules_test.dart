@@ -67,6 +67,10 @@ void main() {
         FormProblem.unavailable,
       );
       expect(
+        submitFailureFor(SubmitStep.analysis, const ApiException(429, 'rate_limited', '')).formProblem,
+        FormProblem.rateLimited,
+      );
+      expect(
         submitFailureFor(SubmitStep.analysis, const ApiException(0, 'network_error', '')).formProblem,
         FormProblem.unavailable,
       );
@@ -126,6 +130,7 @@ void main() {
     expect(authProblemFor(const ApiException(401, 'invalid_credentials', '')), AuthProblem.invalidCredentials);
     expect(authProblemFor(const ApiException(409, 'email_taken', '')), AuthProblem.emailTaken);
     expect(authProblemFor(const ApiException(422, 'password_too_long', '')), AuthProblem.passwordTooLong);
+    expect(authProblemFor(const ApiException(429, 'rate_limited', '')), AuthProblem.tooManyAttempts);
     expect(authProblemFor(const ApiException(0, 'network_error', '')), AuthProblem.unavailable);
     expect(looksLikeEmail('ayse@example.com'), isTrue);
     expect(looksLikeEmail('ayse@'), isFalse);

@@ -38,6 +38,7 @@
   "authErrorInvalidCredentials": "Bu e-posta ve şifreyle eşleşen bir hesap yok. Kontrol edip tekrar dene.",
   "authErrorEmailTaken": "Bu e-postayla açılmış bir hesap zaten var. Giriş yap ya da başka bir e-posta kullan.",
   "authErrorPasswordTooLong": "Bu şifre çok uzun. Daha kısa bir şifre seç.",
+  "authErrorTooManyAttempts": "Bu e-posta için çok fazla hatalı deneme yapıldı. 15 dakika bekleyip tekrar dene.",
   "authErrorInvalidInput": "Alanları kontrol et: geçerli bir e-posta adresi ve en az 8 karakterlik bir şifre gerekiyor.",
   "authErrorUnavailable": "Servise şu an ulaşılamıyor. Bir dakika sonra tekrar dene.",
   "authErrorGeneric": "Bir şeyler ters gitti. Tekrar dene.",
@@ -112,6 +113,7 @@
   "errorPdfNoText": "Bu PDF’te seçilebilir metin yok (taranmış olabilir). Metni yapıştır.",
   "errorPdfEncrypted": "Bu PDF şifreli. Şifreyi kaldır ya da metni yapıştır.",
   "errorStartUnavailable": "Servise şu an ulaşılamıyor. Metnin hâlâ burada; bir dakika sonra tekrar dene.",
+  "errorStartRateLimited": "Günde 20 analiz sınırına ulaştın. Metnin hâlâ burada; daha sonra tekrar dene.",
   "errorStartGeneric": "Analiz başlatılamadı. Metnin hâlâ burada; tekrar dene.",
 
   "analysisTitle": "Analiz",
