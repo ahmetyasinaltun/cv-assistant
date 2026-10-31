@@ -3,7 +3,7 @@
 
 import type { Dictionary } from "@/i18n/dictionaries";
 import { ApiError, NETWORK_ERROR_STATUS } from "@/lib/api/client";
-import type { AnalysisSummary, ResumeSummary } from "@/lib/api/types";
+import type { AnalysisSummary, JobDescriptionDraft, ResumeSummary } from "@/lib/api/types";
 
 /** Mirrors the API: shorter documents are rejected, longer ones are cut to the limit. */
 export const MIN_DOCUMENT_CHARS = 50;
@@ -97,6 +97,40 @@ export function submitErrorResult(
     error instanceof ApiError && (error.status === NETWORK_ERROR_STATUS || error.status >= 500);
   result.formError = unreachable ? "unavailable" : "generic";
   return result;
+}
+
+export type LinkErrorKey = keyof Dictionary["newAnalysis"]["link"]["errors"];
+
+const LINK_ERRORS: Record<string, LinkErrorKey> = {
+  link_invalid: "invalid",
+  validation_failed: "invalid",
+  link_not_allowed: "notAllowed",
+  link_blocked: "blocked",
+  link_not_found: "notFound",
+  link_unreachable: "unreachable",
+  link_no_posting: "noPosting",
+};
+
+/** The message for a failed fill; an unknown failure or an unreachable API gets the general "paste instead". */
+export function linkErrorKey(error: unknown): LinkErrorKey {
+  return (error instanceof ApiError && LINK_ERRORS[error.code]) || "unavailable";
+}
+
+/** "kariyer.net" for messages that name the site; null when the text is not a link. */
+export function siteName(link: string): string | null {
+  const trimmed = link.trim();
+  if (!trimmed || /\s/.test(trimmed)) return null;
+  try {
+    const url = new URL(/^[a-z][a-z0-9+.-]*:/i.test(trimmed) ? trimmed : `https://${trimmed}`);
+    return url.hostname.replace(/^www\./, "") || null;
+  } catch {
+    return null;
+  }
+}
+
+/** All three posting fields replaced by what the link held, so the form shows that posting and nothing older. */
+export function linkPatch(posting: JobDescriptionDraft): Pick<NewAnalysisDraft, "jobTitle" | "company" | "jobText"> {
+  return { jobTitle: posting.title ?? "", company: posting.company ?? "", jobText: posting.text };
 }
 
 /** What the start card names before the user starts; null where the draft does not say yet. */

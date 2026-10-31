@@ -7,6 +7,7 @@ import type {
   AnalysisDetail,
   AnalysisSummary,
   InterviewQuestion,
+  JobDescriptionDraft,
   JobDescriptionSummary,
   Language,
   ResumeSummary,
@@ -70,6 +71,10 @@ export function createJobDescription(title: string, company: string | null, text
     method: "POST",
     json: { title, company, text },
   });
+}
+
+export function importJobDescription(url: string) {
+  return authed<JobDescriptionDraft>("/job-descriptions/import", { method: "POST", json: { url } });
 }
 
 export function listAnalyses() {

@@ -28,6 +28,7 @@ class JobDescriptionDraftResponse(BaseModel):
     title: str | None
     company: str | None
     text: str
+    source_url: str = Field(description="The page the text was read from, after redirects.")
 
 
 class JobDescriptionResponse(ORMModel):

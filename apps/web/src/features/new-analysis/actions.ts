@@ -1,7 +1,8 @@
 "use server";
 
 // Server Actions of the new-analysis screen: save the CV if it is new, save the posting, start the analysis
-// and open it; and delete a saved CV. Every step goes through the API with the session token.
+// and open it; fill the posting from a link; and delete a saved CV. Every step goes through the API with the
+// session token.
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -12,13 +13,17 @@ import {
   createJobDescription,
   createResumeFromText,
   deleteResume,
+  importJobDescription,
   uploadResume,
 } from "@/lib/api/backend";
 import { ApiError } from "@/lib/api/client";
+import type { JobDescriptionDraft } from "@/lib/api/types";
 
 import {
   NEW_RESUME,
+  linkErrorKey,
   submitErrorResult,
+  type LinkErrorKey,
   type StartAnalysisResult,
   type SubmitStep,
 } from "./new-analysis-model";
@@ -74,6 +79,20 @@ export async function startAnalysis(localeValue: string, formData: FormData): Pr
     return submitErrorResult(step, error, savedResumeId);
   }
   redirect(`/${locale}/analyses/${analysisId}`);
+}
+
+export type LinkFillResult = { ok: true; posting: JobDescriptionDraft } | { ok: false; error: LinkErrorKey };
+
+/** Reads the posting behind a link for the form to show; nothing is saved until the analysis starts. */
+export async function fillFromLink(localeValue: string, link: string): Promise<LinkFillResult> {
+  const locale = toLocale(localeValue);
+  try {
+    return { ok: true, posting: await importJobDescription(link) };
+  } catch (error) {
+    redirectIfSignedOut(error, locale);
+    if (!(error instanceof ApiError)) console.error("Filling a posting from a link failed", error);
+    return { ok: false, error: linkErrorKey(error) };
+  }
 }
 
 export async function deleteSavedResume(localeValue: string, resumeId: string): Promise<{ ok: boolean }> {

@@ -20,6 +20,7 @@ class PostingDraft:
     title: str | None
     company: str | None
     text: str
+    source_url: str
 
 
 class PostingImportService:
@@ -37,6 +38,7 @@ class PostingImportService:
             title=_field(posting.title),
             company=_field(posting.company),
             text=normalize_document_text(posting.text, max_chars=get_settings().max_document_chars),
+            source_url=page.url,
         )
 
 

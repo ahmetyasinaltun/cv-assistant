@@ -57,7 +57,9 @@ def import_job_description(
     """Reads the posting behind a link so the client can fill its form; nothing is saved. Signed-in users only,
     so the endpoint is not an open proxy."""
     draft = importer.draft_from_link(payload.url)
-    return JobDescriptionDraftResponse(title=draft.title, company=draft.company, text=draft.text)
+    return JobDescriptionDraftResponse(
+        title=draft.title, company=draft.company, text=draft.text, source_url=draft.source_url
+    )
 
 
 @router.get("", response_model=list[JobDescriptionResponse])

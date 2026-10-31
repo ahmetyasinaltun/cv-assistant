@@ -1,12 +1,13 @@
 "use client";
 
-// The job posting sheet: title, optional company and the full posting text.
+// The job posting sheet: an optional link that fills the fields, then title, optional company and the full text.
 
 import { TextAreaField } from "@/components/form/TextAreaField";
 import { TextField } from "@/components/form/TextField";
 import type { Dictionary } from "@/i18n/dictionaries";
 
-import { MAX_DOCUMENT_CHARS, type FieldErrors, type NewAnalysisDraft } from "./new-analysis-model";
+import { LinkFill } from "./LinkFill";
+import { MAX_DOCUMENT_CHARS, linkPatch, type FieldErrors, type NewAnalysisDraft } from "./new-analysis-model";
 
 interface PostingSheetProps {
   draft: NewAnalysisDraft;
@@ -26,6 +27,7 @@ export function PostingSheet({ draft, onChange, errors, locale, labels }: Postin
         {copy.title}
       </h2>
       <div className="mt-5 flex flex-col gap-4">
+        <LinkFill locale={locale} labels={labels} onFilled={(posting) => onChange(linkPatch(posting))} />
         <div className="grid gap-4 sm:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
           <TextField
             id="job-title"
@@ -59,7 +61,8 @@ export function PostingSheet({ draft, onChange, errors, locale, labels }: Postin
           maxChars={MAX_DOCUMENT_CHARS}
           countTemplate={labels.characterCount}
           overLimitTemplate={labels.overLimit}
-          rows={14}
+          // Shorter than the CV text box: the link row sits above it and the two columns should end together.
+          rows={8}
           error={errorText("jobText")}
         />
       </div>

@@ -235,6 +235,26 @@
     "submit": "Analizi başlat",
     "submitting": "Başlatılıyor…",
     "submitNote": "Analiz sürerken bu sayfadan ayrılabilirsin; sonuç Analizler altında saklanır.",
+    "link": {
+      "label": "İlanın bağlantısı",
+      "placeholder": "https://www.linkedin.com/jobs/view/…",
+      "hint": "LinkedIn ilanları ve gönderileri, Kariyer.net, Youthall ve çoğu ilan sayfası. Açılmayan sitelerde metni aşağıya yapıştır.",
+      "fill": "Doldur",
+      "filling": "Okunuyor…",
+      "divider": "ya da kendin doldur",
+      "filled": "Alanlar {site} sayfasından dolduruldu. Başlamadan önce pozisyonu ve metni kontrol et.",
+      "filledNoTitle": "Alanlar {site} sayfasından dolduruldu. Sayfada pozisyon adı yok: kendin yaz ve metni kontrol et.",
+      "errors": {
+        "missing": "Önce ilanın bağlantısını yapıştır.",
+        "invalid": "Bu bir web adresine benzemiyor. Bağlantıyı tarayıcının adres çubuğundan kopyala.",
+        "notAllowed": "Bu adres okunamaz. İlanın herkese açık bağlantısını kullan.",
+        "blocked": "Bu sayfa okunamadı: {site} buna izin vermiyor. İlanın metnini kopyalayıp aşağıya yapıştır.",
+        "notFound": "Bu sayfa artık yok; ilan kaldırılmış olabilir.",
+        "unreachable": "Şu an {site} yanıt vermiyor. Biraz sonra yeniden dene ya da metni aşağıya yapıştır.",
+        "noPosting": "Bu sayfada ilan metni bulamadık. İlanın metnini kopyalayıp aşağıya yapıştır.",
+        "unavailable": "Bağlantı şu an okunamıyor. İlanın metnini aşağıya yapıştırabilirsin."
+      }
+    },
     "startCard": {
       "title": "Neler karşılaştırılacak",
       "resumeUnnamed": "Yeni CV, henüz adı yok",

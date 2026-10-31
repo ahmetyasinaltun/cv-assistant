@@ -14,6 +14,9 @@ import {
   checkPdf,
   comparisonSummary,
   defaultResumeChoice,
+  linkErrorKey,
+  linkPatch,
+  siteName,
   submitErrorResult,
   validateDraft,
   type NewAnalysisDraft,
@@ -94,6 +97,29 @@ describe("submitErrorResult", () => {
     const offline = submitErrorResult("analysis", new ApiError(NETWORK_ERROR_STATUS, "network_error", ""), null);
     expect(offline.formError).toBe("unavailable");
     expect(submitErrorResult("analysis", new Error("boom"), null).formError).toBe("generic");
+  });
+});
+
+describe("filling from a link", () => {
+  it("maps each API code to its message and anything unexpected to a general one", () => {
+    expect(linkErrorKey(new ApiError(502, "link_blocked", ""))).toBe("blocked");
+    expect(linkErrorKey(new ApiError(422, "link_no_posting", ""))).toBe("noPosting");
+    expect(linkErrorKey(new ApiError(422, "link_invalid", ""))).toBe("invalid");
+    expect(linkErrorKey(new ApiError(422, "validation_failed", ""))).toBe("invalid");
+    expect(linkErrorKey(new ApiError(NETWORK_ERROR_STATUS, "network_error", ""))).toBe("unavailable");
+    expect(linkErrorKey(new ApiError(500, "http_500", ""))).toBe("unavailable");
+    expect(linkErrorKey(new Error("boom"))).toBe("unavailable");
+  });
+
+  it("names the site by its host without www, and nothing for text that is not a link", () => {
+    expect(siteName("https://www.kariyer.net/is-ilani/x-1")).toBe("kariyer.net");
+    expect(siteName("tr.linkedin.com/jobs/view/1")).toBe("tr.linkedin.com");
+    expect(siteName("not a link")).toBeNull();
+  });
+
+  it("replaces all three posting fields with what the link held, emptying the ones it lacks", () => {
+    const posting = { title: null, company: "SafeSpeech", text: POSTING, source_url: "https://www.linkedin.com/posts/x" };
+    expect(linkPatch(posting)).toEqual({ jobTitle: "", company: "SafeSpeech", jobText: POSTING });
   });
 });
 

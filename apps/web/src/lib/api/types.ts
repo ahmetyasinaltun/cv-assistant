@@ -126,6 +126,15 @@ export interface JobDescriptionSummary {
   created_at: string;
 }
 
+/** What a link held, to fill the posting fields; the API does not save it. */
+export interface JobDescriptionDraft {
+  title: string | null;
+  company: string | null;
+  text: string;
+  /** The page the text was read from, after redirects (a short lnkd.in link ends on linkedin.com). */
+  source_url: string;
+}
+
 export interface SampleAnalysisInput {
   resume: { title: string; text: string };
   job_description: { title: string; company: string | null; text: string };

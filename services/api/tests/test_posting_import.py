@@ -378,6 +378,7 @@ def test_import_endpoint_returns_a_draft_and_saves_nothing(client, auth_headers)
         "title": "Backend Intern",
         "company": None,
         "text": f"Backend Intern\n\n{DESCRIPTION}",
+        "source_url": "https://jobs.example/backend-intern",
     }
     assert client.get("/job-descriptions", headers=auth_headers).json() == []
 
