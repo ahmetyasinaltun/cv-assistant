@@ -25,12 +25,13 @@ Instead of an unexplained "87% fit", every judgement points at the CV lines it r
 
 ## What it does
 
-1. Paste or upload a CV (PDF; clickable links such as project repositories are read too) and paste a job posting, or fill the posting from its link (LinkedIn jobs and posts, Kariyer.net, Youthall and other pages with job data); on Android, share the link from the LinkedIn or Kariyer.net app.
+1. Paste or upload a CV (PDF or Word .docx; clickable links such as project repositories are read too) and paste a job posting, or fill the posting from its link (LinkedIn jobs and posts, Kariyer.net, Youthall and other pages with job data); on Android, share the link from the LinkedIn or Kariyer.net app.
 2. The posting's requirements are extracted and labelled must-have or nice-to-have.
 3. Each requirement is matched against the CV's own lines and judged **matched**, **partial** or **missing**, with the lines quoted.
 4. A score is computed from those labels (must-have counts double), with the formula shown next to it.
 5. The result leads with **what to fix**: prioritized changes tied to a requirement and a CV section.
 6. Interview questions are generated on request, aimed at the gaps.
+7. A result can be printed or saved as PDF from the web: a plain document with the score, the fixes and, for every requirement, the reason and the CV lines it relied on.
 
 AI-written text follows the interface language (English or Turkish); requirement wording and CV quotes stay in their source language. Both clients use the same API, and the account remembers the language across devices.
 

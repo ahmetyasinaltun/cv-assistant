@@ -1,5 +1,6 @@
 // Teal brand band at the top of an analysis: the way back, the job title, what it was compared with, when,
-// and one action. The summary card below overlaps its lower edge.
+// a quiet secondary action beside the date (printing) and one main action. The summary card below overlaps its
+// lower edge.
 
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -19,6 +20,8 @@ interface ResultHeaderProps {
   /** The analyses list; the public sample has no list to return to. */
   backHref?: string;
   action?: ReactNode;
+  /** Secondary, set as a text action beside the date so the band keeps one main action. */
+  metaAction?: ReactNode;
 }
 
 export function ResultHeader({
@@ -31,6 +34,7 @@ export function ResultHeader({
   labels,
   backHref,
   action,
+  metaAction,
 }: ResultHeaderProps) {
   return (
     <div className="bg-brand text-on-brand">
@@ -69,6 +73,7 @@ export function ResultHeader({
                 ·
               </span>
               <time dateTime={createdAt}>{createdAtLabel}</time>
+              {metaAction && <span className="sm:ml-3">{metaAction}</span>}
             </p>
             {isSample && (
               <SampleNotice tone="onBrand" className="mt-4">

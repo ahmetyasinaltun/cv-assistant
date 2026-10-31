@@ -184,3 +184,13 @@
     transition: opacity 150ms ease;
   }
 }
+
+/* Paper: the print-only result document fills the page on white; the screen layout is hidden by print: classes. */
+@media print {
+  @page {
+    margin: 14mm 15mm;
+  }
+  body {
+    background: #ffffff;
+  }
+}

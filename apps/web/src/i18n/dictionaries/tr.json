@@ -39,6 +39,10 @@
     },
     "score": "{score} / 100",
     "howScored": "Puan nasıl hesaplanıyor?",
+    "print": {
+      "button": "Yazdır ya da PDF kaydet",
+      "footer": "AI Career Assistant ile hazırlandı. Değerlendirmeler yapay zekâ desteklidir: her birini CV’nle karşılaştırarak kontrol et."
+    },
     "limitationsTitle": "Bu analizin bilemeyecekleri",
     "status": {
       "matched": "Karşılandı",

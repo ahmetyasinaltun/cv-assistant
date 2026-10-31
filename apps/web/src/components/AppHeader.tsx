@@ -35,7 +35,7 @@ function BrandMark() {
 
 export function AppHeader({ locale, labels }: AppHeaderProps) {
   return (
-    <header className="border-b border-rule bg-paper">
+    <header className="border-b border-rule bg-paper print:hidden">
       {/* Phones: brand and a menu button in one row; the menu opens the rest under the bar. */}
       <div className="mx-auto flex max-w-[1280px] flex-wrap items-center gap-x-3 px-4 sm:flex-nowrap sm:px-8">
         <Link

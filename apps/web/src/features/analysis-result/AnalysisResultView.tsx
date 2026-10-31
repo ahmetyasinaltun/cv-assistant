@@ -14,6 +14,8 @@ import { EvidenceSheet } from "./EvidenceSheet";
 import { FixList } from "./FixList";
 import { InterviewQuestions, type QuestionsState } from "./InterviewQuestions";
 import { MatchSummary } from "./MatchSummary";
+import { PrintableResult } from "./PrintableResult";
+import { PrintButton } from "./PrintButton";
 import { RequirementList, type SelectionSource } from "./RequirementList";
 import { ResultHeader } from "./ResultHeader";
 import { defaultSelectedRequirementId } from "./view-model";
@@ -168,83 +170,96 @@ export function AnalysisResultView({
   ) : null;
 
   return (
-    <main id="main" className="pb-24">
-      <ResultHeader
-        jobTitle={analysis.job_title}
-        company={analysis.company}
-        resumeTitle={analysis.resume_title}
-        createdAt={analysis.created_at}
-        createdAtLabel={createdAtLabel}
-        isSample={isSample}
-        labels={labels}
-        backHref={backHref}
-        action={headerAction}
-      />
+    <main id="main" className="pb-24 print:pb-0">
+      <div className="print:hidden">
+        <ResultHeader
+          jobTitle={analysis.job_title}
+          company={analysis.company}
+          resumeTitle={analysis.resume_title}
+          createdAt={analysis.created_at}
+          createdAtLabel={createdAtLabel}
+          isSample={isSample}
+          labels={labels}
+          backHref={backHref}
+          action={headerAction}
+          metaAction={result ? <PrintButton label={labels.print.button} /> : null}
+        />
 
-      <div className="mx-auto max-w-[1280px] px-4 sm:px-8">
-        {!result ? (
-          <AnalysisStatusPanel
-            status={analysis.status === "completed" ? "failed" : analysis.status}
-            errorCode={analysis.error_code}
-            retryHref={retryHref}
-            retryAction={retryAction}
-            newAnalysisHref={newAnalysisHref}
-            labels={labels}
-          />
-        ) : (
-          <>
-            <MatchSummary
-              overall={result.overall}
-              requirements={requirements}
+        <div className="mx-auto max-w-[1280px] px-4 sm:px-8">
+          {!result ? (
+            <AnalysisStatusPanel
+              status={analysis.status === "completed" ? "failed" : analysis.status}
+              errorCode={analysis.error_code}
+              retryHref={retryHref}
+              retryAction={retryAction}
+              newAnalysisHref={newAnalysisHref}
               labels={labels}
-              locale={locale}
-              contentLang={contentLang}
             />
-            <FixList
-              suggestions={result.suggestions}
-              requirementsById={requirementsById}
-              selectedId={selection.id}
-              onSelect={selectElsewhere}
-              labels={labels}
-              locale={locale}
-              contentLang={contentLang}
-            />
-            <div className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-              <RequirementList
+          ) : (
+            <>
+              <MatchSummary
+                overall={result.overall}
                 requirements={requirements}
-                evidenceById={evidenceById}
-                selectedId={selection.id}
-                onSelect={selectFromList}
                 labels={labels}
                 locale={locale}
                 contentLang={contentLang}
               />
-              <div className="min-w-0">
-                <EvidenceSheet
-                  sheetRef={sheetRef}
-                  resumeTitle={analysis.resume_title}
-                  evidence={result.candidate_evidence}
-                  selected={selected}
-                  instantHighlight={selection.source === "keyboard"}
+              <FixList
+                suggestions={result.suggestions}
+                requirementsById={requirementsById}
+                selectedId={selection.id}
+                onSelect={selectElsewhere}
+                labels={labels}
+                locale={locale}
+                contentLang={contentLang}
+              />
+              <div className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+                <RequirementList
+                  requirements={requirements}
+                  evidenceById={evidenceById}
+                  selectedId={selection.id}
+                  onSelect={selectFromList}
                   labels={labels}
                   locale={locale}
                   contentLang={contentLang}
                 />
+                <div className="min-w-0">
+                  <EvidenceSheet
+                    sheetRef={sheetRef}
+                    resumeTitle={analysis.resume_title}
+                    evidence={result.candidate_evidence}
+                    selected={selected}
+                    instantHighlight={selection.source === "keyboard"}
+                    labels={labels}
+                    locale={locale}
+                    contentLang={contentLang}
+                  />
+                </div>
               </div>
-            </div>
-            <InterviewQuestions
-              state={questions}
-              onGenerate={generateQuestions ? () => void startQuestions() : undefined}
-              requirementsById={requirementsById}
-              selectedId={selection.id}
-              onSelect={selectElsewhere}
-              labels={labels.questions}
-              contentLang={contentLang}
-            />
-            <Limitations items={result.overall.limitations} title={labels.limitationsTitle} contentLang={contentLang} />
-          </>
-        )}
+              <InterviewQuestions
+                state={questions}
+                onGenerate={generateQuestions ? () => void startQuestions() : undefined}
+                requirementsById={requirementsById}
+                selectedId={selection.id}
+                onSelect={selectElsewhere}
+                labels={labels.questions}
+                contentLang={contentLang}
+              />
+              <Limitations items={result.overall.limitations} title={labels.limitationsTitle} contentLang={contentLang} />
+            </>
+          )}
+        </div>
       </div>
+      {result && (
+        <PrintableResult
+          analysis={analysis}
+          result={result}
+          questions={questions.kind === "ready" ? questions.questions : null}
+          labels={labels}
+          createdAtLabel={createdAtLabel}
+          contentLang={contentLang}
+        />
+      )}
     </main>
   );
 }
