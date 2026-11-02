@@ -1,0 +1,90 @@
+{
+  "contact": {
+    "name": "Deniz Aydın",
+    "email": "deniz.aydin@example.com",
+    "phone": "+90 555 010 20 30",
+    "location": "Istanbul, Türkiye",
+    "links": [
+      {"url": "https://github.com/example-deniz"},
+      {"url": "https://www.linkedin.com/in/example-deniz/"}
+    ]
+  },
+  "headline": "Computer Engineering student focused on backend development",
+  "summary": [
+    {"text": "Fourth-year Computer Engineering student who builds and tests REST APIs with Python, FastAPI and PostgreSQL."},
+    {"text": "Completed a backend internship on an order service and maintains two open-source side projects."},
+    {"text": "Looking for a backend or full-stack internship where code review and automated tests are part of the daily work."}
+  ],
+  "experience": [
+    {
+      "role": "Backend Intern",
+      "organization": "Acme Corp",
+      "location": "Istanbul",
+      "start": "2025-06",
+      "end": "2025-09",
+      "bullets": [
+        {"text": "Built six REST endpoints for the order service with Python and FastAPI, including pagination and filtering."},
+        {"text": "Designed PostgreSQL schemas and migrations for returns and refunds, reviewed by the team lead."},
+        {"text": "Raised the service's pytest coverage from 61% to 78% by testing edge cases in the pricing logic."}
+      ]
+    },
+    {
+      "role": "Teaching Assistant, Data Structures",
+      "organization": "North Technical University",
+      "location": "Istanbul",
+      "start": "2024-09",
+      "end": "2025-01",
+      "bullets": [
+        {"text": "Led weekly lab sessions for 40 students on linked lists, trees and hash tables."},
+        {"text": "Wrote feedback on weekly assignments in English and kept an office hour for difficult cases."}
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "B.Sc. in Computer Engineering",
+      "school": "North Technical University",
+      "location": "Istanbul",
+      "start": "2022-09",
+      "end": "2026-06",
+      "details": [
+        {"text": "GPA 3.31 / 4.00"},
+        {"text": "Relevant courses: Databases, Operating Systems, Software Engineering, Computer Networks"}
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Inventory Tracker",
+      "link": {"url": "https://github.com/example-deniz/inventory-tracker"},
+      "start": "2025-02",
+      "end": "2025-05",
+      "bullets": [
+        {"text": "FastAPI backend with SQLAlchemy and PostgreSQL, React frontend for a small shop's stock and orders."},
+        {"text": "Containerised with Docker Compose so the whole app starts with one command; CI runs the tests on every push."}
+      ]
+    },
+    {
+      "name": "Campus Events API",
+      "link": {"url": "https://github.com/example-deniz/campus-events"},
+      "start": "2024-03",
+      "end": "2024-06",
+      "bullets": [
+        {"text": "Public API for student clubs to publish events, with JWT sign-in and efficient full-text search."},
+        {"text": "Profiled slow queries and added indexes, cutting the event list response from 900 ms to 120 ms."}
+      ]
+    }
+  ],
+  "skills": [
+    {"name": "Programming languages", "items": [{"text": "Python"}, {"text": "SQL"}, {"text": "TypeScript"}, {"text": "Java"}]},
+    {"name": "Frameworks", "items": [{"text": "FastAPI"}, {"text": "SQLAlchemy"}, {"text": "React"}]},
+    {"name": "Tools", "items": [{"text": "PostgreSQL"}, {"text": "Docker"}, {"text": "Git"}, {"text": "pytest"}, {"text": "Linux"}, {"text": "GitHub Actions"}]}
+  ],
+  "languages": [
+    {"name": "Turkish", "level": "native"},
+    {"name": "English", "level": "B2, IELTS 6.5"}
+  ],
+  "certificates": [
+    {"name": "AWS Certified Cloud Practitioner", "issuer": "Amazon Web Services", "date": "2025-03"}
+  ]
+}

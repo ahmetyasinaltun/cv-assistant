@@ -1,6 +1,7 @@
 # Application-level exception types and the FastAPI handlers that map them to predictable JSON errors.
 
 from fastapi import FastAPI, Request
+from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
@@ -63,6 +64,13 @@ class ExternalPageError(AppError):
     code = "link_unreachable"
 
 
+class CvRenderError(AppError):
+    """A CV template failed to produce a PDF. Content is validated first, so this points to a template bug."""
+
+    status_code = 500
+    code = "cv_render_failed"
+
+
 def _error_body(code: str, message: str, details: object | None = None) -> dict:
     body: dict = {"error": {"code": code, "message": message}}
     if details is not None:
@@ -86,5 +94,8 @@ def register_error_handlers(app: FastAPI) -> None:
     async def handle_validation_error(_: Request, exc: RequestValidationError) -> JSONResponse:
         return JSONResponse(
             status_code=422,
-            content=_error_body("validation_failed", "Request validation failed.", exc.errors()),
+            # jsonable_encoder: a custom validator's ValueError sits in the details and is not plain JSON.
+            content=_error_body(
+                "validation_failed", "Request validation failed.", jsonable_encoder(exc.errors())
+            ),
         )

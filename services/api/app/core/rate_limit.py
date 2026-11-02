@@ -76,5 +76,7 @@ INTERVIEW_QUESTIONS = SlidingWindowLimiter(
     20, DAY, message="The daily limit of interview questions is reached."
 )
 LINK_IMPORTS = SlidingWindowLimiter(30, 60 * 60, message="Too many links read in the last hour.")
+# A render takes tens of milliseconds of CPU; the cap only stops a script from hogging the free instance.
+CV_RENDERS = SlidingWindowLimiter(200, 60 * 60, message="Too many CV previews in the last hour.")
 
-ALL_LIMITERS = (LOGIN_FAILURES, ANALYSES, INTERVIEW_QUESTIONS, LINK_IMPORTS)
+ALL_LIMITERS = (LOGIN_FAILURES, ANALYSES, INTERVIEW_QUESTIONS, LINK_IMPORTS, CV_RENDERS)

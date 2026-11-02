@@ -1,0 +1,90 @@
+{
+  "contact": {
+    "name": "Deniz Aydın",
+    "email": "deniz.aydin@example.com",
+    "phone": "+90 555 010 20 30",
+    "location": "İstanbul",
+    "links": [
+      {"url": "https://github.com/example-deniz"},
+      {"url": "https://www.linkedin.com/in/example-deniz/"}
+    ]
+  },
+  "headline": "Backend geliştirmeye odaklanan Bilgisayar Mühendisliği öğrencisi",
+  "summary": [
+    {"text": "Python, FastAPI ve PostgreSQL ile REST API geliştirip test eden 4. sınıf Bilgisayar Mühendisliği öğrencisiyim."},
+    {"text": "Bir sipariş servisinde backend stajını tamamladım ve iki açık kaynak yan projeyi sürdürüyorum."},
+    {"text": "Kod incelemesinin ve otomatik testlerin günlük işin parçası olduğu bir backend ya da full-stack staj arıyorum."}
+  ],
+  "experience": [
+    {
+      "role": "Backend Stajyeri",
+      "organization": "Acme Corp",
+      "location": "İstanbul",
+      "start": "2025-06",
+      "end": "2025-09",
+      "bullets": [
+        {"text": "Sipariş servisi için Python ve FastAPI ile sayfalama ve filtreleme içeren altı REST uç noktası geliştirdim."},
+        {"text": "İade ve geri ödeme için PostgreSQL şemalarını ve migration'ları tasarladım; ekip lideri inceledi."},
+        {"text": "Fiyat hesaplama mantığındaki uç durumları test ederek servisin pytest kapsamını %61'den %78'e çıkardım."}
+      ]
+    },
+    {
+      "role": "Öğrenci Asistanı, Veri Yapıları",
+      "organization": "Kuzey Teknik Üniversitesi",
+      "location": "İstanbul",
+      "start": "2024-09",
+      "end": "2025-01",
+      "bullets": [
+        {"text": "40 öğrenciye bağlı listeler, ağaçlar ve hash tabloları üzerine haftalık laboratuvar oturumları yönettim."},
+        {"text": "Haftalık ödevlere İngilizce geri bildirim yazdım ve zorlanan öğrenciler için ofis saati tuttum."}
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "Bilgisayar Mühendisliği Lisans",
+      "school": "Kuzey Teknik Üniversitesi",
+      "location": "İstanbul",
+      "start": "2022-09",
+      "end": "2026-06",
+      "details": [
+        {"text": "Not ortalaması 3,31 / 4,00"},
+        {"text": "İlgili dersler: Veritabanları, İşletim Sistemleri, Yazılım Mühendisliği, Bilgisayar Ağları"}
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Inventory Tracker",
+      "link": {"url": "https://github.com/example-deniz/inventory-tracker"},
+      "start": "2025-02",
+      "end": "2025-05",
+      "bullets": [
+        {"text": "Küçük bir mağazanın stok ve siparişleri için SQLAlchemy ve PostgreSQL kullanan FastAPI backend, React arayüz."},
+        {"text": "Docker Compose ile tüm uygulama tek komutla ayağa kalkıyor; CI her push'ta testleri çalıştırıyor."}
+      ]
+    },
+    {
+      "name": "Campus Events API",
+      "link": {"url": "https://github.com/example-deniz/campus-events"},
+      "start": "2024-03",
+      "end": "2024-06",
+      "bullets": [
+        {"text": "Öğrenci kulüplerinin etkinlik yayımladığı, JWT ile giriş ve verimli tam metin arama sunan herkese açık API."},
+        {"text": "Yavaş sorguları profilleyip indeks ekledim; etkinlik listesinin yanıt süresi 900 ms'den 120 ms'ye indi."}
+      ]
+    }
+  ],
+  "skills": [
+    {"name": "Programlama dilleri", "items": [{"text": "Python"}, {"text": "SQL"}, {"text": "TypeScript"}, {"text": "Java"}]},
+    {"name": "Framework'ler", "items": [{"text": "FastAPI"}, {"text": "SQLAlchemy"}, {"text": "React"}]},
+    {"name": "Araçlar", "items": [{"text": "PostgreSQL"}, {"text": "Docker"}, {"text": "Git"}, {"text": "pytest"}, {"text": "Linux"}, {"text": "GitHub Actions"}]}
+  ],
+  "languages": [
+    {"name": "Türkçe", "level": "ana dil"},
+    {"name": "İngilizce", "level": "B2, IELTS 6.5"}
+  ],
+  "certificates": [
+    {"name": "AWS Certified Cloud Practitioner", "issuer": "Amazon Web Services", "date": "2025-03"}
+  ]
+}

@@ -21,6 +21,8 @@ dependencies = [
     "beautifulsoup4>=4.12",
     # Security floor for a dependency of google-auth (known decoding issues before 0.6.5).
     "pyasn1>=0.6.5",
+    # Typst typesets CVs to PDF: a small native wheel, no TeX installation, data passed in as JSON.
+    "typst>=0.15",
 ]
 
 [project.optional-dependencies]
@@ -52,4 +54,10 @@ build-backend = "setuptools.build_meta"
 include = ["app*"]
 
 [tool.setuptools.package-data]
-app = ["ai/prompts/*.md", "ai/eval/cases/*.json"]
+app = [
+    "ai/prompts/*.md",
+    "ai/eval/cases/*.json",
+    "cv/templates/*/*.typ",
+    "cv/fonts/*/*",
+    "cv/samples/*.json",
+]
