@@ -1,5 +1,6 @@
 # Use cases for CV documents: write one from scratch or from a saved CV, list, edit, delete and render it as a PDF.
 
+import re
 from uuid import UUID
 
 from sqlalchemy.orm import Session
@@ -8,7 +9,7 @@ from app.ai.language_guess import guess_language
 from app.ai.providers.base import LLMClient
 from app.core.errors import NotFoundError
 from app.cv.content import CvContent
-from app.cv.render import CvRenderer, RenderedCv
+from app.cv.render import THUMBNAIL_PPI, CvRenderer, RenderedCv, RenderedPage
 from app.cv.structuring import CvStructurer, StructuringResult
 from app.models.cv_document import CvDocument
 from app.models.user import User
@@ -16,6 +17,9 @@ from app.repositories.cv_document_repository import CvDocumentRepository
 from app.schemas.common import Language
 from app.schemas.cv import CvDocumentUpdateRequest
 from app.services.document_service import ResumeService
+
+# A saved CV is often named after its file ("Deniz_CV_2025.pdf"); the CV document keeps the name, not the extension.
+_FILE_EXTENSION = re.compile(r"\.(pdf|docx?|txt)$", re.IGNORECASE)
 
 
 class CvDocumentService:
@@ -50,7 +54,7 @@ class CvDocumentService:
                 user_id=user.id,
                 kind="maker",
                 resume_id=resume.id,
-                title=resume.title,
+                title=_FILE_EXTENSION.sub("", resume.title).strip() or resume.title,
                 language=language,
                 template=template,
                 content=result.content.model_dump(mode="json"),
@@ -91,3 +95,13 @@ class CvDocumentService:
         document = self.get(document_id, user_id)
         content = CvContent.model_validate(document.content)
         return document, renderer.render(content, document.template, document.language)
+
+    def render_thumbnail(
+        self, document_id: UUID, user_id: UUID, renderer: CvRenderer
+    ) -> tuple[CvDocument, RenderedPage]:
+        document = self.get(document_id, user_id)
+        content = CvContent.model_validate(document.content)
+        page = renderer.render_page(
+            content, document.template, document.language, page=1, ppi=THUMBNAIL_PPI
+        )
+        return document, page

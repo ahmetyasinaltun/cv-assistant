@@ -45,6 +45,17 @@ class RenderedCv:
     page_count: int
 
 
+@dataclass(frozen=True)
+class RenderedPage:
+    png: bytes
+    page_count: int
+
+
+# Pixels per inch for page images: sharp at about 520 CSS pixels wide on a 2x screen, and a small list thumbnail.
+PREVIEW_PPI = 128.0
+THUMBNAIL_PPI = 60.0
+
+
 def get_template(template_id: str) -> CvTemplate:
     template = CV_TEMPLATES.get(template_id)
     if template is None:
@@ -66,17 +77,41 @@ class CvRenderer:
         self._lock = threading.Lock()
 
     def render(self, content: CvContent, template_id: str, language: Language) -> RenderedCv:
+        pdf = self._compile(content, template_id, language, format="pdf")
+        assert isinstance(pdf, bytes)
+        return RenderedCv(pdf=pdf, page_count=len(PdfReader(BytesIO(pdf)).pages))
+
+    def render_page(
+        self, content: CvContent, template_id: str, language: Language, *, page: int, ppi: float
+    ) -> RenderedPage:
+        """One page as a PNG, for the editor's preview and the list's thumbnails: the same in every browser,
+        with no PDF viewer around it. A page past the end gives the last one."""
+        output = self._compile(content, template_id, language, format="png", ppi=ppi)
+        pages = output if isinstance(output, list) else [output]
+        index = min(max(page, 1), len(pages)) - 1
+        return RenderedPage(png=pages[index], page_count=len(pages))
+
+    def _compile(
+        self,
+        content: CvContent,
+        template_id: str,
+        language: Language,
+        *,
+        format: str,
+        ppi: float | None = None,
+    ) -> bytes | list[bytes]:
         template = get_template(template_id)
         data = json.dumps(build_print_view(content, language), ensure_ascii=False)
         with self._lock:
             compiler = self._compiler_for(template)
             try:
-                pdf = compiler.compile(format="pdf", sys_inputs={"cv": data})
+                output = compiler.compile(format=format, ppi=ppi, sys_inputs={"cv": data})
             except typst.TypstError as exc:
                 # The diagnostic names the template line; the CV text itself is not logged.
                 logger.error("CV template %r failed to compile: %s", template.id, exc.message)
                 raise CvRenderError("The CV could not be rendered.") from exc
-        return RenderedCv(pdf=pdf, page_count=len(PdfReader(BytesIO(pdf)).pages))
+        assert output is not None
+        return output
 
     def _compiler_for(self, template: CvTemplate) -> typst.Compiler:
         compiler = self._compilers.get(template.id)

@@ -124,7 +124,24 @@ def download_cv_document(
     )
 
 
+@router.get(
+    "/cv-documents/{document_id}/thumbnail",
+    response_class=Response,
+    responses={200: {"content": {"image/png": {}}, "description": "The first page, small."}},
+)
+def cv_document_thumbnail(
+    document_id: UUID, current_user: CurrentUser, db: DbSession, renderer: Renderer
+) -> Response:
+    CV_RENDERS.hit(str(current_user.id))
+    _, page = CvDocumentService(db).render_thumbnail(document_id, current_user.id, renderer)
+    # Private to the user; the client asks again with the document's update time when it changes.
+    return Response(
+        content=page.png, media_type="image/png", headers={"Cache-Control": "private, max-age=3600"}
+    )
+
+
 def attachment_disposition(title: str) -> str:
     """A plain ASCII file name for old clients plus the exact UTF-8 name ("Deniz Aydın CV.pdf") for the rest."""
-    ascii_name = re.sub(r"[^a-z0-9]+", "-", fold_for_matching(title)).strip("-") or "cv"
-    return f"attachment; filename=\"{ascii_name}.pdf\"; filename*=UTF-8''{quote(title)}.pdf"
+    name = re.sub(r"\.pdf$", "", title.strip(), flags=re.IGNORECASE) or "cv"
+    ascii_name = re.sub(r"[^a-z0-9]+", "-", fold_for_matching(name)).strip("-") or "cv"
+    return f"attachment; filename=\"{ascii_name}.pdf\"; filename*=UTF-8''{quote(name)}.pdf"

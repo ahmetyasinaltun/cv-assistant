@@ -182,3 +182,28 @@ def test_template_list_is_named_in_the_requested_language(client, auth_headers):
         {"id": "modern", "name": "Modern"},
         {"id": "standard", "name": "Standart"},
     ]
+
+
+def test_preview_endpoint_returns_one_page_as_png(client, auth_headers):
+    response = client.post(
+        "/cv-templates/standard/preview", json=render_request("tr"), headers=auth_headers
+    )
+    assert response.status_code == 200, response.text
+    assert response.headers["content-type"] == "image/png"
+    assert response.content.startswith(b"\x89PNG")
+    assert response.headers["x-page-count"] == "1"
+    # A page past the end shows the last page instead of failing.
+    response = client.post(
+        "/cv-templates/standard/preview?page=3", json=render_request("tr"), headers=auth_headers
+    )
+    assert response.status_code == 200
+    assert client.post("/cv-templates/standard/preview", json=render_request()).status_code == 401
+
+
+def test_long_cv_preview_reports_every_page(renderer):
+    bullets = [{"text": f"Delivered improvement number {n}."} for n in range(12)]
+    jobs = [{"role": f"Engineer {n}", "organization": "Acme", "bullets": bullets} for n in range(8)]
+    first = renderer.render_page(content_with(experience=jobs), "classic", "en", page=1, ppi=30)
+    second = renderer.render_page(content_with(experience=jobs), "classic", "en", page=2, ppi=30)
+    assert first.page_count == second.page_count >= 2
+    assert first.png != second.png

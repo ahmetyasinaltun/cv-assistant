@@ -76,8 +76,9 @@ INTERVIEW_QUESTIONS = SlidingWindowLimiter(
     20, DAY, message="The daily limit of interview questions is reached."
 )
 LINK_IMPORTS = SlidingWindowLimiter(30, 60 * 60, message="Too many links read in the last hour.")
-# A render takes tens of milliseconds of CPU; the cap only stops a script from hogging the free instance.
-CV_RENDERS = SlidingWindowLimiter(200, 60 * 60, message="Too many CV previews in the last hour.")
+# A render takes tens of milliseconds of CPU. The editor's live preview renders after each pause in typing, so the
+# cap is generous; it only stops a script from hogging the free instance.
+CV_RENDERS = SlidingWindowLimiter(600, 60 * 60, message="Too many CV previews in the last hour.")
 # Structuring a saved CV (and, later, tailoring one) costs model calls from the shared free quota.
 CV_AI_WRITES = SlidingWindowLimiter(
     10, DAY, message="The daily limit of AI-written CVs is reached."

@@ -2,11 +2,11 @@
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, Query, Response
 
 from app.api.deps import CurrentUser
 from app.core.rate_limit import CV_RENDERS
-from app.cv.render import CV_TEMPLATES, CvRenderer, get_cv_renderer
+from app.cv.render import CV_TEMPLATES, PREVIEW_PPI, CvRenderer, get_cv_renderer
 from app.schemas.common import Language
 from app.schemas.cv import CvRenderRequest, CvTemplateResponse
 
@@ -47,4 +47,30 @@ def render_cv_pdf(
             "Content-Disposition": f'inline; filename="cv-{template_id}.pdf"',
             PAGE_COUNT_HEADER: str(rendered.page_count),
         },
+    )
+
+
+@router.post(
+    "/{template_id}/preview",
+    response_class=Response,
+    responses={
+        200: {"content": {"image/png": {}}, "description": "One page of the CV as an image."}
+    },
+)
+def preview_cv_page(
+    template_id: str,
+    payload: CvRenderRequest,
+    current_user: CurrentUser,
+    renderer: Annotated[CvRenderer, Depends(get_cv_renderer)],
+    page: Annotated[int, Query(ge=1, le=20)] = 1,
+) -> Response:
+    """One page of the given content as a PNG for the editor's live preview; nothing is saved."""
+    CV_RENDERS.hit(str(current_user.id))
+    rendered = renderer.render_page(
+        payload.content, template_id, payload.language, page=page, ppi=PREVIEW_PPI
+    )
+    return Response(
+        content=rendered.png,
+        media_type="image/png",
+        headers={PAGE_COUNT_HEADER: str(rendered.page_count), "Cache-Control": "no-store"},
     )

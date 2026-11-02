@@ -217,6 +217,16 @@ def test_saved_cv_becomes_an_editable_cv_document(client, auth_headers):
     assert body["unsupported_facts"] == []
 
 
+def test_imported_cv_is_named_without_the_file_extension(client, auth_headers):
+    response = client.post(
+        "/resumes", json={"title": "Deniz_CV_2025.PDF", "text": SAMPLE_RESUME}, headers=auth_headers
+    )
+    created = client.post(
+        f"/resumes/{response.json()['id']}/cv-documents", json={}, headers=auth_headers
+    )
+    assert created.json()["title"] == "Deniz_CV_2025"
+
+
 def test_structuring_another_users_cv_is_not_found(client, auth_headers):
     other = register_user(client, "bob@example.com")
     resume_id = create_resume(client, other)
@@ -312,6 +322,7 @@ def test_document_downloads_as_a_named_pdf(client, auth_headers):
             "attachment; filename=\"deniz-aydin-cv.pdf\"; filename*=UTF-8''Deniz%20Ayd%C4%B1n%20CV.pdf",
         ),
         ("***", "attachment; filename=\"cv.pdf\"; filename*=UTF-8''%2A%2A%2A.pdf"),
+        ("CV.PDF", "attachment; filename=\"cv.pdf\"; filename*=UTF-8''CV.pdf"),
     ],
 )
 def test_attachment_name_is_safe_ascii_with_the_exact_name_beside_it(title, expected):
@@ -327,3 +338,15 @@ def test_document_outlives_the_saved_cv_it_came_from(client, auth_headers):
     document = client.get(f"/cv-documents/{created['id']}", headers=auth_headers).json()
     assert document["resume_id"] is None
     assert document["content"]["contact"]["name"] == "Jane Doe"
+
+
+def test_document_thumbnail_is_a_private_png(client, auth_headers):
+    created = client.post(
+        "/cv-documents", json={"title": "CV", "language": "en"}, headers=auth_headers
+    ).json()
+    url = f"/cv-documents/{created['id']}/thumbnail"
+    response = client.get(url, headers=auth_headers)
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "image/png"
+    assert response.headers["cache-control"].startswith("private")
+    assert client.get(url, headers=register_user(client, "bob@example.com")).status_code == 404

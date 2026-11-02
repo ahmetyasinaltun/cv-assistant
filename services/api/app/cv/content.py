@@ -130,7 +130,8 @@ class CvContent(CvModel):
 
     contact: CvContact
     headline: OptionalShortText = None
-    summary: list[CvLine] = Field(default_factory=list, max_length=8)
+    # One line per sentence, so the editor can keep each sentence's origin.
+    summary: list[CvLine] = Field(default_factory=list, max_length=20)
     experience: list[CvExperience] = Field(default_factory=list, max_length=15)
     education: list[CvEducation] = Field(default_factory=list, max_length=8)
     projects: list[CvProject] = Field(default_factory=list, max_length=15)
