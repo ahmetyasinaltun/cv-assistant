@@ -50,7 +50,7 @@ def test_labels_may_accept_several_answers_for_borderline_cases():
 
 
 def test_guess_language_tells_english_from_turkish():
-    from app.ai.eval.language_check import guess_language
+    from app.ai.language_guess import guess_language
 
     assert guess_language("Add a Docker example to the Projects section of your CV.") == "en"
     assert guess_language("CV’nde Docker ile ilgili bir proje örneği ekle.") == "tr"

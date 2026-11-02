@@ -8,7 +8,7 @@ import sys
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
-from app.ai.eval.language_check import guess_language
+from app.ai.language_guess import guess_language
 from app.ai.pipeline import AnalysisInput, AnalysisPipeline
 from app.ai.providers.base import AIProvider
 from app.ai.providers.fake import FakeProvider

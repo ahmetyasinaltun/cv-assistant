@@ -11,6 +11,7 @@ from pydantic import BaseModel
 
 from app.ai.schemas import (
     AnalysisNarrative,
+    CvStructure,
     EvidenceExtraction,
     ExtractedEvidence,
     ExtractedRequirement,
@@ -18,6 +19,11 @@ from app.ai.schemas import (
     MatchJudgement,
     RequirementExtraction,
     RequirementJudgement,
+    StructuredContact,
+    StructuredEducation,
+    StructuredExperience,
+    StructuredProject,
+    StructuredSkillGroup,
 )
 from app.schemas.analysis import InterviewQuestion, Suggestion
 
@@ -81,6 +87,7 @@ class FakeLLM:
             "judge_matches": self._judge_matches,
             "write_narrative": self._write_narrative,
             "generate_interview_questions": self._interview_questions,
+            "structure_cv": _structure_cv,
         }
         if task not in handlers:
             raise ValueError(f"FakeLLM has no handler for task '{task}'")
@@ -174,6 +181,107 @@ class FakeLLM:
             for r in requirements[:6]
         ]
         return InterviewQuestionSet(questions=questions)
+
+
+# --- structure_cv: reads the plain "Heading" + "- item" layout of the sample and evaluation CVs ----------------
+
+_SECTION_KEYS = {
+    "experience": "experience",
+    "deneyim": "experience",
+    "education": "education",
+    "eğitim": "education",
+    "projects": "projects",
+    "projeler": "projects",
+    "skills": "skills",
+    "beceriler": "skills",
+    "yetenekler": "skills",
+    "links": "links",
+}
+_MONTHS = {
+    name: number
+    for number, names in enumerate(
+        [
+            ("jan", "oca"),
+            ("feb", "şub"),
+            ("mar",),
+            ("apr", "nis"),
+            ("may",),
+            ("jun", "haz"),
+            ("jul", "tem"),
+            ("aug", "ağu"),
+            ("sep", "eyl"),
+            ("oct", "eki"),
+            ("nov", "kas"),
+            ("dec", "ara"),
+        ],
+        start=1,
+    )
+    for name in names
+}
+_ENTRY = re.compile(r"^(?P<head>[^:(]+?)\s*(?:\((?P<dates>[^)]*)\))?\s*:\s*(?P<text>.+)$")
+_DATE_PART = re.compile(r"(?:([A-Za-zÇĞİÖŞÜçğıöşü]{3})[A-Za-zÇĞİÖŞÜçğıöşü]*\.?\s+)?(\d{4})")
+
+
+def _fake_dates(text: str | None) -> tuple[str | None, str | None]:
+    found = []
+    for month, year in _DATE_PART.findall(text or ""):
+        number = _MONTHS.get(month.lower())
+        found.append(f"{year}-{number:02d}" if number else year)
+    return (found[0] if found else None, found[1] if len(found) > 1 else None)
+
+
+def _structure_cv(prompt: str) -> CvStructure:
+    lines = [line.strip() for line in _block(prompt, "resume").splitlines() if line.strip()]
+    name = lines[0] if lines else "Candidate"
+    headline = lines[1] if len(lines) > 1 and lines[1].lower() not in _SECTION_KEYS else None
+    sections: dict[str, list[str]] = {}
+    omitted: list[str] = []
+    current = None
+    for line in lines[2 if headline else 1 :]:
+        is_item = line.startswith("- ")
+        # A plain comma-separated line under a heading ("Python, SQL, Git") is an item, not a heading.
+        if not is_item and (line.lower() in _SECTION_KEYS or "," not in line or current is None):
+            current = _SECTION_KEYS.get(line.lower())
+            if current is None:
+                omitted.append(line)
+            continue
+        if current:
+            sections.setdefault(current, []).append(line[2:].strip() if is_item else line)
+
+    def entries(key: str) -> list[tuple[str, str | None, str | None, str | None, str]]:
+        parsed = []
+        for item in sections.get(key, []):
+            match = _ENTRY.match(item)
+            if not match:
+                continue
+            head, _, place = match["head"].partition(",")
+            start, end = _fake_dates(match["dates"])
+            parsed.append((head.strip(), place.strip() or None, start, end, match["text"].strip()))
+        return parsed
+
+    return CvStructure(
+        contact=StructuredContact(name=name, links=sections.get("links", [])),
+        headline=headline,
+        experience=[
+            StructuredExperience(
+                role=role, organization=org or role, start=start, end=end, bullets=[text]
+            )
+            for role, org, start, end, text in entries("experience")
+        ],
+        education=[
+            StructuredEducation(degree=degree, school=school or degree, start=start, end=end)
+            for degree, school, start, end, _ in entries("education")
+        ],
+        projects=[
+            StructuredProject(name=project, start=start, end=end, bullets=[text])
+            for project, _, start, end, text in entries("projects")
+        ],
+        skills=[
+            StructuredSkillGroup(items=[part.strip() for part in item.split(",") if part.strip()])
+            for item in sections.get("skills", [])
+        ],
+        omitted_sections=omitted,
+    )
 
 
 class FakeEmbeddings:

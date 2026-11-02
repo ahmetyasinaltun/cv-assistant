@@ -1,5 +1,6 @@
-# Rough, dependency-free guess of whether a generated text is English or Turkish, used only by the evaluation.
-# It counts common function words and Turkish-only letters; short or evenly mixed texts stay undecided.
+# Rough, dependency-free guess of whether a text is English or Turkish: picks the language of a structured CV and
+# checks the language of generated text in the evaluation. It counts common function words and Turkish-only letters;
+# short or evenly mixed texts stay undecided.
 
 import re
 

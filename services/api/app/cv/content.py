@@ -25,10 +25,20 @@ DEFAULT_SECTION_ORDER: tuple[SectionKey, ...] = (
 # and month names come from code in the CV's language instead of from the model.
 YearMonth = Annotated[str, StringConstraints(pattern=r"^\d{4}(-(0[1-9]|1[0-2]))?$")]
 
-ShortText = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=160)]
-OptionalShortText = Annotated[str, StringConstraints(strip_whitespace=True, max_length=160)] | None
-LineText = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=600)]
-Url = Annotated[str, StringConstraints(strip_whitespace=True, max_length=300)]
+SHORT_TEXT_MAX = 160
+LINE_TEXT_MAX = 600
+URL_MAX = 300
+
+ShortText = Annotated[
+    str, StringConstraints(strip_whitespace=True, min_length=1, max_length=SHORT_TEXT_MAX)
+]
+OptionalShortText = (
+    Annotated[str, StringConstraints(strip_whitespace=True, max_length=SHORT_TEXT_MAX)] | None
+)
+LineText = Annotated[
+    str, StringConstraints(strip_whitespace=True, min_length=1, max_length=LINE_TEXT_MAX)
+]
+Url = Annotated[str, StringConstraints(strip_whitespace=True, max_length=URL_MAX)]
 
 
 class CvModel(BaseModel):

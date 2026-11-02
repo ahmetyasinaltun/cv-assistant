@@ -8,7 +8,7 @@ os.environ.setdefault("JWT_SECRET_KEY", "test-secret-key-that-is-at-least-32-byt
 
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
-from sqlalchemy import create_engine  # noqa: E402
+from sqlalchemy import create_engine, event  # noqa: E402
 from sqlalchemy.orm import sessionmaker  # noqa: E402
 from sqlalchemy.pool import StaticPool  # noqa: E402
 
@@ -57,6 +57,12 @@ def engine():
     engine = create_engine(
         "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
     )
+
+    # SQLite ignores foreign keys unless asked, so ON DELETE CASCADE / SET NULL would go untested.
+    @event.listens_for(engine, "connect")
+    def enforce_foreign_keys(dbapi_connection, _):
+        dbapi_connection.execute("PRAGMA foreign_keys=ON")
+
     Base.metadata.create_all(engine)
     yield engine
     Base.metadata.drop_all(engine)
