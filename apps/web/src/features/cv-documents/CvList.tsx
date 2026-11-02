@@ -77,7 +77,7 @@ function CvCard({ card, locale, labels }: { card: CvCardData; locale: string; la
           width={496}
           height={702}
           loading="lazy"
-          className="block h-auto w-full rounded-[2px] bg-paper shadow-[0_2px_10px_-2px_rgb(16_52_48/0.25)] transition-transform duration-200 ease-out group-hover:-translate-y-0.5"
+          className="block h-auto w-full rounded-[2px] bg-paper shadow-[0_2px_10px_-2px_rgb(16_52_48/0.25)] transition-transform duration-200 ease-out group-hover:-translate-y-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-y-0"
         />
       </div>
       <div className="flex flex-1 flex-col px-[18px] pt-3.5 pb-4">
@@ -85,7 +85,7 @@ function CvCard({ card, locale, labels }: { card: CvCardData; locale: string; la
           {/* The title link covers the card, so the whole card opens the editor; the footer actions sit above it. */}
           <Link
             href={card.editorUrl}
-            className="rounded-[3px] after:absolute after:inset-0 after:content-[''] hover:text-accent-hover"
+            className="rounded-[3px] break-words after:absolute after:inset-0 after:content-[''] hover:text-accent-hover"
           >
             {card.title}
           </Link>

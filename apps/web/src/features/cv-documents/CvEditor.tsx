@@ -53,6 +53,21 @@ import type { ImportNotice } from "./import-notice";
 const LIST_KINDS: ListKind[] = ["experience", "education", "projects", "skills", "languages", "certificates"];
 type Keys = Record<ListKind, string[]>;
 
+interface RemovedEntry {
+  kind: ListKind;
+  index: number;
+  key: string;
+  item: unknown;
+  name: string;
+}
+
+/** What a removed entry is called in the undo note: its title, or the "new …" label while it has none. */
+function entryName(kind: ListKind, item: Record<string, unknown>, fallback: string): string {
+  const field = { experience: "role", education: "degree", projects: "name", skills: "name", languages: "name", certificates: "name" }[kind];
+  const value = item[field];
+  return typeof value === "string" && value.trim() ? value.trim() : fallback;
+}
+
 interface CvEditorProps {
   document: CvDocument;
   locale: string;
@@ -104,6 +119,7 @@ export function CvEditor({ document: saved, locale, fallbackName, importNotice, 
   const [saveError, setSaveError] = useState<SaveErrorKey | null>(null);
   const [notice, setNotice] = useState(importNotice);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [removed, setRemoved] = useState<RemovedEntry | null>(null);
   const [isSaving, startSaving] = useTransition();
   const [isDownloading, startDownload] = useTransition();
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -217,11 +233,20 @@ export function CvEditor({ document: saved, locale, fallbackName, importNotice, 
               : newCertificate();
       const index = content[kind].length;
       changeList(kind, (list) => [...list, created], (list) => [...list, key]);
+      setRemoved(null);
       setOpenEntries((current) => new Set(current).add(key));
       const firstField = { experience: "role", education: "degree", projects: "name", skills: "name", languages: "name", certificates: "name" }[kind];
       requestAnimationFrame(() => window.document.getElementById(fieldId(`${kind}.${index}.${firstField}`))?.focus());
     },
     remove(kind, index) {
+      const item = content[kind][index];
+      setRemoved({
+        kind,
+        index,
+        key: keys[kind][index],
+        item,
+        name: entryName(kind, item as unknown as Record<string, unknown>, editor.newEntry[kind]),
+      });
       changeList(
         kind,
         (list) => list.filter((_, at) => at !== index),
@@ -230,8 +255,20 @@ export function CvEditor({ document: saved, locale, fallbackName, importNotice, 
       // Errors are keyed by position, so they are recounted at the next save.
       setErrors({});
     },
+    removed: removed && { kind: removed.kind, name: removed.name },
+    undoRemove() {
+      if (!removed) return;
+      const insert = <T,>(list: T[], value: T) => [
+        ...list.slice(0, removed.index),
+        value,
+        ...list.slice(removed.index),
+      ];
+      changeList(removed.kind, (list) => insert(list, removed.item), (list) => insert(list, removed.key));
+      setRemoved(null);
+    },
     move(kind, index, delta) {
       changeList(kind, (list) => moveItem(list, index, delta), (list) => moveItem(list, index, delta));
+      setRemoved(null);
       setErrors({});
     },
   };
@@ -508,9 +545,9 @@ export function CvEditor({ document: saved, locale, fallbackName, importNotice, 
           ref={dialogRef}
           aria-label={editor.preview.label}
           onClose={() => setPreviewOpen(false)}
-          className="m-0 h-dvh max-h-none w-full max-w-none bg-desk p-0 backdrop:bg-ink/40"
+          className="m-0 h-dvh max-h-none w-full max-w-none overscroll-contain bg-desk p-0 pb-[env(safe-area-inset-bottom)] backdrop:bg-ink/40"
         >
-          <div className="sticky top-0 z-10 flex items-center justify-between border-b border-rule bg-paper px-4 py-2">
+          <div className="sticky top-0 z-10 flex items-center justify-between border-b border-rule bg-paper px-4 pt-[max(0.5rem,env(safe-area-inset-top))] pb-2">
             <h2 className="text-[17px] font-bold">{editor.preview.label}</h2>
             <button
               type="button"

@@ -49,7 +49,7 @@ export function SectionCard({ id, title, count, summary, open, onToggle, tools, 
               onClick={onToggle}
               aria-expanded={open}
               aria-controls={bodyId}
-              className={`rounded-[4px] text-left after:absolute after:inset-0 after:content-[''] ${hidden ? "text-mute" : ""}`}
+              className={`rounded-[4px] text-left transition-colors duration-150 after:absolute after:inset-0 after:content-[''] hover:text-accent-hover ${hidden ? "text-mute" : ""}`}
             >
               {title}
             </button>
@@ -97,7 +97,7 @@ export function SectionCard({ id, title, count, summary, open, onToggle, tools, 
           controls={bodyId}
           onClick={onToggle}
         >
-          <ChevronIcon className={`transition-transform duration-200 ease-out ${open ? "rotate-180" : ""}`} />
+          <ChevronIcon className={`transition-transform duration-200 ease-out motion-reduce:transition-none ${open ? "rotate-180" : ""}`} />
         </IconButton>
       </div>
       <div id={bodyId} hidden={!open} className="px-5 pt-1 pb-6 sm:px-[22px]">
@@ -144,7 +144,7 @@ export function EntryBox({
           onClick={onToggle}
           aria-expanded={open}
           aria-controls={bodyId}
-          className="min-w-0 flex-1 rounded-lg py-1.5 text-left text-[15.5px] leading-[1.45]"
+          className="min-w-0 flex-1 rounded-lg py-1.5 text-left text-[15.5px] leading-[1.45] break-words transition-colors duration-150 hover:[&>span:first-child]:text-accent-hover"
         >
           <span className="font-semibold text-ink">{title}</span>
           {subtitle && <span className="text-mute"> · {subtitle}</span>}
@@ -164,7 +164,7 @@ export function EntryBox({
           controls={bodyId}
           onClick={onToggle}
         >
-          <ChevronIcon size={17} className={`transition-transform duration-200 ease-out ${open ? "rotate-180" : ""}`} />
+          <ChevronIcon size={17} className={`transition-transform duration-200 ease-out motion-reduce:transition-none ${open ? "rotate-180" : ""}`} />
         </IconButton>
       </div>
       <div id={bodyId} hidden={!open} className="space-y-4 border-t border-rule px-4 pt-4 pb-5">

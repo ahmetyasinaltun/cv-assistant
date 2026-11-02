@@ -507,7 +507,9 @@
         "show": "Önizlemeyi göster",
         "close": "Önizlemeyi kapat"
       },
-      "leaveQuestion": "Kaydedilmemiş değişikliklerin var. Kaydetmeden çıkılsın mı?"
+      "leaveQuestion": "Kaydedilmemiş değişikliklerin var. Kaydetmeden çıkılsın mı?",
+      "removed": "“{name}” kaldırıldı.",
+      "undo": "Geri al"
     }
   }
 }

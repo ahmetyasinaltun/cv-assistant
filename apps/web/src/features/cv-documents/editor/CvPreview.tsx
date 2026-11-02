@@ -157,6 +157,9 @@ export function CvPreview({
           <img
             src={imageUrl}
             alt={interpolate(labels.imageAlt, { page, template: templateName })}
+            // A4 at the API's preview resolution, so the box keeps its shape before the image arrives.
+            width={1058}
+            height={1497}
             className={`block h-auto bg-paper shadow-[0_2px_14px_-3px_rgb(16_52_48/0.3)] transition-opacity duration-200 ${
               fitHeight ? "max-h-[calc(100vh-152px)] w-auto max-w-full" : "w-full"
             } ${status === "loading" ? "opacity-80" : ""}`}

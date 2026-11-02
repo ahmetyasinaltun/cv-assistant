@@ -26,7 +26,7 @@ export function BandPage({ title, breadcrumb, meta, action, notice, width = "wid
           <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
             <div className="min-w-0">
               {breadcrumb && <div className="mb-2.5 text-[14px] text-on-brand-soft">{breadcrumb}</div>}
-              <h1 className="text-[30px] leading-[1.12] font-bold tracking-[-0.025em] sm:text-[36px]">{title}</h1>
+              <h1 className="text-[30px] leading-[1.12] font-bold tracking-[-0.025em] break-words sm:text-[36px]">{title}</h1>
               {meta && <p className="mt-2.5 max-w-[70ch] text-[15px] leading-[1.5] text-on-brand-soft">{meta}</p>}
               {notice && <div className="mt-4">{notice}</div>}
             </div>

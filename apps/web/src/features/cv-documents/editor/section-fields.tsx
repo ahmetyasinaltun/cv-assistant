@@ -41,6 +41,26 @@ export interface EditorApi {
   add: (kind: ListKind) => void;
   remove: (kind: ListKind, index: number) => void;
   move: (kind: ListKind, index: number, delta: -1 | 1) => void;
+  /** The entry removed last, which can still be put back. */
+  removed: { kind: ListKind; name: string } | null;
+  undoRemove: () => void;
+}
+
+/** A removed entry is one click away from coming back, so removing needs no confirmation dialog. */
+function RemovedNote({ api, kind }: { api: EditorApi; kind: ListKind }) {
+  const removed = api.removed?.kind === kind ? api.removed : null;
+  return (
+    <div role="status" className="empty:hidden">
+      {removed && (
+        <p className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-[10px] bg-desk px-3.5 py-2.5 text-[15px] text-ink">
+          <span className="min-w-0 break-words">{interpolate(api.labels.removed, { name: removed.name })}</span>
+          <button type="button" onClick={api.undoRemove} className={textActionClass}>
+            {api.labels.undo}
+          </button>
+        </p>
+      )}
+    </div>
+  );
 }
 
 /** Replaces one item of a list in the CV. */
@@ -106,6 +126,7 @@ export function ContactFields({ api, title, onTitleChange, language, onLanguageC
       <div className="grid gap-x-4 gap-y-5 sm:grid-cols-2">
         <TextField
           id={fieldId("title")}
+          autoComplete="off"
           label={fields.docTitle}
           hint={fields.docTitleHint}
           value={title}
@@ -140,6 +161,7 @@ export function ContactFields({ api, title, onTitleChange, language, onLanguageC
         />
         <TextField
           id={fieldId("headline")}
+          autoComplete="off"
           label={fields.headline}
           labelNote={fields.optional}
           hint={fields.headlineHint}
@@ -171,6 +193,7 @@ export function ContactFields({ api, title, onTitleChange, language, onLanguageC
         />
         <TextField
           id={fieldId("contact.location")}
+          autoComplete="off"
           label={fields.location}
           labelNote={fields.optional}
           value={contact.location ?? ""}
@@ -288,6 +311,7 @@ export function ExperienceFields({ api }: { api: EditorApi }) {
 
   return (
     <div className="space-y-3">
+      <RemovedNote api={api} kind="experience" />
       {entries.map((entry, index) => {
         const path = (field: string) => `experience.${index}.${field}`;
         const set = (field: string, patch: Partial<(typeof entries)[number]>) =>
@@ -303,6 +327,7 @@ export function ExperienceFields({ api }: { api: EditorApi }) {
             <TwoColumns>
               <TextField
                 id={fieldId(path("role"))}
+                autoComplete="off"
                 label={fields.role}
                 value={entry.role}
                 maxLength={LIMITS.shortText}
@@ -311,6 +336,7 @@ export function ExperienceFields({ api }: { api: EditorApi }) {
               />
               <TextField
                 id={fieldId(path("organization"))}
+                autoComplete="off"
                 label={fields.organization}
                 value={entry.organization}
                 maxLength={LIMITS.shortText}
@@ -319,6 +345,7 @@ export function ExperienceFields({ api }: { api: EditorApi }) {
               />
               <TextField
                 id={fieldId(path("location"))}
+                autoComplete="off"
                 label={fields.entryLocation}
                 labelNote={fields.optional}
                 value={entry.location ?? ""}
@@ -374,6 +401,7 @@ export function EducationFields({ api }: { api: EditorApi }) {
 
   return (
     <div className="space-y-3">
+      <RemovedNote api={api} kind="education" />
       {entries.map((entry, index) => {
         const path = (field: string) => `education.${index}.${field}`;
         const set = (field: string, patch: Partial<(typeof entries)[number]>) =>
@@ -389,6 +417,7 @@ export function EducationFields({ api }: { api: EditorApi }) {
             <TwoColumns>
               <TextField
                 id={fieldId(path("degree"))}
+                autoComplete="off"
                 label={fields.degree}
                 value={entry.degree}
                 maxLength={LIMITS.shortText}
@@ -397,6 +426,7 @@ export function EducationFields({ api }: { api: EditorApi }) {
               />
               <TextField
                 id={fieldId(path("school"))}
+                autoComplete="off"
                 label={fields.school}
                 value={entry.school}
                 maxLength={LIMITS.shortText}
@@ -405,6 +435,7 @@ export function EducationFields({ api }: { api: EditorApi }) {
               />
               <TextField
                 id={fieldId(path("location"))}
+                autoComplete="off"
                 label={fields.entryLocation}
                 labelNote={fields.optional}
                 value={entry.location ?? ""}
@@ -461,6 +492,7 @@ export function ProjectFields({ api }: { api: EditorApi }) {
 
   return (
     <div className="space-y-3">
+      <RemovedNote api={api} kind="projects" />
       {entries.map((entry, index) => {
         const path = (field: string) => `projects.${index}.${field}`;
         const set = (field: string, patch: Partial<(typeof entries)[number]>) =>
@@ -476,6 +508,7 @@ export function ProjectFields({ api }: { api: EditorApi }) {
             <TwoColumns>
               <TextField
                 id={fieldId(path("name"))}
+                autoComplete="off"
                 label={fields.projectName}
                 value={entry.name}
                 maxLength={LIMITS.shortText}
@@ -484,6 +517,7 @@ export function ProjectFields({ api }: { api: EditorApi }) {
               />
               <TextField
                 id={fieldId(path("link"))}
+                autoComplete="off"
                 label={fields.projectLink}
                 labelNote={fields.optional}
                 type="url"
@@ -555,6 +589,7 @@ function SkillGroupFields({ api, index }: { api: EditorApi; index: number }) {
       <div className="grid min-w-0 flex-1 gap-x-4 gap-y-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
         <TextField
           id={fieldId(`skills.${index}.name`)}
+          autoComplete="off"
           label={labels.fields.groupName}
           hint={labels.fields.groupNameHint}
           value={group.name ?? ""}
@@ -603,6 +638,7 @@ function SkillGroupFields({ api, index }: { api: EditorApi; index: number }) {
 export function SkillsFields({ api }: { api: EditorApi }) {
   return (
     <div className="space-y-3">
+      <RemovedNote api={api} kind="skills" />
       {api.content.skills.map((_, index) => (
         <SkillGroupFields key={api.keyOf("skills", index)} api={api} index={index} />
       ))}
@@ -619,6 +655,7 @@ export function LanguagesFields({ api }: { api: EditorApi }) {
   const { content, labels } = api;
   return (
     <div className="space-y-3">
+      <RemovedNote api={api} kind="languages" />
       {content.languages.map((language, index) => {
         const path = `languages.${index}.name`;
         return (
@@ -626,6 +663,7 @@ export function LanguagesFields({ api }: { api: EditorApi }) {
             <div className="grid min-w-0 flex-1 gap-x-4 gap-y-4 sm:grid-cols-2">
               <TextField
                 id={fieldId(path)}
+                autoComplete="off"
                 label={labels.fields.languageName}
                 value={language.name}
                 maxLength={LIMITS.shortText}
@@ -634,6 +672,7 @@ export function LanguagesFields({ api }: { api: EditorApi }) {
               />
               <TextField
                 id={fieldId(`languages.${index}.level`)}
+                autoComplete="off"
                 label={labels.fields.languageLevel}
                 labelNote={labels.fields.optional}
                 value={language.level ?? ""}
@@ -663,6 +702,7 @@ export function CertificatesFields({ api }: { api: EditorApi }) {
   const { content, labels } = api;
   return (
     <div className="space-y-3">
+      <RemovedNote api={api} kind="certificates" />
       {content.certificates.map((certificate, index) => {
         const path = (field: string) => `certificates.${index}.${field}`;
         return (
@@ -670,6 +710,7 @@ export function CertificatesFields({ api }: { api: EditorApi }) {
             <div className="grid min-w-0 flex-1 gap-x-4 gap-y-4 sm:grid-cols-2">
               <TextField
                 id={fieldId(path("name"))}
+                autoComplete="off"
                 label={labels.fields.certName}
                 value={certificate.name}
                 maxLength={LIMITS.shortText}
@@ -678,6 +719,7 @@ export function CertificatesFields({ api }: { api: EditorApi }) {
               />
               <TextField
                 id={fieldId(path("issuer"))}
+                autoComplete="off"
                 label={labels.fields.issuer}
                 labelNote={labels.fields.optional}
                 value={certificate.issuer ?? ""}

@@ -507,7 +507,9 @@
         "show": "Show preview",
         "close": "Close preview"
       },
-      "leaveQuestion": "You have unsaved changes. Leave without saving?"
+      "leaveQuestion": "You have unsaved changes. Leave without saving?",
+      "removed": "“{name}” removed.",
+      "undo": "Undo"
     }
   }
 }
