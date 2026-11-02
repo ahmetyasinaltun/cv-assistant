@@ -122,6 +122,13 @@ def test_name_only_cv_renders(renderer, template_id):
     assert "Deniz Aydın" in pdf_text(rendered.pdf)
 
 
+def test_standard_template_reads_in_the_order_it_is_seen(renderer):
+    # Nothing is right-aligned, so the dates follow the title instead of trailing the bullets.
+    text = pdf_text(renderer.render(sample("en"), "standard", "en").pdf)
+    assert "Backend Intern\nAcme Corp | Istanbul | Jun 2025 – Sep 2025\n• Built six" in text
+    assert "github.com/example-deniz/inventory-tracker | Feb 2025 – May 2025" in text
+
+
 def test_unknown_template_is_not_found(renderer):
     with pytest.raises(NotFoundError):
         renderer.render(content_with(), "fancy", "en")
@@ -173,4 +180,5 @@ def test_template_list_is_named_in_the_requested_language(client, auth_headers):
     assert response.json() == [
         {"id": "classic", "name": "Klasik"},
         {"id": "modern", "name": "Modern"},
+        {"id": "standard", "name": "Standart"},
     ]

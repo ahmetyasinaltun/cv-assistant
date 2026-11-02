@@ -34,6 +34,7 @@ CV_TEMPLATES: dict[str, CvTemplate] = {
     for template in (
         CvTemplate("classic", {"en": "Classic", "tr": "Klasik"}),
         CvTemplate("modern", {"en": "Modern", "tr": "Modern"}),
+        CvTemplate("standard", {"en": "Standard", "tr": "Standart"}),
     )
 }
 
