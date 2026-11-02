@@ -506,7 +506,8 @@
         "imageAlt": "CV'nin {page}. sayfası, {template} şablonu",
         "show": "Önizlemeyi göster",
         "close": "Önizlemeyi kapat"
-      }
+      },
+      "leaveQuestion": "Kaydedilmemiş değişikliklerin var. Kaydetmeden çıkılsın mı?"
     }
   }
 }

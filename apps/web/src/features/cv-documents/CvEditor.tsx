@@ -130,13 +130,26 @@ export function CvEditor({ document: saved, locale, fallbackName, importNotice, 
   const preview = useMemo(() => previewContent(content, fallbackName), [content, fallbackName]);
   const pdfUrl = `/${locale}/cvs/${saved.id}/pdf`;
 
-  // Unsaved edits are easy to lose by closing or reloading the tab; ask first.
+  // Unsaved edits are easy to lose by closing or reloading the tab, or by following a link in the page; ask first.
   useEffect(() => {
     if (!isDirty) return;
     const warn = (event: BeforeUnloadEvent) => event.preventDefault();
+    // Capture on the document runs before Next's link handler, so a "stay" stops the client-side navigation too.
+    const guardLinks = (event: MouseEvent) => {
+      const link = event.target instanceof Element ? event.target.closest("a[href]") : null;
+      if (!link || link.hasAttribute("download") || link.getAttribute("target") === "_blank") return;
+      if (!window.confirm(editor.leaveQuestion)) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    };
     window.addEventListener("beforeunload", warn);
-    return () => window.removeEventListener("beforeunload", warn);
-  }, [isDirty]);
+    window.document.addEventListener("click", guardLinks, true);
+    return () => {
+      window.removeEventListener("beforeunload", warn);
+      window.document.removeEventListener("click", guardLinks, true);
+    };
+  }, [isDirty, editor.leaveQuestion]);
 
   // After a failed save the first problem takes focus, once its card has opened.
   useEffect(() => {
