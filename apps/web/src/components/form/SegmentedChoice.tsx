@@ -6,6 +6,8 @@ interface SegmentedChoiceProps<T extends string> {
   value: T;
   options: { value: T; label: string }[];
   onChange: (value: T) => void;
+  /** Keeps the legend for screen readers only, where the context already names the choice. */
+  hideLegend?: boolean;
 }
 
 export function SegmentedChoice<T extends string>({
@@ -14,11 +16,12 @@ export function SegmentedChoice<T extends string>({
   value,
   options,
   onChange,
+  hideLegend = false,
 }: SegmentedChoiceProps<T>) {
   return (
     <fieldset>
-      <legend className="text-[15px] font-semibold text-ink">{legend}</legend>
-      <div className="mt-1.5 inline-flex flex-wrap rounded-[10px] bg-desk p-1">
+      <legend className={hideLegend ? "sr-only" : "text-[15px] font-semibold text-ink"}>{legend}</legend>
+      <div className={`${hideLegend ? "" : "mt-1.5 "}inline-flex flex-wrap rounded-[10px] bg-desk p-1`}>
         {options.map((option) => (
           <label
             key={option.value}

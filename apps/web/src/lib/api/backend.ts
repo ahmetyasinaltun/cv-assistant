@@ -2,10 +2,15 @@
 
 import { getSessionToken } from "@/lib/auth/session";
 
-import { apiRequest } from "./client";
+import { apiFileRequest, apiRequest } from "./client";
 import type {
   AnalysisDetail,
   AnalysisSummary,
+  CvContent,
+  CvDocument,
+  CvDocumentFromResume,
+  CvDocumentSummary,
+  CvTemplateId,
   InterviewQuestion,
   JobDescriptionDraft,
   JobDescriptionSummary,
@@ -20,6 +25,10 @@ type AuthedOptions = Omit<NonNullable<Parameters<typeof apiRequest>[1]>, "token"
 
 async function authed<T>(path: string, options: AuthedOptions = {}): Promise<T> {
   return apiRequest<T>(path, { ...options, token: await getSessionToken() });
+}
+
+async function authedFile(path: string, options: AuthedOptions = {}): Promise<Response> {
+  return apiFileRequest(path, { ...options, token: await getSessionToken() });
 }
 
 const segment = encodeURIComponent;
@@ -95,5 +104,54 @@ export function createAnalysis(resumeId: string, jobDescriptionId: string, outpu
 export function generateInterviewQuestions(analysisId: string) {
   return authed<InterviewQuestion[]>(`/analyses/${segment(analysisId)}/interview-questions`, {
     method: "POST",
+  });
+}
+
+export function listCvDocuments() {
+  return authed<CvDocumentSummary[]>("/cv-documents");
+}
+
+export function getCvDocument(documentId: string) {
+  return authed<CvDocument>(`/cv-documents/${segment(documentId)}`);
+}
+
+export function createBlankCvDocument(title: string, language: Language) {
+  return authed<CvDocument>("/cv-documents", { method: "POST", json: { title, language } });
+}
+
+export function createCvDocumentFromResume(resumeId: string) {
+  return authed<CvDocumentFromResume>(`/resumes/${segment(resumeId)}/cv-documents`, {
+    method: "POST",
+    json: {},
+  });
+}
+
+export interface CvDocumentChanges {
+  title?: string;
+  language?: Language;
+  template?: CvTemplateId;
+  content?: CvContent;
+}
+
+export function updateCvDocument(documentId: string, changes: CvDocumentChanges) {
+  return authed<CvDocument>(`/cv-documents/${segment(documentId)}`, { method: "PATCH", json: changes });
+}
+
+export function deleteCvDocument(documentId: string) {
+  return authed<void>(`/cv-documents/${segment(documentId)}`, { method: "DELETE" });
+}
+
+export function fetchCvDocumentPdf(documentId: string) {
+  return authedFile(`/cv-documents/${segment(documentId)}/pdf`);
+}
+
+export function fetchCvDocumentThumbnail(documentId: string) {
+  return authedFile(`/cv-documents/${segment(documentId)}/thumbnail`);
+}
+
+export function fetchCvPreview(template: CvTemplateId, language: Language, content: CvContent, page: number) {
+  return authedFile(`/cv-templates/${segment(template)}/preview?page=${page}`, {
+    method: "POST",
+    json: { language, content },
   });
 }

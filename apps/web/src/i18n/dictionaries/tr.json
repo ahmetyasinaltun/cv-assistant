@@ -7,7 +7,10 @@
       "register": "Hesap oluştur",
       "analyses": "Analizler",
       "newAnalysis": "Yeni analiz",
-      "analysis": "Analiz"
+      "analysis": "Analiz",
+      "cvs": "CV'lerim",
+      "newCv": "Yeni CV",
+      "cv": "CV"
     }
   },
   "shell": {
@@ -16,7 +19,8 @@
     "menu": "Menü",
     "nav": {
       "analyses": "Analizler",
-      "sample": "Örnek analiz"
+      "sample": "Örnek analiz",
+      "cvs": "CV'lerim"
     },
     "language": "Dil",
     "skipToContent": "İçeriğe geç",
@@ -285,6 +289,224 @@
       "unavailable": "Servise şu an ulaşılamıyor. Metnin hâlâ burada; bir dakika sonra tekrar dene.",
       "rateLimited": "Günde 20 analiz sınırına ulaştın. Metnin hâlâ burada; daha sonra tekrar dene.",
       "generic": "Analiz başlatılamadı. Metnin hâlâ burada; tekrar dene."
+    }
+  },
+  "cvs": {
+    "list": {
+      "title": "CV'lerim",
+      "meta": "Düzenleyip PDF olarak indirebileceğin CV'ler.",
+      "newCv": "Yeni CV",
+      "download": "PDF indir",
+      "delete": "Sil",
+      "deleteQuestion": "“{title}” silinsin mi? Bu geri alınamaz.",
+      "deleteAction": "CV'yi sil",
+      "deleting": "Siliniyor…",
+      "cancel": "Vazgeç",
+      "deleteFailed": "CV silinemedi. Tekrar dene.",
+      "edited": "{date} düzenlendi",
+      "thumbnailAlt": "{title} CV'sinin ilk sayfası",
+      "empty": {
+        "title": "Henüz CV yok",
+        "body": "Kayıtlı bir CV'ni düzenlenebilir hâle getir ya da boş bir sayfadan başla. Görünümünü seçip PDF olarak indirebilirsin."
+      }
+    },
+    "templates": {
+      "classic": "Klasik",
+      "modern": "Modern",
+      "standard": "Standart"
+    },
+    "languageNames": {
+      "en": "İngilizce",
+      "tr": "Türkçe"
+    },
+    "new": {
+      "title": "Yeni CV",
+      "meta": "Kayıtlı bir CV'yi düzenlenebilir hâle getir ya da boş bir sayfadan başla.",
+      "fromSaved": {
+        "title": "Kayıtlı bir CV'den",
+        "body": "CV'ndeki bilgiler bölümlere aktarılır; yazdıkların olduğu gibi kalır. Birkaç saniye sürer, sonra düzenleyici açılır.",
+        "legend": "Kayıtlı CV'ler",
+        "action": "CV'yi aktar",
+        "pending": "Aktarılıyor…",
+        "pendingNote": "Birkaç saniye sürer.",
+        "templateNote": "Görünümü sonra seçersin.",
+        "addNote": "Başka bir CV eklemek için onu şu ekranda yükle:",
+        "addLink": "Yeni analiz",
+        "none": "Henüz kayıtlı CV'n yok. Yeni analiz ekranında bir CV yükle ya da boş sayfadan başla."
+      },
+      "blank": {
+        "title": "Boş sayfadan",
+        "body": "Adınla başlayan boş bir CV açılır; bölümleri sen doldurursun.",
+        "nameLabel": "CV adı",
+        "nameHint": "Bu adı yalnızca sen, listende görürsün.",
+        "languageLegend": "CV'nin dili",
+        "languageHint": "Bölüm başlıkları ve tarihler bu dilde yazılır.",
+        "action": "Boş CV oluştur",
+        "pending": "Oluşturuluyor…",
+        "nameRequired": "CV'ye bir ad ver."
+      },
+      "errors": {
+        "rateLimited": "Bugünkü CV aktarma sınırına ulaştın. Yarın tekrar dene ya da boş sayfadan başla.",
+        "aiUnavailable": "AI servisi şu an meşgul. Bir dakika sonra tekrar dene ya da boş sayfadan başla.",
+        "resumeMissing": "Bu kayıtlı CV artık yok. Başka birini seç.",
+        "network": "Servise ulaşılamadı. Bağlantını kontrol edip tekrar dene.",
+        "generic": "CV oluşturulamadı. Tekrar dene."
+      }
+    },
+    "editor": {
+      "unsaved": "Kaydedilmemiş değişiklikler var",
+      "saved": "Tüm değişiklikler kaydedildi",
+      "save": "Kaydet",
+      "saving": "Kaydediliyor…",
+      "download": "PDF indir",
+      "source": {
+        "resume": "Kayıtlı CV'den",
+        "blank": "Sıfırdan yazıldı"
+      },
+      "saveErrors": {
+        "invalid": "Bazı alanların düzeltilmesi gerekiyor. İlki seçildi.",
+        "rateLimited": "Kısa sürede çok fazla değişiklik oldu. Bir dakika bekleyip tekrar kaydet.",
+        "network": "Servise ulaşılamadı. Değişikliklerin duruyor; tekrar dene.",
+        "generic": "Değişiklikler kaydedilemedi. Değişikliklerin duruyor; tekrar dene."
+      },
+      "import": {
+        "title": "CV'n aktarıldı.",
+        "omitted": "Aktarılmayan bölümler: {list}.",
+        "unsupported": "CV'nde bulunamadı, kontrol et: {list}.",
+        "datesLeftOut": "CV'nde olmayan tarihler eklenmedi.",
+        "reworded": {
+          "one": "AI'ın aktarırken değiştirdiği {count} satır işaretli",
+          "other": "AI'ın aktarırken değiştirdiği {count} satır işaretli"
+        },
+        "dismiss": "Kapat"
+      },
+      "sections": {
+        "contact": "Kişisel bilgiler",
+        "summary": "Özet",
+        "experience": "Deneyim",
+        "education": "Eğitim",
+        "projects": "Projeler",
+        "skills": "Yetenekler",
+        "languages": "Diller",
+        "certificates": "Sertifikalar"
+      },
+      "tools": {
+        "show": "{section} bölümünü CV'de göster",
+        "hide": "{section} bölümünü CV'de gizle",
+        "hidden": "CV'de gizli",
+        "up": "{section} bölümünü yukarı taşı",
+        "down": "{section} bölümünü aşağı taşı",
+        "open": "{section} bölümünü aç",
+        "close": "{section} bölümünü kapat",
+        "entryUp": "Yukarı taşı",
+        "entryDown": "Aşağı taşı",
+        "entryOpen": "{entry} kaydını aç",
+        "entryClose": "{entry} kaydını kapat",
+        "remove": "Kaldır",
+        "removeEntry": "{entry} kaydını kaldır"
+      },
+      "empty": {
+        "summary": "Henüz özet yok",
+        "list": "Henüz bir şey yok"
+      },
+      "fields": {
+        "docTitle": "CV adı",
+        "docTitleHint": "Bu adı yalnızca sen, listende görürsün.",
+        "language": "CV'nin dili",
+        "languageHint": "Bölüm başlıklarını ve ay adlarını belirler; metnin çevrilmez.",
+        "name": "Ad soyad",
+        "headline": "Başlık",
+        "headlineHint": "Adının altındaki kısa satır; alanın ve odağın gibi.",
+        "email": "E-posta",
+        "phone": "Telefon",
+        "location": "Konum",
+        "links": "Bağlantılar",
+        "linkLabel": "Bağlantı {number}",
+        "addLink": "Bağlantı ekle",
+        "role": "Pozisyon",
+        "organization": "Kurum",
+        "entryLocation": "Konum",
+        "start": "Başlangıç",
+        "end": "Bitiş",
+        "ongoing": "Devam ediyor",
+        "month": "Ay",
+        "year": "Yıl",
+        "noMonth": "Ay yok",
+        "degree": "Derece",
+        "school": "Okul",
+        "projectName": "Proje adı",
+        "projectLink": "Bağlantı",
+        "bullets": "Maddeler",
+        "details": "Ayrıntılar",
+        "detailsHint": "Not ortalaması, dereceler ya da ilgili dersler.",
+        "addBullet": "Madde ekle",
+        "bulletLabel": "Madde {number}",
+        "summary": "Özet",
+        "summaryHint": "Başvurduğun rollere göre yazılmış, seni anlatan birkaç cümle.",
+        "groupName": "Grup adı",
+        "groupNameHint": "İsteğe bağlı; Diller ya da Araçlar gibi.",
+        "groupItems": "Yetenekler",
+        "groupItemsHint": "Yetenekleri virgülle ayır.",
+        "languageName": "Dil",
+        "languageLevel": "Seviye",
+        "certName": "Sertifika",
+        "issuer": "Veren kurum",
+        "date": "Tarih",
+        "optional": "isteğe bağlı"
+      },
+      "add": {
+        "experience": "Deneyim ekle",
+        "education": "Eğitim ekle",
+        "projects": "Proje ekle",
+        "skills": "Yetenek grubu ekle",
+        "languages": "Dil ekle",
+        "certificates": "Sertifika ekle"
+      },
+      "newEntry": {
+        "experience": "Yeni pozisyon",
+        "education": "Yeni okul",
+        "projects": "Yeni proje",
+        "skills": "Yeni grup",
+        "languages": "Yeni dil",
+        "certificates": "Yeni sertifika"
+      },
+      "origins": {
+        "ai_reworded": "Yeniden yazıldı",
+        "ai_embellished": "AI süsledi",
+        "ai_added": "AI ekledi",
+        "confirmed": "Onayladın"
+      },
+      "originNotes": {
+        "ai_reworded": "AI aktarırken bu satırı değiştirdi; kontrol et. Düzenlersen satır senin olur.",
+        "ai_embellished": "AI buraya ayrıntı ekledi; bunun hakkında konuşmaya hazır ol.",
+        "ai_added": "Bu satırı AI yazdı; bunun hakkında konuşmaya hazır ol.",
+        "confirmed": "Bu satırı onayladın."
+      },
+      "errors": {
+        "required": "Bunu doldur.",
+        "email": "ad@ornek.com gibi bir e-posta adresi yaz.",
+        "url": "https:// ile başlayan bir web adresi yaz.",
+        "year": "Dört haneli bir yıl yaz.",
+        "tooLong": "Bu çok uzun; kısalt."
+      },
+      "preview": {
+        "label": "Önizleme",
+        "templateLegend": "Şablon",
+        "pages": {
+          "one": "{count} sayfa",
+          "other": "{count} sayfa"
+        },
+        "longNote": "{count} sayfaya taşıyor; staj başvurusunda tek sayfa daha iyi okunur.",
+        "pageOf": "Sayfa {page} / {count}",
+        "previous": "Önceki sayfa",
+        "next": "Sonraki sayfa",
+        "updating": "Güncelleniyor…",
+        "failed": "Önizleme güncellenemedi. Bir sonraki değişikliğinde yeniden denenir.",
+        "incomplete": "Önizlemenin güncellenmesi için işaretli alanları doldur.",
+        "imageAlt": "CV'nin {page}. sayfası, {template} şablonu",
+        "show": "Önizlemeyi göster",
+        "close": "Önizlemeyi kapat"
+      }
     }
   }
 }

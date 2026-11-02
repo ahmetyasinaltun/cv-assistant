@@ -47,6 +47,13 @@ describe("isPrivatePath", () => {
     expect(isPrivatePath("/analyses/sample")).toBe(false);
     expect(isPrivatePath("/sign-in")).toBe(false);
   });
+
+  it("guards the CV list, a new CV and the editor", () => {
+    expect(isPrivatePath("/cvs")).toBe(true);
+    expect(isPrivatePath("/cvs/new")).toBe(true);
+    expect(isPrivatePath("/cvs/7f6c/pdf")).toBe(true);
+    expect(isPrivatePath("/cvsx")).toBe(false);
+  });
 });
 
 describe("signInDestination", () => {

@@ -36,10 +36,12 @@ export function signInDestination(next: unknown, formLocale: Locale, accountLoca
   return pathForLocale(path, accountLocale);
 }
 
-/** The analyses list, the new-analysis screen and real results need an account; the public sample does not. */
+/** Analyses (except the public sample) and the CVs a user writes need an account. */
 export function isPrivatePath(pathAfterLocale: string): boolean {
   return (
     pathAfterLocale === "/analyses" ||
-    (pathAfterLocale.startsWith("/analyses/") && pathAfterLocale !== "/analyses/sample")
+    (pathAfterLocale.startsWith("/analyses/") && pathAfterLocale !== "/analyses/sample") ||
+    pathAfterLocale === "/cvs" ||
+    pathAfterLocale.startsWith("/cvs/")
   );
 }

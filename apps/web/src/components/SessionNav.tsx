@@ -30,7 +30,10 @@ async function userOrNull(): Promise<User | null> {
 export async function SessionNav({ locale, labels }: SessionPartProps) {
   const user = await userOrNull();
   const items = user
-    ? [{ href: "/analyses", excludes: ["/analyses/sample"], label: labels.nav.analyses }]
+    ? [
+        { href: "/analyses", excludes: ["/analyses/sample"], label: labels.nav.analyses },
+        { href: "/cvs", label: labels.nav.cvs },
+      ]
     : [{ href: "/analyses/sample", label: labels.nav.sample }];
 
   return <MainNav locale={locale} label={labels.navLabel} items={items} />;

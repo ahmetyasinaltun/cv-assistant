@@ -139,3 +139,123 @@ export interface SampleAnalysisInput {
   resume: { title: string; text: string };
   job_description: { title: string; company: string | null; text: string };
 }
+
+// --- CV documents (services/api/app/cv/content.py and app/schemas/cv.py) -----------------------------
+
+export type CvTemplateId = "classic" | "modern" | "standard";
+export type CvSectionKey =
+  | "summary"
+  | "experience"
+  | "education"
+  | "projects"
+  | "skills"
+  | "languages"
+  | "certificates";
+/** Where a line came from; shown in the editor only, never printed. */
+export type LineOrigin = "cv" | "ai_reworded" | "ai_embellished" | "ai_added" | "confirmed" | "user";
+
+export interface CvLine {
+  text: string;
+  origin: LineOrigin;
+  evidence_ids: string[];
+}
+
+export interface CvLink {
+  url: string;
+}
+
+export interface CvContact {
+  name: string;
+  email: string | null;
+  phone: string | null;
+  location: string | null;
+  links: CvLink[];
+}
+
+/** "2025" or "2025-06"; an end date may also be "present". */
+export type CvDate = string | null;
+
+export interface CvExperience {
+  role: string;
+  organization: string;
+  location: string | null;
+  start: CvDate;
+  end: CvDate;
+  bullets: CvLine[];
+}
+
+export interface CvEducation {
+  degree: string;
+  school: string;
+  location: string | null;
+  start: CvDate;
+  end: CvDate;
+  details: CvLine[];
+}
+
+export interface CvProject {
+  name: string;
+  link: CvLink | null;
+  start: CvDate;
+  end: CvDate;
+  bullets: CvLine[];
+}
+
+export interface CvSkillGroup {
+  name: string | null;
+  items: CvLine[];
+}
+
+export interface CvLanguage {
+  name: string;
+  level: string | null;
+}
+
+export interface CvCertificate {
+  name: string;
+  issuer: string | null;
+  date: CvDate;
+}
+
+export interface CvSection {
+  key: CvSectionKey;
+  visible: boolean;
+}
+
+export interface CvContent {
+  contact: CvContact;
+  headline: string | null;
+  summary: CvLine[];
+  experience: CvExperience[];
+  education: CvEducation[];
+  projects: CvProject[];
+  skills: CvSkillGroup[];
+  languages: CvLanguage[];
+  certificates: CvCertificate[];
+  sections: CvSection[];
+}
+
+export interface CvDocumentSummary {
+  id: string;
+  kind: "maker" | "tailored";
+  title: string;
+  language: Language;
+  template: CvTemplateId;
+  resume_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CvDocument extends CvDocumentSummary {
+  content: CvContent;
+}
+
+export interface UnsupportedFact {
+  kind: "role" | "organization" | "degree" | "school" | "date";
+  value: string;
+}
+
+export interface CvDocumentFromResume extends CvDocument {
+  unsupported_facts: UnsupportedFact[];
+  omitted_sections: string[];
+}

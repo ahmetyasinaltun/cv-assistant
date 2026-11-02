@@ -7,7 +7,10 @@
       "register": "Create an account",
       "analyses": "Analyses",
       "newAnalysis": "New analysis",
-      "analysis": "Analysis"
+      "analysis": "Analysis",
+      "cvs": "My CVs",
+      "newCv": "New CV",
+      "cv": "CV"
     }
   },
   "shell": {
@@ -16,7 +19,8 @@
     "menu": "Menu",
     "nav": {
       "analyses": "Analyses",
-      "sample": "Sample analysis"
+      "sample": "Sample analysis",
+      "cvs": "My CVs"
     },
     "language": "Language",
     "skipToContent": "Skip to content",
@@ -285,6 +289,224 @@
       "unavailable": "The service is not reachable right now. Your text is still here; try again in a minute.",
       "rateLimited": "You have reached the limit of 20 analyses a day. Your text is still here; try again later.",
       "generic": "The analysis could not be started. Your text is still here; try again."
+    }
+  },
+  "cvs": {
+    "list": {
+      "title": "My CVs",
+      "meta": "CVs you can edit and download as a PDF.",
+      "newCv": "New CV",
+      "download": "Download PDF",
+      "delete": "Delete",
+      "deleteQuestion": "Delete “{title}”? This cannot be undone.",
+      "deleteAction": "Delete CV",
+      "deleting": "Deleting…",
+      "cancel": "Cancel",
+      "deleteFailed": "The CV could not be deleted. Try again.",
+      "edited": "Edited {date}",
+      "thumbnailAlt": "First page of {title}",
+      "empty": {
+        "title": "No CVs yet",
+        "body": "Turn a saved CV into one you can edit, or start from a blank page. You pick its look and download it as a PDF."
+      }
+    },
+    "templates": {
+      "classic": "Classic",
+      "modern": "Modern",
+      "standard": "Standard"
+    },
+    "languageNames": {
+      "en": "English",
+      "tr": "Turkish"
+    },
+    "new": {
+      "title": "New CV",
+      "meta": "Make a saved CV editable, or start from a blank page.",
+      "fromSaved": {
+        "title": "From a saved CV",
+        "body": "The CV's details are placed into sections and your wording stays as it is. It takes a few seconds, then the editor opens.",
+        "legend": "Saved CVs",
+        "action": "Import CV",
+        "pending": "Importing…",
+        "pendingNote": "This takes a few seconds.",
+        "templateNote": "You choose the look afterwards.",
+        "addNote": "To add another CV, upload it on the",
+        "addLink": "New analysis screen",
+        "none": "You have no saved CV yet. Upload one on the New analysis screen, or start from a blank page."
+      },
+      "blank": {
+        "title": "From a blank page",
+        "body": "A blank CV opens with your name, and you fill in the sections.",
+        "nameLabel": "CV name",
+        "nameHint": "Only you see this name, in your list.",
+        "languageLegend": "Language of the CV",
+        "languageHint": "Section titles and dates are written in this language.",
+        "action": "Create blank CV",
+        "pending": "Creating…",
+        "nameRequired": "Give the CV a name."
+      },
+      "errors": {
+        "rateLimited": "You reached today's limit of imported CVs. Try again tomorrow, or start from a blank page.",
+        "aiUnavailable": "The AI service is busy right now. Try again in a minute, or start from a blank page.",
+        "resumeMissing": "That saved CV no longer exists. Pick another one.",
+        "network": "The service could not be reached. Check your connection and try again.",
+        "generic": "The CV could not be created. Try again."
+      }
+    },
+    "editor": {
+      "unsaved": "Unsaved changes",
+      "saved": "All changes saved",
+      "save": "Save",
+      "saving": "Saving…",
+      "download": "Download PDF",
+      "source": {
+        "resume": "From a saved CV",
+        "blank": "Written from scratch"
+      },
+      "saveErrors": {
+        "invalid": "Some fields need attention. The first one is selected.",
+        "rateLimited": "Too many changes in a short time. Wait a minute and save again.",
+        "network": "The service could not be reached. Your changes are still here; try again.",
+        "generic": "The changes could not be saved. Your changes are still here; try again."
+      },
+      "import": {
+        "title": "Your CV was imported.",
+        "omitted": "Not carried over: {list}.",
+        "unsupported": "Not found in your CV, so check them: {list}.",
+        "datesLeftOut": "Dates that are not in your CV were left out.",
+        "reworded": {
+          "one": "{count} line the AI changed while copying is marked",
+          "other": "{count} lines the AI changed while copying are marked"
+        },
+        "dismiss": "Close"
+      },
+      "sections": {
+        "contact": "Personal details",
+        "summary": "Summary",
+        "experience": "Experience",
+        "education": "Education",
+        "projects": "Projects",
+        "skills": "Skills",
+        "languages": "Languages",
+        "certificates": "Certifications"
+      },
+      "tools": {
+        "show": "Show {section} in the CV",
+        "hide": "Hide {section} from the CV",
+        "hidden": "Hidden in the CV",
+        "up": "Move {section} up",
+        "down": "Move {section} down",
+        "open": "Open {section}",
+        "close": "Close {section}",
+        "entryUp": "Move up",
+        "entryDown": "Move down",
+        "entryOpen": "Open {entry}",
+        "entryClose": "Close {entry}",
+        "remove": "Remove",
+        "removeEntry": "Remove {entry}"
+      },
+      "empty": {
+        "summary": "No summary yet",
+        "list": "Nothing here yet"
+      },
+      "fields": {
+        "docTitle": "CV name",
+        "docTitleHint": "Only you see this name, in your list.",
+        "language": "Language of the CV",
+        "languageHint": "Sets the section titles and month names; your text is not translated.",
+        "name": "Full name",
+        "headline": "Headline",
+        "headlineHint": "A short line under your name, such as your field and focus.",
+        "email": "Email",
+        "phone": "Phone",
+        "location": "Location",
+        "links": "Links",
+        "linkLabel": "Link {number}",
+        "addLink": "Add a link",
+        "role": "Position",
+        "organization": "Organization",
+        "entryLocation": "Location",
+        "start": "Start",
+        "end": "End",
+        "ongoing": "Ongoing",
+        "month": "Month",
+        "year": "Year",
+        "noMonth": "No month",
+        "degree": "Degree",
+        "school": "School",
+        "projectName": "Project name",
+        "projectLink": "Link",
+        "bullets": "Bullet points",
+        "details": "Details",
+        "detailsHint": "Grade average, honours or relevant courses.",
+        "addBullet": "Add a bullet point",
+        "bulletLabel": "Bullet point {number}",
+        "summary": "Summary",
+        "summaryHint": "A few sentences about you, written for the roles you apply to.",
+        "groupName": "Group name",
+        "groupNameHint": "Optional, such as Languages or Tools.",
+        "groupItems": "Skills",
+        "groupItemsHint": "Separate the skills with commas.",
+        "languageName": "Language",
+        "languageLevel": "Level",
+        "certName": "Certificate",
+        "issuer": "Issuer",
+        "date": "Date",
+        "optional": "optional"
+      },
+      "add": {
+        "experience": "Add experience",
+        "education": "Add education",
+        "projects": "Add a project",
+        "skills": "Add a skill group",
+        "languages": "Add a language",
+        "certificates": "Add a certificate"
+      },
+      "newEntry": {
+        "experience": "New position",
+        "education": "New school",
+        "projects": "New project",
+        "skills": "New group",
+        "languages": "New language",
+        "certificates": "New certificate"
+      },
+      "origins": {
+        "ai_reworded": "Reworded",
+        "ai_embellished": "Embellished by AI",
+        "ai_added": "Added by AI",
+        "confirmed": "You confirmed"
+      },
+      "originNotes": {
+        "ai_reworded": "The AI changed this line while copying; check it. Editing it makes it yours.",
+        "ai_embellished": "The AI added detail here; be ready to talk about it.",
+        "ai_added": "The AI wrote this line; be ready to talk about it.",
+        "confirmed": "You confirmed this line."
+      },
+      "errors": {
+        "required": "Fill this in.",
+        "email": "Enter an email address such as name@example.com.",
+        "url": "Enter a web address that starts with https://",
+        "year": "Enter a four-digit year.",
+        "tooLong": "This is too long; shorten it."
+      },
+      "preview": {
+        "label": "Preview",
+        "templateLegend": "Template",
+        "pages": {
+          "one": "{count} page",
+          "other": "{count} pages"
+        },
+        "longNote": "Runs to {count} pages; for an internship, one page reads best.",
+        "pageOf": "Page {page} of {count}",
+        "previous": "Previous page",
+        "next": "Next page",
+        "updating": "Updating…",
+        "failed": "The preview could not be updated. It tries again after your next change.",
+        "incomplete": "Fill in the marked fields to update the preview.",
+        "imageAlt": "Page {page} of the CV in the {template} template",
+        "show": "Show preview",
+        "close": "Close preview"
+      }
     }
   }
 }

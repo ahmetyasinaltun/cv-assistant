@@ -26,7 +26,18 @@ interface RequestOptions {
 }
 
 export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const headers = new Headers({ Accept: "application/json" });
+  const response = await send(path, options, "application/json");
+  if (response.status === 204) return undefined as T;
+  return (await response.json()) as T;
+}
+
+/** For files (a PDF, a page image): the raw response, so a route handler can pass its body and headers on. */
+export async function apiFileRequest(path: string, options: RequestOptions = {}): Promise<Response> {
+  return send(path, options, "*/*");
+}
+
+async function send(path: string, options: RequestOptions, accept: string): Promise<Response> {
+  const headers = new Headers({ Accept: accept });
   if (options.token) headers.set("Authorization", `Bearer ${options.token}`);
 
   let body: BodyInit | undefined;
@@ -50,8 +61,7 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
   }
 
   if (!response.ok) throw await toApiError(response);
-  if (response.status === 204) return undefined as T;
-  return (await response.json()) as T;
+  return response;
 }
 
 async function toApiError(response: Response): Promise<ApiError> {
