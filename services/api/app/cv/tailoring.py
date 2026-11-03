@@ -6,6 +6,7 @@ import json
 from dataclasses import dataclass, field
 from typing import Literal
 
+from app.ai.lexical import keyword_terms
 from app.ai.prompts import render_prompt
 from app.ai.providers.base import LLMClient
 from app.ai.schemas import TailoredCv, TailoredLine
@@ -24,7 +25,8 @@ MAX_QUESTIONS = 5
 MODE_RULES: dict[TailoringMode, str] = {
     "flexible": (
         "The candidate chose the flexible mode. You may write the headline and summary freely for this posting, "
-        "including strengths the CV does not show (origin ai_added). You may add skills the posting asks for to the "
+        "stressing strengths that fit it, including ones the CV does not show (origin ai_added), within the summary "
+        "rules above. You may add skills the posting asks for to the "
         "skills list (origin ai_added). In positions and projects you may add plausible detail that fits what a line "
         "already says, for example that a full-stack project used a tool the posting asks for (origin "
         "ai_embellished), and at most one new bullet per position or project in an area the CV already touches "
@@ -104,7 +106,15 @@ class CvTailorer:
         )
         raw = self.llm.generate_structured(task="tailor_cv", prompt=prompt, schema=TailoredCv)
         same_language = request.base_language == request.target_language
-        content = assemble(raw, request.base, ids, same_language=same_language, mode=request.mode)
+        content = assemble(
+            raw,
+            request.base,
+            ids,
+            same_language=same_language,
+            mode=request.mode,
+            posting=request.posting,
+            company=request.company,
+        )
         questions = _questions(raw, request.base, ids) if request.mode == "strict" else []
         return TailoringResult(content=content, questions=questions)
 
@@ -178,10 +188,36 @@ def describe_source(base: CvContent) -> tuple[_SourceIds, dict]:
     }
 
 
+def source_text(base: CvContent) -> str:
+    """Everything the source CV says, comparable: lines, titles, organizations, projects and skills."""
+    parts = [base.headline or "", *(line.text for line in base.summary)]
+    for job in base.experience:
+        parts += [job.role, job.organization, *(line.text for line in job.bullets)]
+    for school in base.education:
+        parts += [school.degree, school.school, *(line.text for line in school.details)]
+    for project in base.projects:
+        parts += [project.name, *(line.text for line in project.bullets)]
+    parts += [item.text for group in base.skills for item in group.items]
+    parts += [f"{language.name} {language.level or ''}" for language in base.languages]
+    parts += [certificate.name for certificate in base.certificates]
+    return " ".join(parts)
+
+
 def assemble(
-    raw: TailoredCv, base: CvContent, ids: _SourceIds, *, same_language: bool, mode: TailoringMode
+    raw: TailoredCv,
+    base: CvContent,
+    ids: _SourceIds,
+    *,
+    same_language: bool,
+    mode: TailoringMode,
+    posting: str = "",
+    company: str | None = None,
 ) -> CvContent:
     """Builds the tailored CV from the source CV and the model's text. Entities always come from the source."""
+    source = source_text(base)
+    source_comparable = f" {comparable(source)} "
+    # Words of the posting the CV never uses: a "reworded" line that brings one in has added something.
+    new_posting_terms = set(keyword_terms(posting)) - set(keyword_terms(source))
 
     def line(item: TailoredLine) -> dict | None:
         text = " ".join(item.text.split())[:LINE_TEXT_MAX]
@@ -195,6 +231,15 @@ def assemble(
         elif origin == "cv":
             # Claimed as copied but not in the CV word for word: a rewording of its source, or new.
             origin = "ai_reworded" if source is not None else "ai_added"
+        elif (
+            origin == "ai_reworded"
+            and same_language
+            and new_posting_terms & set(keyword_terms(text))
+        ):
+            origin = "ai_embellished"
+        elif f" {comparable(text)} " in source_comparable:
+            # A skill or phrase the CV already states word for word comes from the CV, whatever the model said.
+            origin = "cv"
         if mode == "strict" and origin in ("ai_embellished", "ai_added"):
             return None
         return {"text": text, "origin": origin}
@@ -212,6 +257,10 @@ def assemble(
     if headline:
         data["headline"] = headline
     summary = lines(raw.summary)
+    # A CV does not address the company; that belongs in a cover letter.
+    company_name = comparable(company or "")
+    if len(company_name) >= 3:
+        summary = [s for s in summary if f" {company_name} " not in f" {comparable(s['text'])} "]
     if summary:
         data["summary"] = capped(summary, CvContent, "summary")
 

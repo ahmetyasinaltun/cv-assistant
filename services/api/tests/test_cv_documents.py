@@ -99,6 +99,30 @@ def test_model_output_is_cleaned_into_the_contract():
     assert [[item.text for item in group.items] for group in content.skills] == [["Python"]]
 
 
+def test_a_profile_shown_short_and_linked_in_full_is_kept_once():
+    raw = structure(
+        contact=StructuredContact(
+            name="Deniz",
+            links=[
+                "www.linkedin.com/in/deniz-kurgu",
+                "https://github.com/denizkurgu",
+                "https://www.linkedin.com/in/deniz-kurgu-4f2a91c07/",
+                "https://github.com/denizkurgu",
+            ],
+        )
+    )
+    links = [link.url for link in to_cv_content(raw, "x").contact.links]
+    assert links == [
+        "https://github.com/denizkurgu",
+        "https://www.linkedin.com/in/deniz-kurgu-4f2a91c07/",
+    ]
+
+
+def test_an_email_split_by_pdf_text_is_joined_again():
+    raw = structure(contact=StructuredContact(name="A", email="deniz.kurgu @example.com"))
+    assert to_cv_content(raw, "x").contact.email == "deniz.kurgu@example.com"
+
+
 def test_empty_name_falls_back_to_the_account_name():
     content = to_cv_content(structure(contact=StructuredContact(name=" ")), "Jane Doe")
     assert content.contact.name == "Jane Doe"

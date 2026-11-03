@@ -73,7 +73,9 @@ def to_cv_content(raw: CvStructure, fallback_name: str) -> CvContent:
             "phone": _short(contact.phone),
             "location": _short(contact.location),
             "links": capped(
-                [{"url": url} for url in map(_url, contact.links) if url], CvContact, "links"
+                [{"url": url} for url in _without_duplicate_profiles(map(_url, contact.links))],
+                CvContact,
+                "links",
             ),
         },
         "headline": _short(raw.headline),
@@ -224,8 +226,27 @@ def _url(value: str | None) -> str | None:
     return text if len(text) <= URL_MAX else None
 
 
+def _profile_key(url: str) -> str:
+    """ "https://www.linkedin.com/in/name/" → "linkedin.com/in/name", for comparing profile links."""
+    return url.split("://", 1)[-1].removeprefix("www.").rstrip("/").lower()
+
+
+def _without_duplicate_profiles(urls) -> list[str]:
+    """A CV often shows a short profile address as text and links to the full one ("…/in/name" and
+    "…/in/name-9a09"); both are the same profile, so only the full link target is kept."""
+    kept = [url for url in dict.fromkeys(u for u in urls if u)]
+    keys = [_profile_key(url) for url in kept]
+    return [
+        url
+        for url, key in zip(kept, keys, strict=True)
+        if not any(other != key and other.startswith(f"{key}-") for other in keys)
+    ]
+
+
 def _email(value: str | None) -> str | None:
+    # An address never contains spaces; PDF text often splits one ("name @gmail.com"), so they are removed first.
+    compact = "".join((value or "").split())
     try:
-        return _EMAIL.validate_python((value or "").strip()) if value else None
+        return _EMAIL.validate_python(compact) if compact else None
     except ValidationError:
         return None

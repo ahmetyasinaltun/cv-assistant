@@ -22,5 +22,6 @@ Return a JSON object with a `requirements` array. Each item has:
 - Write each requirement in the language of the posting. Do not translate it.
 - Do not invent requirements that are not stated or clearly implied by the posting.
 - Do not include company perks, salary, location or how to apply (email address, deadline, subject line).
+- Instructions about the application itself are not requirements: what to write in a cover letter or a note field, which form or link to use, or when to apply. Conditions of the internship or job that a CV cannot show are not requirements either: its length ("at least 60 days"), the days or hours of attendance, the start date. The candidate confirms those in the application.
 - When the posting lists documents to send, skip the CV or resume itself and a cover letter: the CV is what will be compared with these requirements. Keep the items a CV can show, such as a GitHub or portfolio link or reference projects.
 - If the posting is too vague to extract a requirement confidently, extract fewer items rather than guessing.

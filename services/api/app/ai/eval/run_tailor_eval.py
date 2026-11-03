@@ -140,17 +140,23 @@ def evaluate(
 def run(provider: AIProvider, cases: list[dict]) -> list[TailorReport]:
     reports = []
     for case in cases:
-        structured = CvStructurer(provider.llm).structure(case["resume"], "Candidate")
         case_language: Language = case.get("output_language", "en")
-        analysis = AnalysisPipeline(provider).run(
-            AnalysisInput(
-                job_title=case["job_title"],
-                job_description=case["job_description"],
-                resume=case["resume"],
-                output_language=case_language,
-            )
-        )
         base_language = guess_language(case["resume"]) or case_language
+        try:
+            structured = CvStructurer(provider.llm).structure(case["resume"], "Candidate")
+            analysis = AnalysisPipeline(provider).run(
+                AnalysisInput(
+                    job_title=case["job_title"],
+                    job_description=case["job_description"],
+                    resume=case["resume"],
+                    output_language=case_language,
+                )
+            )
+        except Exception as exc:  # noqa: BLE001 - a case whose setup failed is reported, not raised
+            failed = TailorReport(case=case["name"], mode="flexible", target_language=base_language)
+            failed.error = f"setup failed: {type(exc).__name__}: {exc}"[:300]
+            reports.append(failed)
+            continue
         runs: list[tuple[TailoringMode, Language]] = [
             ("flexible", base_language),
             ("strict", base_language),

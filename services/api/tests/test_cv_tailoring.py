@@ -244,6 +244,87 @@ def test_strict_mode_drops_additions_and_keeps_questions_about_real_entries():
     assert result.questions[0].kind == "experience"
 
 
+def tailor_for(output: dict, posting: str, *, target="en"):
+    request = TailoringRequest(
+        base=BASE,
+        base_language="en",
+        target_language=target,
+        job_title="Intern",
+        company="Globex Defence",
+        posting=posting,
+        requirements=REQUIREMENTS,
+        mode="flexible",
+    )
+    return CvTailorer(ScriptedLLM(output)).tailor(request).content
+
+
+def test_summary_never_addresses_the_company():
+    content = tailor_for(
+        {
+            "summary": [
+                {
+                    "text": "I want to complete my internship at Globex Defence.",
+                    "origin": "ai_added",
+                },
+                {"text": "Builds and tests FastAPI services.", "origin": "ai_reworded"},
+            ]
+        },
+        "Join Globex Defence.",
+    )
+    assert [line.text for line in content.summary] == ["Builds and tests FastAPI services."]
+
+
+def test_a_reworded_line_that_brings_in_posting_words_is_marked_embellished():
+    posting = "Support the workshop team with simulation runs. FastAPI is a plus."
+    output = {
+        "experience": [
+            {
+                "id": "x1",
+                "role": "Backend Intern",
+                "bullets": [
+                    {
+                        "text": "Ran simulation tests for the workshop team.",
+                        "origin": "ai_reworded",
+                        "source": "x1.1",
+                    },
+                    {
+                        "text": "Built REST services with FastAPI.",
+                        "origin": "ai_reworded",
+                        "source": "x1.1",
+                    },
+                ],
+            }
+        ]
+    }
+    bullets = tailor_for(output, posting).experience[0].bullets
+    assert [b.origin for b in bullets] == ["ai_embellished", "ai_reworded"]
+    # Across languages every word is new, so a translation is not judged by its words.
+    translated = tailor_for(output, posting, target="tr").experience[0].bullets
+    assert [b.origin for b in translated] == ["ai_reworded", "ai_reworded"]
+
+
+def test_a_skill_the_cv_already_states_is_not_an_addition():
+    content = tailor_for(
+        {
+            "skills": [
+                {
+                    "items": [
+                        {"text": "FastAPI", "origin": "ai_added"},
+                        {"text": "Python", "origin": "ai_reworded"},
+                        {"text": "SolidWorks", "origin": "ai_added"},
+                    ]
+                }
+            ]
+        },
+        "SolidWorks is a plus.",
+    )
+    assert [(i.text, i.origin) for i in content.skills[0].items] == [
+        ("FastAPI", "cv"),
+        ("Python", "cv"),
+        ("SolidWorks", "ai_added"),
+    ]
+
+
 # --- HTTP -------------------------------------------------------------------------------------------
 
 
