@@ -127,7 +127,14 @@ export function DateField({ id, label, value, onChange, allowOngoing, error, loc
 
 // --- Lines --------------------------------------------------------------------------------------------
 
-export function OriginMark({ origin, labels }: { origin: CvLine["origin"]; labels: EditorLabels }) {
+interface OriginMarkProps {
+  origin: CvLine["origin"];
+  labels: EditorLabels;
+  /** The chip alone, where the surrounding text already says what to do. */
+  compact?: boolean;
+}
+
+export function OriginMark({ origin, labels, compact = false }: OriginMarkProps) {
   if (!isMarkedOrigin(origin)) return null;
   const added = origin === "ai_added" || origin === "ai_embellished";
   return (
@@ -139,7 +146,7 @@ export function OriginMark({ origin, labels }: { origin: CvLine["origin"]; label
       >
         {labels.origins[origin]}
       </span>
-      <span className="text-[13px] text-mute">{labels.originNotes[origin]}</span>
+      {!compact && <span className="text-[13px] text-mute">{labels.originNotes[origin]}</span>}
     </div>
   );
 }

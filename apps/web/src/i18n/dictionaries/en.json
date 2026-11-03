@@ -10,7 +10,8 @@
       "analysis": "Analysis",
       "cvs": "My CVs",
       "newCv": "New CV",
-      "cv": "CV"
+      "cv": "CV",
+      "tailorCv": "A CV for this posting"
     }
   },
   "shell": {
@@ -361,7 +362,8 @@
       "download": "Download PDF",
       "source": {
         "resume": "From a saved CV",
-        "blank": "Written from scratch"
+        "blank": "Written from scratch",
+        "tailored": "Written for a posting"
       },
       "saveErrors": {
         "invalid": "Some fields need attention. The first one is selected.",
@@ -510,6 +512,59 @@
       "leaveQuestion": "You have unsaved changes. Leave without saving?",
       "removed": "“{name}” removed.",
       "undo": "Undo"
+    },
+    "tailor": {
+      "resultAction": "Write a CV for this posting",
+      "page": {
+        "title": "A CV for this posting",
+        "modeLegend": "How freely may the AI write?",
+        "flexible": {
+          "label": "Flexible",
+          "note": "Recommended",
+          "body": "Writes the summary and skills for this role and may add plausible detail to your projects and positions. It never adds employers, schools, roles or dates. Every line it added is marked, so you know what to be ready to talk about."
+        },
+        "strict": {
+          "label": "Strict",
+          "body": "Uses only what your CV says: selects, reorders, rewords and translates. Where the posting asks for something your CV may leave out, it asks you instead of writing it."
+        },
+        "scoreNote": "The analysis and its score do not change: they always come from your own CV.",
+        "startsFrom": "It starts from your latest edited copy of this CV in My CVs, or from the saved CV.",
+        "action": "Write the CV",
+        "pending": "Writing…",
+        "pendingNote": "This takes 10 to 30 seconds.",
+        "notCompleted": "A CV can be written once the analysis is complete.",
+        "errors": {
+          "rateLimited": "You reached today's limit of AI-written CVs. Try again tomorrow.",
+          "aiUnavailable": "The AI service is busy right now. Try again in a minute.",
+          "missing": "This analysis no longer exists.",
+          "network": "The service could not be reached. Check your connection and try again.",
+          "generic": "The CV could not be written. Try again."
+        }
+      },
+      "panel": {
+        "title": "Written for {job}",
+        "mode": {
+          "flexible": "Flexible mode",
+          "strict": "Strict mode"
+        },
+        "scoreNote": "The analysis score still comes from your own CV.",
+        "openAnalysis": "Open the analysis",
+        "readyTitle": "Be ready to talk about",
+        "readyNote": "The AI added these lines or added detail to them. Keep, change or remove each one before you send the CV.",
+        "readyEmpty": "No line was added by the AI; every line comes from your CV or rewords it.",
+        "questionsTitle": "Is this true for you?",
+        "questionsNote": "A yes adds the line, marked as confirmed by you.",
+        "yes": "Yes, add it",
+        "no": "No",
+        "answered": {
+          "yes": "Added",
+          "no": "Left out"
+        },
+        "saveFirst": "Save your changes first, then answer.",
+        "answerFailed": "The answer could not be saved. Try again.",
+        "in": "in {entry}"
+      },
+      "listTailored": "for a posting"
     }
   }
 }

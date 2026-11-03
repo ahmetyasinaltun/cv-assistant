@@ -9,6 +9,7 @@ import {
   editLine,
   firstErrorPath,
   joinDate,
+  linesToTalkAbout,
   moveSection,
   newEntry,
   previewContent,
@@ -168,5 +169,23 @@ describe("cleaning and preview", () => {
     expect(preview.contact.links).toEqual([{ url: "https://ok.dev" }]);
     expect(preview.experience).toHaveLength(1);
     expect(preview.experience[0].start).toBeNull();
+  });
+});
+
+describe("lines to talk about", () => {
+  it("lists what the AI added or embellished, with where each line sits", () => {
+    const cv = content({
+      summary: [line("Ships tested APIs.", "ai_added")],
+      experience: [
+        { ...newEntry("experience"), role: "Intern", organization: "Acme", bullets: [line("Built APIs."), line("Used Docker.", "ai_embellished")] },
+      ],
+      skills: [{ name: "Tools", items: [line("Python"), line("Kubernetes", "ai_added")] }],
+    });
+    const sections = { summary: "Summary", experience: "Experience", education: "Education", projects: "Projects", skills: "Skills", languages: "Languages", certificates: "Certifications" };
+    expect(linesToTalkAbout(cv, sections)).toEqual([
+      { text: "Ships tested APIs.", origin: "ai_added", place: "Summary" },
+      { text: "Used Docker.", origin: "ai_embellished", place: "Experience · Intern" },
+      { text: "Kubernetes", origin: "ai_added", place: "Skills · Tools" },
+    ]);
   });
 });

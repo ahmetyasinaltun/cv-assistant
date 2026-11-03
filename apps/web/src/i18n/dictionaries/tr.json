@@ -10,7 +10,8 @@
       "analysis": "Analiz",
       "cvs": "CV'lerim",
       "newCv": "Yeni CV",
-      "cv": "CV"
+      "cv": "CV",
+      "tailorCv": "Bu ilan için CV"
     }
   },
   "shell": {
@@ -361,7 +362,8 @@
       "download": "PDF indir",
       "source": {
         "resume": "Kayıtlı CV'den",
-        "blank": "Sıfırdan yazıldı"
+        "blank": "Sıfırdan yazıldı",
+        "tailored": "İlana göre yazıldı"
       },
       "saveErrors": {
         "invalid": "Bazı alanların düzeltilmesi gerekiyor. İlki seçildi.",
@@ -510,6 +512,59 @@
       "leaveQuestion": "Kaydedilmemiş değişikliklerin var. Kaydetmeden çıkılsın mı?",
       "removed": "“{name}” kaldırıldı.",
       "undo": "Geri al"
+    },
+    "tailor": {
+      "resultAction": "Bu ilan için CV yaz",
+      "page": {
+        "title": "Bu ilan için bir CV",
+        "modeLegend": "AI ne kadar serbest yazsın?",
+        "flexible": {
+          "label": "Esnek",
+          "note": "Önerilen",
+          "body": "Özeti ve yetenekleri bu rol için yazar; projelerine ve deneyimlerine akla yatkın ayrıntılar ekleyebilir. Hiçbir zaman yeni işveren, okul, pozisyon ya da tarih eklemez. Eklediği her satır işaretlenir; böylece neyi konuşmaya hazır olman gerektiğini bilirsin."
+        },
+        "strict": {
+          "label": "Katı",
+          "body": "Yalnızca CV'nde yazanı kullanır: seçer, sıralar, yeniden yazar ve çevirir. İlanın istediği bir şey CV'nde eksik kalmış olabilirse yazmak yerine sana sorar."
+        },
+        "scoreNote": "Analiz ve puanı değişmez; puan her zaman kendi CV'nden gelir.",
+        "startsFrom": "CV'lerim'deki en son düzenlediğin kopyadan, yoksa kayıtlı CV'nden başlar.",
+        "action": "CV'yi yaz",
+        "pending": "Yazılıyor…",
+        "pendingNote": "10-30 saniye sürer.",
+        "notCompleted": "CV, analiz tamamlandığında yazılabilir.",
+        "errors": {
+          "rateLimited": "Bugünkü AI ile CV yazma sınırına ulaştın. Yarın tekrar dene.",
+          "aiUnavailable": "AI servisi şu an meşgul. Bir dakika sonra tekrar dene.",
+          "missing": "Bu analiz artık yok.",
+          "network": "Servise ulaşılamadı. Bağlantını kontrol edip tekrar dene.",
+          "generic": "CV yazılamadı. Tekrar dene."
+        }
+      },
+      "panel": {
+        "title": "{job} için yazıldı",
+        "mode": {
+          "flexible": "Esnek mod",
+          "strict": "Katı mod"
+        },
+        "scoreNote": "Analizin puanı yine kendi CV'nden gelir.",
+        "openAnalysis": "Analizi aç",
+        "readyTitle": "Konuşmaya hazır ol",
+        "readyNote": "Bu satırları AI ekledi ya da ayrıntı kattı. CV'yi göndermeden önce her birini koru, değiştir ya da kaldır.",
+        "readyEmpty": "AI hiçbir satır eklemedi; her satır CV'nden geliyor ya da onu yeniden yazıyor.",
+        "questionsTitle": "Bu senin için doğru mu?",
+        "questionsNote": "Evet dersen satır, senin onayladığın olarak eklenir.",
+        "yes": "Evet, ekle",
+        "no": "Hayır",
+        "answered": {
+          "yes": "Eklendi",
+          "no": "Eklenmedi"
+        },
+        "saveFirst": "Önce değişikliklerini kaydet, sonra yanıtla.",
+        "answerFailed": "Yanıt kaydedilemedi. Tekrar dene.",
+        "in": "{entry} içinde"
+      },
+      "listTailored": "ilana göre"
     }
   }
 }

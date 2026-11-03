@@ -48,6 +48,7 @@ import {
   type EditorApi,
 } from "./editor/section-fields";
 import { SectionCard } from "./editor/SectionCard";
+import { TailoringPanel } from "./editor/TailoringPanel";
 import type { ImportNotice } from "./import-notice";
 
 const LIST_KINDS: ListKind[] = ["experience", "education", "projects", "skills", "languages", "certificates"];
@@ -74,6 +75,8 @@ interface CvEditorProps {
   /** The account's name, printed while the name field is empty. */
   fallbackName: string;
   importNotice: ImportNotice | null;
+  /** For a tailored CV: the analysed posting and its analysis, while the analysis still exists. */
+  posting?: { title: string; href: string } | null;
   labels: Dictionary["cvs"];
 }
 
@@ -100,7 +103,14 @@ function sectionOf(path: string): string {
   return path === "title" ? "contact" : path.split(".")[0];
 }
 
-export function CvEditor({ document: saved, locale, fallbackName, importNotice, labels }: CvEditorProps) {
+export function CvEditor({
+  document: saved,
+  locale,
+  fallbackName,
+  importNotice,
+  posting = null,
+  labels,
+}: CvEditorProps) {
   const editor = labels.editor;
   const router = useRouter();
   const pathname = usePathname();
@@ -120,6 +130,7 @@ export function CvEditor({ document: saved, locale, fallbackName, importNotice, 
   const [notice, setNotice] = useState(importNotice);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [removed, setRemoved] = useState<RemovedEntry | null>(null);
+  const [questions, setQuestions] = useState(saved.questions);
   const [isSaving, startSaving] = useTransition();
   const [isDownloading, startDownload] = useTransition();
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -409,7 +420,7 @@ export function CvEditor({ document: saved, locale, fallbackName, importNotice, 
       }
       meta={
         <>
-          {labels.languageNames[language]} · {saved.resume_id ? editor.source.resume : editor.source.blank} ·{" "}
+          {labels.languageNames[language]} · {saved.kind === "tailored" ? editor.source.tailored : saved.resume_id ? editor.source.resume : editor.source.blank} ·{" "}
           <span aria-live="polite">{status}</span>
         </>
       }
@@ -467,6 +478,32 @@ export function CvEditor({ document: saved, locale, fallbackName, importNotice, 
                 {editor.import.dismiss}
               </button>
             </div>
+          )}
+
+          {saved.kind === "tailored" && saved.tailoring_mode && (
+            <TailoringPanel
+              documentId={saved.id}
+              locale={locale}
+              mode={saved.tailoring_mode}
+              posting={posting}
+              fallbackTitle={saved.title}
+              content={content}
+              questions={questions}
+              isDirty={isDirty}
+              onAnswered={(document) => {
+                // Answers only add confirmed lines; nothing was unsaved, so the server's copy becomes the saved state.
+                setContent(document.content);
+                setQuestions(document.questions);
+                setKeys((current) => ({
+                  ...current,
+                  experience: document.content.experience.map((_, index) => current.experience[index] ?? makeKey()),
+                  projects: document.content.projects.map((_, index) => current.projects[index] ?? makeKey()),
+                }));
+                setSnapshot(snapshotOf(title, language, template, document.content));
+              }}
+              labels={labels.tailor.panel}
+              editorLabels={editor}
+            />
           )}
 
           {!isWide && (

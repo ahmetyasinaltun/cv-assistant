@@ -8,14 +8,16 @@ import { redirect } from "next/navigation";
 
 import { defaultLocale, isLocale, type Locale } from "@/i18n/config";
 import {
+  answerCvQuestions,
   createBlankCvDocument,
+  createTailoredCv,
   createCvDocumentFromResume,
   deleteCvDocument,
   updateCvDocument,
   type CvDocumentChanges,
 } from "@/lib/api/backend";
 import { ApiError, NETWORK_ERROR_STATUS } from "@/lib/api/client";
-import type { CvDocument, Language } from "@/lib/api/types";
+import type { CvDocument, Language, TailoringMode } from "@/lib/api/types";
 
 import { encodeImportNotice } from "./import-notice";
 
@@ -109,4 +111,45 @@ export async function deleteCv(localeValue: string, documentId: string): Promise
   }
   revalidatePath(`/${locale}/cvs`);
   return { ok: true };
+}
+
+export type TailorErrorKey = "rateLimited" | "aiUnavailable" | "missing" | "network" | "generic";
+
+/** Writes a CV for the posting of an analysis and opens it in the editor. */
+export async function tailorCv(
+  localeValue: string,
+  analysisId: string,
+  mode: TailoringMode,
+): Promise<{ error: TailorErrorKey }> {
+  const locale = toLocale(localeValue);
+  let documentId: string;
+  try {
+    documentId = (await createTailoredCv(analysisId, mode)).id;
+  } catch (error) {
+    redirectIfSignedOut(error, locale, `/analyses/${analysisId}/cv`);
+    if (!(error instanceof ApiError)) console.error("Tailoring a CV failed", error);
+    const key = createErrorKey(error);
+    return { error: key === "resumeMissing" ? "missing" : key };
+  }
+  revalidatePath(`/${locale}/cvs`);
+  redirect(`/${locale}/cvs/${documentId}`);
+}
+
+export type AnswerResult = { ok: true; document: CvDocument } | { ok: false };
+
+export async function answerQuestions(
+  localeValue: string,
+  documentId: string,
+  answers: { id: string; accepted: boolean }[],
+): Promise<AnswerResult> {
+  const locale = toLocale(localeValue);
+  try {
+    const document = await answerCvQuestions(documentId, answers);
+    revalidatePath(`/${locale}/cvs`);
+    return { ok: true, document };
+  } catch (error) {
+    redirectIfSignedOut(error, locale, `/cvs/${documentId}`);
+    if (!(error instanceof ApiError)) console.error("Answering CV questions failed", error);
+    return { ok: false };
+  }
 }

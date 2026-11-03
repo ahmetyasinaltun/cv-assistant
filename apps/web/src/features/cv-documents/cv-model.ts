@@ -85,6 +85,33 @@ export function userLine(text = ""): CvLine {
   return { text, origin: "user", evidence_ids: [] };
 }
 
+// --- Lines to talk about ------------------------------------------------------------------------------
+
+export interface ReadyLine {
+  text: string;
+  origin: CvLine["origin"];
+  /** Where the line sits: "Experience · Backend Intern". */
+  place: string;
+}
+
+/** Every line the AI added or embellished, with where it sits, in the order the CV shows them. */
+export function linesToTalkAbout(content: CvContent, sections: Record<CvSectionKey, string>): ReadyLine[] {
+  const ready: ReadyLine[] = [];
+  const take = (lines: CvLine[], place: string) => {
+    for (const line of lines) {
+      if (line.origin === "ai_added" || line.origin === "ai_embellished") {
+        ready.push({ text: line.text, origin: line.origin, place });
+      }
+    }
+  };
+  take(content.summary, sections.summary);
+  for (const job of content.experience) take(job.bullets, `${sections.experience} · ${job.role}`);
+  for (const project of content.projects) take(project.bullets, `${sections.projects} · ${project.name}`);
+  for (const school of content.education) take(school.details, `${sections.education} · ${school.degree}`);
+  for (const group of content.skills) take(group.items, group.name ? `${sections.skills} · ${group.name}` : sections.skills);
+  return ready;
+}
+
 /** Origins the editor marks; lines from the CV and the user's own lines carry no mark. */
 export function isMarkedOrigin(origin: LineOrigin): origin is "ai_reworded" | "ai_embellished" | "ai_added" | "confirmed" {
   return origin !== "cv" && origin !== "user";

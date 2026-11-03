@@ -235,6 +235,8 @@ export interface CvContent {
   sections: CvSection[];
 }
 
+export type TailoringMode = "flexible" | "strict";
+
 export interface CvDocumentSummary {
   id: string;
   kind: "maker" | "tailored";
@@ -242,12 +244,25 @@ export interface CvDocumentSummary {
   language: Language;
   template: CvTemplateId;
   resume_id: string | null;
+  analysis_id: string | null;
+  tailoring_mode: TailoringMode | null;
   created_at: string;
   updated_at: string;
 }
 
+/** Strict mode asks before adding a claim; a yes adds the proposed line, marked as confirmed. */
+export interface TailoringQuestion {
+  id: string;
+  question: string;
+  kind: "experience" | "projects";
+  entry_name: string;
+  proposed_line: string;
+  answer: boolean | null;
+}
+
 export interface CvDocument extends CvDocumentSummary {
   content: CvContent;
+  questions: TailoringQuestion[];
 }
 
 export interface UnsupportedFact {

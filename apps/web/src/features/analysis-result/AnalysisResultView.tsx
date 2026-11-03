@@ -3,9 +3,10 @@
 // Analysis result screen: brand band, summary card, fixes, requirements beside the highlighted CV sheet, and
 // interview questions. Owns the selected requirement and keeps the sheet registered with it; all judgements come from the API.
 
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { onBrandButtonClass } from "@/components/button-styles";
+import { onBrandButtonClass, onBrandPrimaryButtonClass } from "@/components/button-styles";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { AnalysisDetail, InterviewQuestion } from "@/lib/api/types";
 
@@ -43,6 +44,8 @@ interface AnalysisResultViewProps {
   newAnalysisHref?: string;
   /** The analyses list, offered as the way back from a real analysis. */
   backHref?: string;
+  /** Writing a CV for this posting (real analyses only): the band's main action. */
+  tailor?: { href: string; label: string };
 }
 
 function prefersReducedMotion() {
@@ -88,6 +91,7 @@ export function AnalysisResultView({
   retryAction,
   newAnalysisHref,
   backHref,
+  tailor,
 }: AnalysisResultViewProps) {
   const result = analysis.status === "completed" ? analysis.result : null;
   // AI-written text keeps the language the analysis was generated in, which can differ from the interface.
@@ -150,7 +154,7 @@ export function AnalysisResultView({
     }
   }
 
-  const headerAction = result ? (
+  const questionsAction = result ? (
     questions.kind === "idle" && generateQuestions ? (
       <button
         type="button"
@@ -168,6 +172,19 @@ export function AnalysisResultView({
       </a>
     )
   ) : null;
+
+  // The product's main outcome is a better CV, so writing one for this posting leads; questions follow, outlined.
+  const headerAction =
+    result && tailor ? (
+      <div className="flex flex-wrap items-center gap-2.5">
+        <Link href={tailor.href} className={onBrandPrimaryButtonClass}>
+          {tailor.label}
+        </Link>
+        {questionsAction}
+      </div>
+    ) : (
+      questionsAction
+    );
 
   return (
     <main id="main" className="pb-24 print:pb-0">

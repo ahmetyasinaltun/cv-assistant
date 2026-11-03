@@ -11,6 +11,7 @@ import type {
   CvDocumentFromResume,
   CvDocumentSummary,
   CvTemplateId,
+  TailoringMode,
   InterviewQuestion,
   JobDescriptionDraft,
   JobDescriptionSummary,
@@ -135,6 +136,17 @@ export interface CvDocumentChanges {
 
 export function updateCvDocument(documentId: string, changes: CvDocumentChanges) {
   return authed<CvDocument>(`/cv-documents/${segment(documentId)}`, { method: "PATCH", json: changes });
+}
+
+export function createTailoredCv(analysisId: string, mode: TailoringMode) {
+  return authed<CvDocument>(`/analyses/${segment(analysisId)}/tailored-cv`, { method: "POST", json: { mode } });
+}
+
+export function answerCvQuestions(documentId: string, answers: { id: string; accepted: boolean }[]) {
+  return authed<CvDocument>(`/cv-documents/${segment(documentId)}/answers`, {
+    method: "POST",
+    json: { answers },
+  });
 }
 
 export function deleteCvDocument(documentId: string) {

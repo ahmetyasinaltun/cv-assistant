@@ -8,7 +8,7 @@ import { Suspense } from "react";
 import { CvEditor } from "@/features/cv-documents/CvEditor";
 import { decodeImportNotice } from "@/features/cv-documents/import-notice";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
-import { getCvDocument } from "@/lib/api/backend";
+import { getAnalysis, getCvDocument } from "@/lib/api/backend";
 import { ApiError } from "@/lib/api/client";
 import { requireUser } from "@/lib/auth/current-user";
 
@@ -32,6 +32,7 @@ async function EditorContent({ params, searchParams }: PageProps<"/[lang]/cvs/[i
     if (error instanceof ApiError && (error.status === 404 || error.status === 422)) notFound();
     throw error;
   }
+  const posting = document.analysis_id ? await postingOf(locale, document.analysis_id) : null;
 
   return (
     <CvEditor
@@ -41,9 +42,22 @@ async function EditorContent({ params, searchParams }: PageProps<"/[lang]/cvs/[i
       locale={locale}
       fallbackName={user.full_name}
       importNotice={decodeImportNotice(query.imported)}
+      posting={posting}
       labels={dictionary.cvs}
     />
   );
+}
+
+/** The posting a tailored CV was written for; null once its analysis is gone (the CV outlives it). */
+async function postingOf(locale: string, analysisId: string) {
+  try {
+    const analysis = await getAnalysis(analysisId);
+    const title = analysis.company ? `${analysis.job_title} · ${analysis.company}` : analysis.job_title;
+    return { title, href: `/${locale}/analyses/${analysisId}` };
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) return null;
+    throw error;
+  }
 }
 
 function EditorSkeleton() {

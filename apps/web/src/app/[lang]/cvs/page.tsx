@@ -41,7 +41,11 @@ async function CvListContent() {
   const cards: CvCardData[] = documents.map((document) => ({
     id: document.id,
     title: document.title,
-    meta: `${labels.languageNames[document.language]} · ${labels.templates[document.template]}`,
+    meta: [
+      labels.languageNames[document.language],
+      labels.templates[document.template],
+      ...(document.kind === "tailored" ? [labels.tailor.listTailored] : []),
+    ].join(" · "),
     editedLabel: interpolate(labels.list.edited, { date: dateFormat.format(new Date(document.updated_at)) }),
     // The edit time in the address lets the browser keep the image until the CV changes.
     thumbnailUrl: `/${locale}/cvs/${document.id}/thumbnail?v=${encodeURIComponent(document.updated_at)}`,

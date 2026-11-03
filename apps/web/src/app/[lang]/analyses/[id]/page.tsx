@@ -50,6 +50,7 @@ async function AnalysisContent({ params }: PageProps<"/[lang]/analyses/[id]">) {
         retryAction={rerunAnalysis.bind(null, locale, analysis.id)}
         newAnalysisHref={`/${locale}/analyses/new`}
         backHref={`/${locale}/analyses`}
+        tailor={{ href: `/${locale}/analyses/${analysis.id}/cv`, label: dictionary.cvs.tailor.resultAction }}
       />
     </>
   );
