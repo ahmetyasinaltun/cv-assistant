@@ -72,13 +72,13 @@ def to_cv_content(raw: CvStructure, fallback_name: str) -> CvContent:
             "email": _email(contact.email),
             "phone": _short(contact.phone),
             "location": _short(contact.location),
-            "links": _capped(
+            "links": capped(
                 [{"url": url} for url in map(_url, contact.links) if url], CvContact, "links"
             ),
         },
         "headline": _short(raw.headline),
-        "summary": _capped(_lines(raw.summary), CvContent, "summary"),
-        "experience": _capped(
+        "summary": capped(_lines(raw.summary), CvContent, "summary"),
+        "experience": capped(
             [
                 {
                     "role": _short(job.role),
@@ -86,7 +86,7 @@ def to_cv_content(raw: CvStructure, fallback_name: str) -> CvContent:
                     "location": _short(job.location),
                     "start": _date(job.start),
                     "end": _date(job.end, allow_present=True),
-                    "bullets": _capped(_lines(job.bullets), CvExperience, "bullets"),
+                    "bullets": capped(_lines(job.bullets), CvExperience, "bullets"),
                 }
                 for job in raw.experience
                 if _short(job.role) and _short(job.organization)
@@ -94,7 +94,7 @@ def to_cv_content(raw: CvStructure, fallback_name: str) -> CvContent:
             CvContent,
             "experience",
         ),
-        "education": _capped(
+        "education": capped(
             [
                 {
                     "degree": _short(school.degree),
@@ -102,7 +102,7 @@ def to_cv_content(raw: CvStructure, fallback_name: str) -> CvContent:
                     "location": _short(school.location),
                     "start": _date(school.start),
                     "end": _date(school.end, allow_present=True),
-                    "details": _capped(_lines(school.details), CvEducation, "details"),
+                    "details": capped(_lines(school.details), CvEducation, "details"),
                 }
                 for school in raw.education
                 if _short(school.degree) and _short(school.school)
@@ -110,14 +110,14 @@ def to_cv_content(raw: CvStructure, fallback_name: str) -> CvContent:
             CvContent,
             "education",
         ),
-        "projects": _capped(
+        "projects": capped(
             [
                 {
                     "name": _short(project.name),
                     "link": {"url": url} if (url := _url(project.url)) else None,
                     "start": _date(project.start),
                     "end": _date(project.end, allow_present=True),
-                    "bullets": _capped(_lines(project.bullets), CvProject, "bullets"),
+                    "bullets": capped(_lines(project.bullets), CvProject, "bullets"),
                 }
                 for project in raw.projects
                 if _short(project.name)
@@ -125,16 +125,16 @@ def to_cv_content(raw: CvStructure, fallback_name: str) -> CvContent:
             CvContent,
             "projects",
         ),
-        "skills": _capped(
+        "skills": capped(
             [
                 {"name": _short(group.name), "items": items}
                 for group in raw.skills
-                if (items := _capped(_lines(group.items, SHORT_TEXT_MAX), CvSkillGroup, "items"))
+                if (items := capped(_lines(group.items, SHORT_TEXT_MAX), CvSkillGroup, "items"))
             ],
             CvContent,
             "skills",
         ),
-        "languages": _capped(
+        "languages": capped(
             [
                 {"name": _short(language.name), "level": _short(language.level)}
                 for language in raw.languages
@@ -143,7 +143,7 @@ def to_cv_content(raw: CvStructure, fallback_name: str) -> CvContent:
             CvContent,
             "languages",
         ),
-        "certificates": _capped(
+        "certificates": capped(
             [
                 {
                     "name": _short(certificate.name),
@@ -192,7 +192,7 @@ def _clean_list(values: list[str]) -> list[str]:
     return [text for text in map(_short, values) if text]
 
 
-def _capped(items: list, model: type[BaseModel], field: str) -> list:
+def capped(items: list, model: type[BaseModel], field: str) -> list:
     """Keeps as many items as the contract allows for that field."""
     limits = [m.max_length for m in model.model_fields[field].metadata if isinstance(m, MaxLen)]
     return items[: limits[0]] if limits else items

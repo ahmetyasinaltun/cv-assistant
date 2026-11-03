@@ -1,5 +1,7 @@
 # Structured-output schemas for each LLM step of the pipeline (intermediate shapes, not API responses).
 
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 from app.schemas.analysis import (
@@ -124,3 +126,70 @@ class CvStructure(BaseModel):
         default_factory=list,
         description="Headings of CV sections that fit none of the fields above, as written.",
     )
+
+
+# --- Tailoring a CV to a posting -------------------------------------------------------------------
+# The model writes text into slots of the user's own CV, referenced by id. Employers, schools, dates and links are
+# not part of this shape at all: app.cv.tailoring copies them from the source CV, so they cannot be invented.
+
+TailoredOrigin = Literal["cv", "ai_reworded", "ai_embellished", "ai_added"]
+
+
+class TailoredLine(BaseModel):
+    text: str
+    origin: TailoredOrigin = Field(
+        description='"cv": copied as it is; "ai_reworded": the same fact in new words or translated; '
+        '"ai_embellished": a fact from the CV with detail added; "ai_added": not in the CV.'
+    )
+    source: str | None = Field(
+        default=None, description="Id of the CV line this line comes from, when there is one."
+    )
+
+
+class TailoredExperience(BaseModel):
+    id: str = Field(description="Id of the position in the source CV.")
+    role: str = Field(
+        description="The position title, translated only when the CV changes language."
+    )
+    bullets: list[TailoredLine] = Field(default_factory=list)
+
+
+class TailoredEducation(BaseModel):
+    id: str
+    degree: str = Field(description="The degree, translated only when the CV changes language.")
+    details: list[TailoredLine] = Field(default_factory=list)
+
+
+class TailoredProject(BaseModel):
+    id: str
+    bullets: list[TailoredLine] = Field(default_factory=list)
+
+
+class TailoredSkillGroup(BaseModel):
+    name: str | None = None
+    items: list[TailoredLine]
+
+
+class TailoredLanguage(BaseModel):
+    id: str
+    name: str
+    level: str | None = None
+
+
+class ConfirmationQuestion(BaseModel):
+    """Strict mode: instead of adding a claim, ask the user whether it is true."""
+
+    question: str
+    entry_id: str = Field(description="Id of the position or project the proposed line belongs to.")
+    proposed_line: str
+
+
+class TailoredCv(BaseModel):
+    headline: str | None = None
+    summary: list[TailoredLine] = Field(default_factory=list)
+    experience: list[TailoredExperience] = Field(default_factory=list)
+    education: list[TailoredEducation] = Field(default_factory=list)
+    projects: list[TailoredProject] = Field(default_factory=list)
+    skills: list[TailoredSkillGroup] = Field(default_factory=list)
+    languages: list[TailoredLanguage] = Field(default_factory=list)
+    questions: list[ConfirmationQuestion] = Field(default_factory=list)

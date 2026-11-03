@@ -24,6 +24,7 @@ from app.ai.schemas import (
     StructuredExperience,
     StructuredProject,
     StructuredSkillGroup,
+    TailoredCv,
 )
 from app.schemas.analysis import InterviewQuestion, Suggestion
 
@@ -88,6 +89,7 @@ class FakeLLM:
             "write_narrative": self._write_narrative,
             "generate_interview_questions": self._interview_questions,
             "structure_cv": _structure_cv,
+            "tailor_cv": _tailor_cv,
         }
         if task not in handlers:
             raise ValueError(f"FakeLLM has no handler for task '{task}'")
@@ -281,6 +283,72 @@ def _structure_cv(prompt: str) -> CvStructure:
             for item in sections.get("skills", [])
         ],
         omitted_sections=omitted,
+    )
+
+
+# --- tailor_cv: keeps every line, reorders projects, adds one skill (flexible) or asks one question (strict) -------
+
+
+def _tailor_cv(prompt: str) -> TailoredCv:
+    cv = json.loads(_block(prompt, "cv"))
+    strict = "strict mode" in prompt
+    experience = [
+        {
+            "id": job["id"],
+            "role": job["role"],
+            "bullets": [
+                {"text": line["text"], "origin": "cv", "source": line["id"]}
+                for line in job["bullets"]
+            ],
+        }
+        for job in cv["experience"]
+    ]
+    skills = [
+        {
+            "name": group["name"],
+            "items": [
+                {"text": item["text"], "origin": "cv", "source": item["id"]}
+                for item in group["items"]
+            ],
+        }
+        for group in cv["skills"]
+    ]
+    if not strict and skills:
+        skills[0]["items"].append({"text": "Kubernetes", "origin": "ai_added"})
+    questions = []
+    if strict and experience:
+        questions.append(
+            {
+                "question": "Did you deploy this service with Docker?",
+                "entry_id": experience[0]["id"],
+                "proposed_line": "Deployed the service with Docker.",
+            }
+        )
+    return TailoredCv.model_validate(
+        {
+            "headline": "Backend developer in training",
+            "summary": [
+                {"text": "Ready to build and test APIs for this team.", "origin": "ai_added"}
+            ],
+            "experience": experience,
+            "education": [
+                {"id": school["id"], "degree": school["degree"], "details": []}
+                for school in cv["education"]
+            ],
+            "projects": [
+                {
+                    "id": project["id"],
+                    "bullets": [
+                        {"text": line["text"], "origin": "cv", "source": line["id"]}
+                        for line in project["bullets"]
+                    ],
+                }
+                for project in reversed(cv["projects"])
+            ],
+            "skills": skills,
+            "languages": [],
+            "questions": questions,
+        }
     )
 
 

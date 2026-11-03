@@ -21,6 +21,8 @@ from app.schemas.cv import (
     CvDocumentResponse,
     CvDocumentSummaryResponse,
     CvDocumentUpdateRequest,
+    QuestionAnswersRequest,
+    TailoredCvRequest,
     UnsupportedFactResponse,
 )
 from app.services.cv_document_service import CvDocumentService
@@ -77,6 +79,38 @@ def create_cv_document_from_resume(
             UnsupportedFactResponse(kind=fact.kind, value=fact.value) for fact in result.unsupported
         ],
         omitted_sections=result.omitted_sections,
+    )
+
+
+@router.post(
+    "/analyses/{analysis_id}/tailored-cv",
+    response_model=CvDocumentResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def create_tailored_cv(
+    analysis_id: UUID,
+    payload: TailoredCvRequest,
+    current_user: CurrentUser,
+    db: DbSession,
+    provider: Provider,
+) -> CvDocumentResponse:
+    """Writes a CV for the analysed posting, in its language. The analysis and its score do not change: they
+    always come from the user's own CV."""
+    CV_AI_WRITES.check(str(current_user.id))
+    document = CvDocumentService(db).create_tailored(
+        current_user, analysis_id, payload.mode, payload.template, provider.llm
+    )
+    CV_AI_WRITES.record(str(current_user.id))
+    return _to_response(document)
+
+
+@router.post("/cv-documents/{document_id}/answers", response_model=CvDocumentResponse)
+def answer_cv_questions(
+    document_id: UUID, payload: QuestionAnswersRequest, current_user: CurrentUser, db: DbSession
+) -> CvDocumentResponse:
+    answers = {answer.id: answer.accepted for answer in payload.answers}
+    return _to_response(
+        CvDocumentService(db).answer_questions(document_id, current_user.id, answers)
     )
 
 

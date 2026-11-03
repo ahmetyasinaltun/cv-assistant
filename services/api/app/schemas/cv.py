@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Annotated, Literal
 from uuid import UUID
 
-from pydantic import AfterValidator, BaseModel, Field
+from pydantic import AfterValidator, BaseModel, Field, field_validator
 
 from app.cv.content import CvContent
 from app.cv.render import CV_TEMPLATES
@@ -58,6 +58,21 @@ class CvDocumentUpdateRequest(BaseModel):
     content: CvContent | None = None
 
 
+TailoringMode = Literal["flexible", "strict"]
+
+
+class TailoringQuestion(BaseModel):
+    """Strict mode asks before adding a claim; a yes adds the proposed line, marked as confirmed."""
+
+    id: str
+    question: str
+    kind: Literal["experience", "projects"]
+    # The position ("role · organization") or project it is about; found again by name after edits.
+    entry_name: str
+    proposed_line: str
+    answer: bool | None = None
+
+
 class CvDocumentSummaryResponse(BaseModel):
     id: UUID
     kind: CvDocumentKind
@@ -65,12 +80,34 @@ class CvDocumentSummaryResponse(BaseModel):
     language: Language
     template: str
     resume_id: UUID | None
+    analysis_id: UUID | None = None
+    tailoring_mode: TailoringMode | None = None
     created_at: datetime
     updated_at: datetime
 
 
 class CvDocumentResponse(CvDocumentSummaryResponse):
     content: CvContent
+    questions: list[TailoringQuestion] = Field(default_factory=list)
+
+    @field_validator("questions", mode="before")
+    @classmethod
+    def _no_questions_as_empty(cls, value: object) -> object:
+        return [] if value is None else value
+
+
+class TailoredCvRequest(BaseModel):
+    mode: TailoringMode = "flexible"
+    template: TemplateId = DEFAULT_TEMPLATE
+
+
+class QuestionAnswer(BaseModel):
+    id: str = Field(max_length=10)
+    accepted: bool
+
+
+class QuestionAnswersRequest(BaseModel):
+    answers: list[QuestionAnswer] = Field(min_length=1, max_length=10)
 
 
 class UnsupportedFactResponse(BaseModel):

@@ -30,6 +30,20 @@ class CvDocumentRepository:
         stmt = select(CvDocument).where(CvDocument.id == document_id, CvDocument.user_id == user_id)
         return self.db.scalar(stmt)
 
+    def latest_maker_for_resume(self, resume_id: UUID, user_id: UUID) -> CvDocument | None:
+        """The CV Maker copy of a saved CV that the user edited last, if there is one."""
+        stmt = (
+            select(CvDocument)
+            .where(
+                CvDocument.user_id == user_id,
+                CvDocument.resume_id == resume_id,
+                CvDocument.kind == "maker",
+            )
+            .order_by(CvDocument.updated_at.desc())
+            .limit(1)
+        )
+        return self.db.scalar(stmt)
+
     def delete(self, document: CvDocument) -> None:
         self.db.delete(document)
         self.db.commit()
