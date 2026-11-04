@@ -1,0 +1,94 @@
+# Manual switch for the live site: "pause" stops the web (Vercel) and the API (Render), "resume" starts them again.
+# Run it from the repository's Actions tab. It needs the secrets RENDER_API_KEY and VERCEL_TOKEN (README, Deployment).
+# Only curl and jq run here, so the two tokens never reach third-party actions.
+
+name: Live site
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: Pause or resume the live site
+        required: true
+        type: choice
+        options:
+          - pause
+          - resume
+
+permissions: {}
+
+concurrency:
+  group: live-site
+
+jobs:
+  switch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      ACTION: ${{ inputs.action }}
+      RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      RENDER_SERVICE: career-assistant-api
+      WEB_DOMAIN: ai-career-assistant-seven-delta.vercel.app
+      API_URL: https://career-assistant-api-b0bn.onrender.com
+    steps:
+      - name: Switch the web and the API
+        run: |
+          set -euo pipefail
+
+          if [ -z "$RENDER_API_KEY" ] || [ -z "$VERCEL_TOKEN" ]; then
+            echo "::error::Add the RENDER_API_KEY and VERCEL_TOKEN secrets first (README, Deployment)."
+            exit 1
+          fi
+
+          render() { curl -fsS -H "Authorization: Bearer $RENDER_API_KEY" -H "Accept: application/json" "$@"; }
+          vercel() { curl -fsS -H "Authorization: Bearer $VERCEL_TOKEN" -H "Content-Type: application/json" "$@"; }
+
+          service_id=$(render "https://api.render.com/v1/services?name=$RENDER_SERVICE&limit=1" | jq -r '.[0].service.id // empty')
+          if [ -z "$service_id" ]; then
+            echo "::error::Render service $RENDER_SERVICE was not found."
+            exit 1
+          fi
+
+          # The project is found by its live domain, in the personal scope first and then in each team.
+          project_id=""
+          team_query=""
+          teams=$(vercel "https://api.vercel.com/v2/teams" | jq -r '.teams[].id' || true)
+          for team in "" $teams; do
+            scope=${team:+teamId=$team&}
+            project_id=$(vercel "https://api.vercel.com/v9/projects?${scope}limit=100" \
+              | jq -r --arg domain "$WEB_DOMAIN" \
+                'first(.projects[] | select((.targets.production.alias // []) | index($domain)) | .id) // empty' || true)
+            if [ -n "$project_id" ]; then
+              team_query=${team:+?teamId=$team}
+              break
+            fi
+          done
+          if [ -z "$project_id" ]; then
+            echo "::error::No Vercel project serves $WEB_DOMAIN with this token."
+            exit 1
+          fi
+
+          # Pausing starts with the web, so a refused pause changes nothing; resuming starts with the API it calls.
+          if [ "$ACTION" = "pause" ]; then
+            vercel -X POST "https://api.vercel.com/v1/projects/$project_id/pause$team_query" > /dev/null
+            render -X POST "https://api.render.com/v1/services/$service_id/suspend" > /dev/null
+          else
+            render -X POST "https://api.render.com/v1/services/$service_id/resume" > /dev/null
+            vercel -X POST "https://api.vercel.com/v1/projects/$project_id/unpause$team_query" > /dev/null
+          fi
+          echo "$ACTION accepted by Vercel and Render."
+
+      - name: Report what the site answers
+        run: |
+          # A paused site answers 503; a resumed one can take a few minutes while the free API instance starts.
+          web=""
+          api=""
+          for _ in $(seq 1 24); do
+            web=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 "https://$WEB_DOMAIN/en/analyses/sample" || true)
+            api=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 "$API_URL/health" || true)
+            if [ "$ACTION" = "resume" ] && [ "$web" = "200" ] && [ "$api" = "200" ]; then break; fi
+            if [ "$ACTION" = "pause" ] && [ "$web" != "200" ] && [ "$api" != "200" ]; then break; fi
+            sleep 15
+          done
+          echo "After $ACTION: web answers $web, API answers $api." | tee -a "$GITHUB_STEP_SUMMARY"
