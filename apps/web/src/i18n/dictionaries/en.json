@@ -19,9 +19,9 @@
     "navLabel": "Main",
     "menu": "Menu",
     "nav": {
-      "analyses": "Analyses",
+      "analyses": "CV Analyzer",
       "sample": "Sample analysis",
-      "cvs": "My CVs"
+      "cvs": "CV Maker"
     },
     "language": "Language",
     "skipToContent": "Skip to content",
@@ -246,7 +246,7 @@
     },
     "submit": "Start analysis",
     "submitting": "Starting…",
-    "submitNote": "You can leave this page while it runs; the result is saved under Analyses.",
+    "submitNote": "You can leave this page while it runs; the result is saved under CV Analyzer.",
     "link": {
       "label": "Link to the posting",
       "placeholder": "https://www.linkedin.com/jobs/view/…",
@@ -501,7 +501,6 @@
         "next": "Next page",
         "updating": "Updating…",
         "failed": "The preview could not be updated. It tries again after your next change.",
-        "incomplete": "Fill in the marked fields to update the preview.",
         "imageAlt": "Page {page} of the CV in the {template} template",
         "show": "Show preview",
         "close": "Close preview"

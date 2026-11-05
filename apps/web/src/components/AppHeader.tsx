@@ -37,7 +37,7 @@ export function AppHeader({ locale, labels }: AppHeaderProps) {
   return (
     <header className="border-b border-rule bg-paper print:hidden">
       {/* Phones: brand and a menu button in one row; the menu opens the rest under the bar. */}
-      <div className="mx-auto flex max-w-[1280px] flex-wrap items-center gap-x-3 px-4 sm:flex-nowrap sm:px-8">
+      <div className="mx-auto flex max-w-[1280px] flex-wrap items-center gap-x-3 px-4 sm:flex-nowrap sm:gap-x-2 sm:px-8 md:gap-x-3">
         <Link
           href={`/${locale}`}
           translate="no"
@@ -47,7 +47,7 @@ export function AppHeader({ locale, labels }: AppHeaderProps) {
           {labels.product}
         </Link>
         <BarMenu label={labels.menu}>
-          <Suspense fallback={<div className="h-10 sm:order-2 sm:ml-4 sm:h-16" />}>
+          <Suspense fallback={<div className="h-10 sm:order-2 sm:ml-2 sm:h-16 md:ml-4" />}>
             <SessionNav locale={locale} labels={labels} />
           </Suspense>
           <div className="-mx-3 flex items-center sm:order-3 sm:mx-0 sm:ml-auto">

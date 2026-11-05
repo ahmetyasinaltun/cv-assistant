@@ -26,7 +26,7 @@ export function MainNav({ locale, label, items }: MainNavProps) {
   const pathname = usePathname();
 
   return (
-    <nav aria-label={label} className="-mx-2.5 sm:order-2 sm:ml-4">
+    <nav aria-label={label} className="-mx-2.5 sm:order-2 sm:ml-2 md:ml-4">
       <ul className="flex gap-1">
         {items.map((item) => {
           const href = `/${locale}${item.href}`;

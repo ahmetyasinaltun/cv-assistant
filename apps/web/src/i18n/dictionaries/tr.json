@@ -19,9 +19,9 @@
     "navLabel": "Ana menü",
     "menu": "Menü",
     "nav": {
-      "analyses": "Analizler",
+      "analyses": "CV Analizi",
       "sample": "Örnek analiz",
-      "cvs": "CV'lerim"
+      "cvs": "CV Oluşturucu"
     },
     "language": "Dil",
     "skipToContent": "İçeriğe geç",
@@ -246,7 +246,7 @@
     },
     "submit": "Analizi başlat",
     "submitting": "Başlatılıyor…",
-    "submitNote": "Analiz sürerken bu sayfadan ayrılabilirsin; sonuç Analizler altında saklanır.",
+    "submitNote": "Analiz sürerken bu sayfadan ayrılabilirsin; sonuç CV Analizi bölümünde saklanır.",
     "link": {
       "label": "İlanın bağlantısı",
       "placeholder": "https://www.linkedin.com/jobs/view/…",
@@ -501,7 +501,6 @@
         "next": "Sonraki sayfa",
         "updating": "Güncelleniyor…",
         "failed": "Önizleme güncellenemedi. Bir sonraki değişikliğinde yeniden denenir.",
-        "incomplete": "Önizlemenin güncellenmesi için işaretli alanları doldur.",
         "imageAlt": "CV'nin {page}. sayfası, {template} şablonu",
         "show": "Önizlemeyi göster",
         "close": "Önizlemeyi kapat"
