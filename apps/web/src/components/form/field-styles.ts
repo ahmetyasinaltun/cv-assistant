@@ -1,7 +1,7 @@
 // Shared class names for form controls and text links, so every field on every screen looks and responds the same way.
 
 /** White field with a 3.3:1 teal-grey edge, darker on hover, red when invalid; focus uses the global teal ring. */
-export const fieldControlClass =
+const fieldControlClass =
   "w-full rounded-[10px] border border-field-edge bg-paper text-[16px] text-ink transition-[border-color] duration-150 placeholder:text-mute hover:border-ink-soft aria-[invalid=true]:border-marker";
 
 export const inputClass = `${fieldControlClass} h-11 px-3.5`;

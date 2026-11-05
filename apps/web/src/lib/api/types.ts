@@ -1,7 +1,7 @@
 // TypeScript mirror of the API contract defined by the Pydantic schemas in services/api/app/schemas/.
 
 export type AnalysisStatus = "pending" | "running" | "completed" | "failed";
-export type RequirementCategory =
+type RequirementCategory =
   | "technical_skill"
   | "tool"
   | "experience"
@@ -14,11 +14,11 @@ export type MatchStatus = "matched" | "partial" | "missing";
 export type FitLevel = "strong" | "moderate" | "weak";
 export type SuggestionTarget = "skill" | "cv_section" | "project" | "interview_topic";
 export type Priority = "high" | "medium" | "low";
-export type QuestionCategory = "technical" | "behavioral" | "project" | "gap";
+type QuestionCategory = "technical" | "behavioral" | "project" | "gap";
 /** Account language and language of AI-written text; requirement wording and CV quotes keep their own. */
 export type Language = "en" | "tr";
 
-export interface EvidenceReference {
+interface EvidenceReference {
   evidence_id: string;
   /** Verbatim or near-verbatim excerpt from the resume. */
   quote: string;
@@ -160,11 +160,11 @@ export interface CvLine {
   evidence_ids: string[];
 }
 
-export interface CvLink {
+interface CvLink {
   url: string;
 }
 
-export interface CvContact {
+interface CvContact {
   name: string;
   email: string | null;
   phone: string | null;

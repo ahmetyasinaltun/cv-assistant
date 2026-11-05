@@ -1,6 +1,6 @@
 // States the sample page can preview through `?preview=`; shared by the server page and the client wrapper.
 
-export const samplePreviews = ["pending", "running", "failed", "no-questions", "questions-error"] as const;
+const samplePreviews = ["pending", "running", "failed", "no-questions", "questions-error"] as const;
 
 export type SamplePreview = (typeof samplePreviews)[number];
 

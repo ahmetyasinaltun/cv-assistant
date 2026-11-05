@@ -31,7 +31,7 @@ export const LIMITS = {
 
 export type EntryKind = "experience" | "education" | "projects";
 export type ListKind = EntryKind | "skills" | "languages" | "certificates";
-export type ErrorKey = "required" | "email" | "url" | "year" | "tooLong";
+type ErrorKey = "required" | "email" | "url" | "year" | "tooLong";
 /** Field path ("experience.0.role") to the problem with it. */
 export type FieldErrors = Record<string, ErrorKey>;
 

@@ -6,7 +6,7 @@ import { ApiError, NETWORK_ERROR_STATUS } from "@/lib/api/client";
 import type { AnalysisSummary, JobDescriptionDraft, ResumeSummary } from "@/lib/api/types";
 
 /** Mirrors the API: shorter documents are rejected, longer ones are cut to the limit. */
-export const MIN_DOCUMENT_CHARS = 50;
+const MIN_DOCUMENT_CHARS = 50;
 export const MAX_DOCUMENT_CHARS = 30_000;
 export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 
@@ -24,7 +24,7 @@ export interface ResumeOption extends ResumeSummary {
   createdAtLabel: string;
 }
 
-export type FieldName = "resumeTitle" | "resumeText" | "resumeFile" | "jobTitle" | "jobText";
+type FieldName = "resumeTitle" | "resumeText" | "resumeFile" | "jobTitle" | "jobText";
 export type FieldErrorKey = keyof Dictionary["newAnalysis"]["errors"];
 export type FieldErrors = Partial<Record<FieldName, FieldErrorKey>>;
 

@@ -22,6 +22,8 @@ node_modules/
 out/
 *.tsbuildinfo
 next-env.d.ts
+# Written and re-added by `next dev`.
+apps/web/AGENTS.md
 
 # Flutter / Dart
 apps/mobile/.dart_tool/
