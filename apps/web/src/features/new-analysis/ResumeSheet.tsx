@@ -2,19 +2,15 @@
 
 // The CV sheet: pick a saved CV, or add a new one by pasting text or uploading a PDF or Word file.
 
-import { SegmentedChoice } from "@/components/form/SegmentedChoice";
-import { TextAreaField } from "@/components/form/TextAreaField";
-import { TextField } from "@/components/form/TextField";
 import type { Dictionary } from "@/i18n/dictionaries";
 
-import { FileDrop } from "./FileDrop";
 import {
-  MAX_DOCUMENT_CHARS,
   NEW_RESUME,
   type FieldErrors,
   type NewAnalysisDraft,
   type ResumeOption,
 } from "./new-analysis-model";
+import { NewResumeFields } from "./NewResumeFields";
 import { SavedResumeRow } from "./SavedResumeRow";
 
 interface ResumeSheetProps {
@@ -30,59 +26,17 @@ interface ResumeSheetProps {
 
 export function ResumeSheet({ resumes, analysisCounts, draft, onChange, onFileChange, errors, locale, labels }: ResumeSheetProps) {
   const copy = labels.resume;
-  const errorText = (field: keyof FieldErrors) => (errors[field] ? labels.errors[errors[field]] : null);
   const isNew = draft.resumeChoice === NEW_RESUME;
 
   const newResumeFields = (
-    <div className="reveal-in flex flex-col gap-4">
-      <TextField
-        id="resume-title"
-        name="resumeTitle"
-        label={copy.nameLabel}
-        hint={copy.nameHint}
-        value={draft.resumeTitle}
-        onChange={(event) => onChange({ resumeTitle: event.target.value })}
-        maxLength={150}
-        autoComplete="off"
-        error={errorText("resumeTitle")}
-      />
-      <SegmentedChoice
-        name="resumeSource"
-        legend={copy.sourceLegend}
-        value={draft.resumeSource}
-        onChange={(resumeSource) => onChange({ resumeSource })}
-        options={[
-          { value: "paste", label: copy.paste },
-          { value: "upload", label: copy.upload },
-        ]}
-      />
-      {draft.resumeSource === "paste" ? (
-        <TextAreaField
-          id="resume-text"
-          name="resumeText"
-          label={copy.textLabel}
-          placeholder={copy.textPlaceholder}
-          value={draft.resumeText}
-          onChange={(event) => onChange({ resumeText: event.target.value })}
-          locale={locale}
-          maxChars={MAX_DOCUMENT_CHARS}
-          countTemplate={labels.characterCount}
-          overLimitTemplate={labels.overLimit}
-          spellCheck={false}
-          error={errorText("resumeText")}
-        />
-      ) : (
-        <FileDrop
-          id="resume-file"
-          name="resumeFile"
-          file={draft.resumeFile}
-          onFileChange={onFileChange}
-          labels={copy}
-          locale={locale}
-          error={errorText("resumeFile")}
-        />
-      )}
-    </div>
+    <NewResumeFields
+      draft={draft}
+      onChange={onChange}
+      onFileChange={onFileChange}
+      errors={errors}
+      locale={locale}
+      labels={labels}
+    />
   );
 
   return (

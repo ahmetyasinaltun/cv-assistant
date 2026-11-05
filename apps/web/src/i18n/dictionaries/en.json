@@ -308,7 +308,7 @@
       "thumbnailAlt": "First page of {title}",
       "empty": {
         "title": "No CVs yet",
-        "body": "Turn a saved CV into one you can edit, or start from a blank page. You pick its look and download it as a PDF."
+        "body": "Upload your existing CV or start from a blank page. You pick its look and download it as a PDF."
       }
     },
     "templates": {
@@ -322,18 +322,15 @@
     },
     "new": {
       "title": "New CV",
-      "meta": "Make a saved CV editable, or start from a blank page.",
+      "meta": "Make your existing CV editable, or start from a blank page.",
       "fromSaved": {
-        "title": "From a saved CV",
+        "title": "From your existing CV",
         "body": "The CV's details are placed into sections and your wording stays as it is. It takes a few seconds, then the editor opens.",
-        "legend": "Saved CVs",
+        "legend": "CV to import",
         "action": "Import CV",
         "pending": "Importing…",
         "pendingNote": "This takes a few seconds.",
-        "templateNote": "You choose the look afterwards.",
-        "addNote": "To add another CV, upload it on the",
-        "addLink": "New analysis screen",
-        "none": "You have no saved CV yet. Upload one on the New analysis screen, or start from a blank page."
+        "templateNote": "You choose the look afterwards."
       },
       "blank": {
         "title": "From a blank page",

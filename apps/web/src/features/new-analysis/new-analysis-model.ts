@@ -46,6 +46,11 @@ export interface NewAnalysisDraft {
   jobText: string;
 }
 
+export type NewResumeDraft = Pick<
+  NewAnalysisDraft,
+  "resumeSource" | "resumeTitle" | "resumeText" | "resumeFile"
+>;
+
 function checkDocument(text: string, missing: FieldErrorKey): FieldErrorKey | undefined {
   if (!text.trim()) return missing;
   if (text.trim().length < MIN_DOCUMENT_CHARS) return "tooShort";
@@ -61,19 +66,35 @@ export function checkUpload(file: NewAnalysisDraft["resumeFile"]): FieldErrorKey
   return undefined;
 }
 
-export function validateDraft(draft: NewAnalysisDraft): FieldErrors {
+function withoutEmpty(errors: FieldErrors): FieldErrors {
+  return Object.fromEntries(Object.entries(errors).filter(([, key]) => key)) as FieldErrors;
+}
+
+/** Checks a CV being added; the new-analysis and New CV screens share these rules. */
+export function validateNewResume(draft: NewResumeDraft): FieldErrors {
   const errors: FieldErrors = {};
-  if (draft.resumeChoice === NEW_RESUME) {
-    if (!draft.resumeTitle.trim()) errors.resumeTitle = "resumeTitleMissing";
-    if (draft.resumeSource === "paste") {
-      errors.resumeText = checkDocument(draft.resumeText, "resumeTextMissing");
-    } else {
-      errors.resumeFile = checkUpload(draft.resumeFile);
-    }
+  if (!draft.resumeTitle.trim()) errors.resumeTitle = "resumeTitleMissing";
+  if (draft.resumeSource === "paste") {
+    errors.resumeText = checkDocument(draft.resumeText, "resumeTextMissing");
+  } else {
+    errors.resumeFile = checkUpload(draft.resumeFile);
   }
+  return withoutEmpty(errors);
+}
+
+export function validateDraft(draft: NewAnalysisDraft): FieldErrors {
+  const errors: FieldErrors = draft.resumeChoice === NEW_RESUME ? validateNewResume(draft) : {};
   if (!draft.jobTitle.trim()) errors.jobTitle = "jobTitleMissing";
   errors.jobText = checkDocument(draft.jobText, "jobTextMissing");
-  return Object.fromEntries(Object.entries(errors).filter(([, key]) => key)) as FieldErrors;
+  return withoutEmpty(errors);
+}
+
+/** What picking a file changes: the file itself, and the CV's name while the user has not typed one. */
+export function filePatch(file: File | null, currentTitle: string): Partial<NewResumeDraft> {
+  if (!file) return { resumeFile: null };
+  const resumeFile = { name: file.name, size: file.size, type: file.type };
+  if (currentTitle.trim()) return { resumeFile };
+  return { resumeFile, resumeTitle: file.name.replace(/\.[^.]+$/, "") };
 }
 
 const UPLOAD_ERRORS: Record<string, FieldErrorKey> = {

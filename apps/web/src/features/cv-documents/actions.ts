@@ -6,6 +6,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { submitErrorResult, type FieldErrors, type StartAnalysisResult } from "@/features/new-analysis/new-analysis-model";
+import { readNewResume, saveNewResume } from "@/features/new-analysis/new-resume-input";
 import { defaultLocale, isLocale, type Locale } from "@/i18n/config";
 import {
   answerCvQuestions,
@@ -59,6 +61,38 @@ export async function importCv(localeValue: string, resumeId: string): Promise<{
   }
   revalidatePath(`/${locale}/cvs`);
   redirect(target);
+}
+
+export interface ImportNewCvResult {
+  formError: CreateErrorKey | null;
+  fieldErrors: FieldErrors;
+  /** The CV is kept when only the import failed; the form selects it so a retry does not save it twice. */
+  savedResumeId: string | null;
+}
+
+const SAVE_ERRORS: Record<NonNullable<StartAnalysisResult["formError"]>, CreateErrorKey> = {
+  unavailable: "network",
+  rateLimited: "rateLimited",
+  generic: "generic",
+};
+
+/** Saves a CV brought to the New CV screen, then imports it the same way as a saved one. */
+export async function importNewCv(localeValue: string, formData: FormData): Promise<ImportNewCvResult> {
+  const locale = toLocale(localeValue);
+  const newResume = readNewResume(formData);
+  let resumeId: string;
+  try {
+    resumeId = await saveNewResume(newResume);
+  } catch (error) {
+    redirectIfSignedOut(error, locale, "/cvs/new");
+    if (!(error instanceof ApiError)) console.error("Saving a CV failed", error);
+    const { formError, fieldErrors } = submitErrorResult(newResume.step, error, null);
+    return { formError: formError && SAVE_ERRORS[formError], fieldErrors, savedResumeId: null };
+  }
+  // Success redirects to the editor, so a result here is always a failed import.
+  const result = await importCv(locale, resumeId);
+  revalidatePath(`/${locale}/cvs/new`);
+  return { formError: result.error, fieldErrors: {}, savedResumeId: resumeId };
 }
 
 export async function createBlankCv(

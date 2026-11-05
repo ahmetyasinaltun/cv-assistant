@@ -1,4 +1,4 @@
-// New CV: turn a saved CV into an editable one, or start a blank CV. The band is static; the saved CVs stream in.
+// New CV: turn a saved or newly added CV into an editable one, or start a blank CV. The band is static; the saved CVs stream in.
 
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -42,6 +42,7 @@ async function NewCvContent() {
       defaultTitle={user.full_name}
       defaultLanguage={locale}
       labels={dictionary.cvs}
+      resumeLabels={dictionary.newAnalysis}
     />
   );
 }

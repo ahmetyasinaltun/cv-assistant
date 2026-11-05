@@ -11,10 +11,8 @@ import { defaultLocale, isLocale, type Locale } from "@/i18n/config";
 import {
   createAnalysis,
   createJobDescription,
-  createResumeFromText,
   deleteResume,
   importJobDescription,
-  uploadResume,
 } from "@/lib/api/backend";
 import { ApiError } from "@/lib/api/client";
 import type { JobDescriptionDraft } from "@/lib/api/types";
@@ -27,11 +25,7 @@ import {
   type StartAnalysisResult,
   type SubmitStep,
 } from "./new-analysis-model";
-
-function text(formData: FormData, name: string): string {
-  const value = formData.get(name);
-  return typeof value === "string" ? value.trim() : "";
-}
+import { formText, readNewResume, saveNewResume } from "./new-resume-input";
 
 function toLocale(value: string): Locale {
   return isLocale(value) ? value : defaultLocale;
@@ -46,7 +40,7 @@ function redirectIfSignedOut(error: unknown, locale: Locale) {
 
 export async function startAnalysis(localeValue: string, formData: FormData): Promise<StartAnalysisResult> {
   const locale = toLocale(localeValue);
-  const choice = text(formData, "resumeChoice");
+  const choice = formText(formData, "resumeChoice");
   let step: SubmitStep = "analysis";
   let resumeId: string | null = choice && choice !== NEW_RESUME ? choice : null;
   let savedResumeId: string | null = null;
@@ -54,20 +48,14 @@ export async function startAnalysis(localeValue: string, formData: FormData): Pr
 
   try {
     if (!resumeId) {
-      const title = text(formData, "resumeTitle");
-      const file = formData.get("resumeFile");
-      if (text(formData, "resumeSource") === "upload" && file instanceof File) {
-        step = "resumeUpload";
-        resumeId = (await uploadResume(title, file)).id;
-      } else {
-        step = "resumeText";
-        resumeId = (await createResumeFromText(title, text(formData, "resumeText"))).id;
-      }
+      const newResume = readNewResume(formData);
+      step = newResume.step;
+      resumeId = await saveNewResume(newResume);
       savedResumeId = resumeId;
     }
     step = "jobDescription";
-    const company = text(formData, "company") || null;
-    const job = await createJobDescription(text(formData, "jobTitle"), company, text(formData, "jobText"));
+    const company = formText(formData, "company") || null;
+    const job = await createJobDescription(formText(formData, "jobTitle"), company, formText(formData, "jobText"));
     step = "analysis";
     // AI-written text follows the interface language the analysis was started in.
     analysisId = (await createAnalysis(resumeId, job.id, locale)).id;

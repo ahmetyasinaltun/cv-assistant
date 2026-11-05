@@ -308,7 +308,7 @@
       "thumbnailAlt": "{title} CV'sinin ilk sayfası",
       "empty": {
         "title": "Henüz CV yok",
-        "body": "Kayıtlı bir CV'ni düzenlenebilir hâle getir ya da boş bir sayfadan başla. Görünümünü seçip PDF olarak indirebilirsin."
+        "body": "Mevcut CV'ni yükle ya da boş bir sayfadan başla. Görünümünü seçip PDF olarak indirebilirsin."
       }
     },
     "templates": {
@@ -322,18 +322,15 @@
     },
     "new": {
       "title": "Yeni CV",
-      "meta": "Kayıtlı bir CV'yi düzenlenebilir hâle getir ya da boş bir sayfadan başla.",
+      "meta": "Mevcut CV'ni düzenlenebilir hâle getir ya da boş bir sayfadan başla.",
       "fromSaved": {
-        "title": "Kayıtlı bir CV'den",
+        "title": "Mevcut CV'nden",
         "body": "CV'ndeki bilgiler bölümlere aktarılır; yazdıkların olduğu gibi kalır. Birkaç saniye sürer, sonra düzenleyici açılır.",
-        "legend": "Kayıtlı CV'ler",
+        "legend": "Aktarılacak CV",
         "action": "CV'yi aktar",
         "pending": "Aktarılıyor…",
         "pendingNote": "Birkaç saniye sürer.",
-        "templateNote": "Görünümü sonra seçersin.",
-        "addNote": "Başka bir CV eklemek için onu şu ekranda yükle:",
-        "addLink": "Yeni analiz",
-        "none": "Henüz kayıtlı CV'n yok. Yeni analiz ekranında bir CV yükle ya da boş sayfadan başla."
+        "templateNote": "Görünümü sonra seçersin."
       },
       "blank": {
         "title": "Boş sayfadan",

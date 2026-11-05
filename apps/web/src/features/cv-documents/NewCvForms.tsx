@@ -1,20 +1,26 @@
 "use client";
 
-// New CV: import a saved CV (the main path, one filled action) or open a blank CV in a chosen language (outlined).
-// Each card runs its own Server Action; success redirects into the editor, so only failures come back here.
+// New CV: import a saved or newly added CV (the main path, one filled action) or open a blank CV in a chosen language
+// (outlined). Each card runs its own Server Action; success redirects into the editor, so only failures come back here.
 
-import Link from "next/link";
 import { useState, useTransition, type FormEvent } from "react";
 
 import { primaryButtonClass, secondaryButtonClass } from "@/components/button-styles";
 import { FormAlert } from "@/components/form/FormAlert";
-import { inlineLinkClass } from "@/components/form/field-styles";
 import { SegmentedChoice } from "@/components/form/SegmentedChoice";
 import { TextField } from "@/components/form/TextField";
+import {
+  NEW_RESUME,
+  filePatch,
+  validateNewResume,
+  type FieldErrors,
+  type NewResumeDraft,
+} from "@/features/new-analysis/new-analysis-model";
+import { NewResumeFields, RESUME_FIELD_IDS, focusFirstInvalid } from "@/features/new-analysis/NewResumeFields";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { Language } from "@/lib/api/types";
 
-import { createBlankCv, importCv, type CreateErrorKey } from "./actions";
+import { createBlankCv, importCv, importNewCv, type CreateErrorKey } from "./actions";
 
 export interface SavedResumeOption {
   id: string;
@@ -29,12 +35,13 @@ interface NewCvFormsProps {
   defaultTitle: string;
   defaultLanguage: Language;
   labels: Dictionary["cvs"];
+  resumeLabels: Dictionary["newAnalysis"];
 }
 
-export function NewCvForms({ resumes, locale, defaultTitle, defaultLanguage, labels }: NewCvFormsProps) {
+export function NewCvForms({ resumes, locale, defaultTitle, defaultLanguage, labels, resumeLabels }: NewCvFormsProps) {
   return (
     <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
-      <ImportCard resumes={resumes} locale={locale} labels={labels} />
+      <ImportCard resumes={resumes} locale={locale} labels={labels} resumeLabels={resumeLabels} />
       <BlankCard locale={locale} defaultTitle={defaultTitle} defaultLanguage={defaultLanguage} labels={labels} />
     </div>
   );
@@ -43,16 +50,33 @@ export function NewCvForms({ resumes, locale, defaultTitle, defaultLanguage, lab
 const cardClass = "rounded-card border border-rule bg-paper px-5 py-6 shadow-sheet sm:px-7 sm:py-7";
 const headingClass = "text-[21px] leading-[1.25] font-bold tracking-[-0.015em]";
 
-function ImportCard({ resumes, locale, labels }: Pick<NewCvFormsProps, "resumes" | "locale" | "labels">) {
+/** Most people arrive with a file, so upload is the first thing they see. */
+const EMPTY_NEW_RESUME: NewResumeDraft = { resumeSource: "upload", resumeTitle: "", resumeText: "", resumeFile: null };
+
+function ImportCard({
+  resumes,
+  locale,
+  labels,
+  resumeLabels,
+}: Pick<NewCvFormsProps, "resumes" | "locale" | "labels" | "resumeLabels">) {
   const copy = labels.new.fromSaved;
-  const [choice, setChoice] = useState(resumes[0]?.id ?? "");
+  const [choice, setChoice] = useState(resumes[0]?.id ?? NEW_RESUME);
+  const [newResume, setNewResume] = useState(EMPTY_NEW_RESUME);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [error, setError] = useState<CreateErrorKey | null>(null);
   const [isImporting, startImport] = useTransition();
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!choice) return;
-    setError(null);
+  function updateNewResume(patch: Partial<NewResumeDraft>) {
+    setNewResume((current) => ({ ...current, ...patch }));
+    // An edited field is no longer the one in error.
+    setFieldErrors((current) => {
+      const next = { ...current };
+      for (const key of Object.keys(patch)) delete next[key as keyof FieldErrors];
+      return next;
+    });
+  }
+
+  function importSavedCv() {
     startImport(async () => {
       const result = await importCv(locale, choice);
       // Success redirects to the editor, so a result here is always a failure.
@@ -60,10 +84,39 @@ function ImportCard({ resumes, locale, labels }: Pick<NewCvFormsProps, "resumes"
     });
   }
 
-  const newAnalysisLink = (
-    <Link href={`/${locale}/analyses/new`} className={inlineLinkClass}>
-      {copy.addLink}
-    </Link>
+  function importAddedCv(form: HTMLFormElement) {
+    const found = validateNewResume(newResume);
+    setFieldErrors(found);
+    if (Object.keys(found).length > 0) {
+      focusFirstInvalid(RESUME_FIELD_IDS, found);
+      return;
+    }
+    const formData = new FormData(form);
+    startImport(async () => {
+      const result = await importNewCv(locale, formData);
+      setError(result.formError);
+      setFieldErrors(result.fieldErrors);
+      if (result.savedResumeId) setChoice(result.savedResumeId);
+      focusFirstInvalid(RESUME_FIELD_IDS, result.fieldErrors);
+    });
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError(null);
+    if (choice === NEW_RESUME) importAddedCv(event.currentTarget);
+    else importSavedCv();
+  }
+
+  const newResumeFields = (
+    <NewResumeFields
+      draft={newResume}
+      onChange={updateNewResume}
+      onFileChange={(file) => updateNewResume(filePatch(file, newResume.resumeTitle))}
+      errors={fieldErrors}
+      locale={locale}
+      labels={resumeLabels}
+    />
   );
 
   return (
@@ -73,10 +126,10 @@ function ImportCard({ resumes, locale, labels }: Pick<NewCvFormsProps, "resumes"
       </h2>
       <p className="mt-1.5 max-w-[56ch] text-ink-soft">{copy.body}</p>
 
-      {resumes.length === 0 ? (
-        <p className="mt-5 max-w-[56ch] rounded-[10px] bg-desk px-4 py-3 text-[15px] text-ink">{copy.none}</p>
-      ) : (
-        <form onSubmit={handleSubmit} className="mt-5">
+      <form onSubmit={handleSubmit} noValidate aria-busy={isImporting} className="mt-5">
+        {resumes.length === 0 ? (
+          <fieldset disabled={isImporting}>{newResumeFields}</fieldset>
+        ) : (
           <fieldset disabled={isImporting}>
             <legend className="sr-only">{copy.legend}</legend>
             <div className="space-y-1">
@@ -99,24 +152,33 @@ function ImportCard({ resumes, locale, labels }: Pick<NewCvFormsProps, "resumes"
                   </span>
                 </label>
               ))}
+              <label className="flex cursor-pointer items-center gap-3 rounded-[10px] px-3 py-3 transition-colors duration-150 hover:bg-desk has-checked:bg-accent-tint has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent">
+                <input
+                  type="radio"
+                  name="resume"
+                  value={NEW_RESUME}
+                  checked={choice === NEW_RESUME}
+                  onChange={() => setChoice(NEW_RESUME)}
+                  className="size-[18px] shrink-0 accent-accent"
+                />
+                <span className="font-semibold text-ink">{resumeLabels.resume.addNew}</span>
+              </label>
+              {choice === NEW_RESUME && <div className="px-3 pt-3 pb-2 sm:pl-[42px]">{newResumeFields}</div>}
             </div>
           </fieldset>
-          <p className="mt-2 px-3 text-[14px] text-mute">
-            {copy.addNote} {newAnalysisLink}
-          </p>
-          <div className="has-[p]:mt-5">
-            <FormAlert message={error ? labels.new.errors[error] : null} />
-          </div>
-          <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
-            <button type="submit" disabled={isImporting || !choice} className={primaryButtonClass}>
-              {isImporting ? copy.pending : copy.action}
-            </button>
-            <span aria-live="polite" className="text-[14px] text-mute">
-              {isImporting ? copy.pendingNote : copy.templateNote}
-            </span>
-          </div>
-        </form>
-      )}
+        )}
+        <div className="has-[p]:mt-5">
+          <FormAlert message={error ? labels.new.errors[error] : null} />
+        </div>
+        <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
+          <button type="submit" disabled={isImporting} className={primaryButtonClass}>
+            {isImporting ? copy.pending : copy.action}
+          </button>
+          <span aria-live="polite" className="text-[14px] text-mute">
+            {isImporting ? copy.pendingNote : copy.templateNote}
+          </span>
+        </div>
+      </form>
     </section>
   );
 }

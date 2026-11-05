@@ -14,11 +14,13 @@ import {
   checkUpload,
   comparisonSummary,
   defaultResumeChoice,
+  filePatch,
   linkErrorKey,
   linkPatch,
   siteName,
   submitErrorResult,
   validateDraft,
+  validateNewResume,
   type NewAnalysisDraft,
 } from "./new-analysis-model";
 
@@ -74,6 +76,42 @@ describe("validateDraft", () => {
       draft({ resumeChoice: NEW_RESUME, resumeTitle: "CV", resumeSource: "upload" }),
     );
     expect(errors).toEqual({ resumeFile: "fileMissing" });
+  });
+});
+
+describe("validateNewResume", () => {
+  const newResume = { resumeSource: "upload", resumeTitle: "CV", resumeText: "", resumeFile: null } as const;
+
+  it("needs a name and a file when uploading", () => {
+    expect(validateNewResume({ ...newResume, resumeTitle: " " })).toEqual({
+      resumeTitle: "resumeTitleMissing",
+      resumeFile: "fileMissing",
+    });
+  });
+
+  it("needs enough text when pasting and never reports an empty key", () => {
+    expect(validateNewResume({ ...newResume, resumeSource: "paste", resumeText: "Too short" })).toEqual({
+      resumeText: "tooShort",
+    });
+    expect(validateNewResume({ ...newResume, resumeSource: "paste", resumeText: POSTING })).toEqual({});
+  });
+});
+
+describe("filePatch", () => {
+  const file = new File(["cv"], "Deniz_Kurgu_CV.final.pdf", { type: "application/pdf" });
+
+  it("names the CV after the file, without its extension, while the name is empty", () => {
+    expect(filePatch(file, "  ").resumeTitle).toBe("Deniz_Kurgu_CV.final");
+  });
+
+  it("keeps a name the user typed", () => {
+    const patch = filePatch(file, "Staj CV'si");
+    expect(patch).not.toHaveProperty("resumeTitle");
+    expect(patch.resumeFile?.name).toBe("Deniz_Kurgu_CV.final.pdf");
+  });
+
+  it("clears only the file when it is removed", () => {
+    expect(filePatch(null, "")).toEqual({ resumeFile: null });
   });
 });
 

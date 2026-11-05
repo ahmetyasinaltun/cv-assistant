@@ -12,21 +12,21 @@ import { startAnalysis } from "./actions";
 import {
   NEW_RESUME,
   comparisonSummary,
+  filePatch,
   validateDraft,
   type FieldErrors,
   type NewAnalysisDraft,
   type ResumeOption,
   type StartAnalysisResult,
 } from "./new-analysis-model";
+import { RESUME_FIELD_IDS, focusFirstInvalid } from "./NewResumeFields";
 import { PostingSheet } from "./PostingSheet";
 import { ResumeSheet } from "./ResumeSheet";
 import { StartCard } from "./StartCard";
 
 /** Order in which the first invalid field receives focus after a failed submit. */
 const FIELD_IDS: [keyof FieldErrors, string][] = [
-  ["resumeTitle", "resume-title"],
-  ["resumeText", "resume-text"],
-  ["resumeFile", "resume-file"],
+  ...RESUME_FIELD_IDS,
   ["jobTitle", "job-title"],
   ["jobText", "job-text"],
 ];
@@ -71,11 +71,6 @@ function hasUnsavedInput(draft: NewAnalysisDraft, initial: NewAnalysisDraft): bo
   return draft.resumeFile !== null || TYPED_FIELDS.some((field) => draft[field] !== initial[field]);
 }
 
-function focusFirstInvalid(errors: FieldErrors) {
-  const first = FIELD_IDS.find(([field]) => errors[field]);
-  if (first) document.getElementById(first[1])?.focus();
-}
-
 export function NewAnalysisForm({ resumes, analysisCounts, initialDraft, locale, labels }: NewAnalysisFormProps) {
   const router = useRouter();
   const [draft, setDraft] = useState(initialDraft);
@@ -117,7 +112,7 @@ export function NewAnalysisForm({ resumes, analysisCounts, initialDraft, locale,
   }
 
   function updateFile(file: File | null) {
-    update({ resumeFile: file ? { name: file.name, size: file.size, type: file.type } : null });
+    update(filePatch(file, draft.resumeTitle));
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -126,7 +121,7 @@ export function NewAnalysisForm({ resumes, analysisCounts, initialDraft, locale,
     const found = validateDraft(effectiveDraft);
     setErrors(found);
     if (Object.keys(found).length > 0) {
-      focusFirstInvalid(found);
+      focusFirstInvalid(FIELD_IDS, found);
       return;
     }
     const formData = new FormData(event.currentTarget);
@@ -140,7 +135,7 @@ export function NewAnalysisForm({ resumes, analysisCounts, initialDraft, locale,
         setDraft((current) => ({ ...current, resumeChoice: result.savedResumeId ?? current.resumeChoice }));
         router.refresh();
       }
-      focusFirstInvalid(result.fieldErrors);
+      focusFirstInvalid(FIELD_IDS, result.fieldErrors);
     });
   }
 
