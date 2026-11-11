@@ -122,7 +122,8 @@ services/api    FastAPI backend: auth, documents, AI pipeline, persistence
 
 - **Backend:** Python 3.12+, FastAPI, SQLAlchemy 2, Alembic, PostgreSQL. Analyses run as background tasks; clients poll until they finish (the mobile app pauses polling in the background).
 - **AI:** Google Gemini free tier for structured LLM output and embeddings, behind a provider interface.
-- **Auth:** email/password with bcrypt and JWT bearer tokens; every query is scoped to the signed-in user.
+- **Auth:** email/password with bcrypt and JWT bearer tokens; every query is scoped to the signed-in user. A new account confirms its address with a six-digit code sent through Brevo; analyses, interview questions and AI-written CVs wait until it does.
+- **Abuse limits:** the shared free AI quota is the only real cost, so all AI actions share a daily budget counted in PostgreSQL (it survives the free instance restarting), and accounts and AI actions are also limited per network address. Addresses are stored only as keyed hashes.
 - **CV documents:** stored as validated JSON on one row per CV. PDFs, page previews and list thumbnails are typeset on the server with Typst: one cached compiler per template and bundled open fonts only, so the output does not depend on the machine.
 - **Design:** one visual system for both clients (a deep teal brand band, white cards on a pale teal ground, green / amber / red for matched / partial / missing). Status is also carried by the icon's shape (check, half disc, cross), never by colour alone.
 
@@ -133,6 +134,8 @@ services/api    FastAPI backend: auth, documents, AI pipeline, persistence
 - **Background task + polling** instead of a queue or websockets: one instance on a free tier does not need more.
 - **Output language stored per analysis,** so a result never changes language after a settings switch and one page never mixes languages.
 - **No shared demo account:** a public pre-computed sample result, and after registering one tap fills the form with a fictional sample CV and posting.
+- **A code, not a link, for email verification:** the same six digits work in the browser and in the Android app, without deep links. Codes are stored as keyed hashes, expire after 15 minutes and allow five wrong guesses.
+- **Which address a limit counts:** the API sits behind Cloudflare, so it uses `CF-Connecting-IP`, which a caller cannot set; a caller's own `X-Forwarded-For` would stay in front. The web server calls the API for its visitors and forwards the visitor's address, which the API accepts only with a secret both servers share.
 - **Typst for PDFs:** a small native Python wheel with no TeX installation; the CV goes in as JSON, and the same renderer draws the PDF, the live preview and the list thumbnails.
 
 ## Local setup (backend)
@@ -156,6 +159,7 @@ pip install -e ".[dev]"
 
 # 3. Configure environment
 cp .env.example .env              # Windows cmd: copy; then set JWT_SECRET_KEY and GEMINI_API_KEY
+                                  # EMAIL_PROVIDER=log writes verification codes to the API log
 
 # 4. Apply migrations and run
 alembic upgrade head
@@ -227,8 +231,8 @@ The demo runs on three free services in Frankfurt (EU), none of which needs a cr
 | Web (Next.js) | [Vercel](https://vercel.com) Hobby | personal, non-commercial use |
 
 1. **Neon:** create a project in AWS Europe Central 1 (Frankfurt) and copy the **direct** connection string (connection pooling off; PgBouncer in transaction mode does not suit a long-running server with prepared statements).
-2. **Render:** New → Blueprint, pick this repository; Render reads `render.yaml`. Enter `DATABASE_URL` (the Neon string, unchanged) and `GEMINI_API_KEY` (from [Google AI Studio](https://aistudio.google.com/apikey)); Render generates `JWT_SECRET_KEY`. The start command runs `alembic upgrade head` first, and the API refuses to start in production with a development secret or without a Gemini key. `https://<service>.onrender.com/health` should answer `{"status":"ok"}`.
-3. **Vercel:** import the repository with Root Directory `apps/web` and set `API_BASE_URL` to the Render address (no trailing slash).
+2. **Render:** New → Blueprint, pick this repository; Render reads `render.yaml`. Enter `DATABASE_URL` (the Neon string, unchanged), `GEMINI_API_KEY` (from [Google AI Studio](https://aistudio.google.com/apikey)), `BREVO_API_KEY` and `EMAIL_SENDER_ADDRESS` (a sender verified in Brevo) and `WEB_PROXY_SECRET` (a random value of at least 32 characters); Render generates `JWT_SECRET_KEY`. The start command runs `alembic upgrade head` first, and the API refuses to start in production with a development secret, without a Gemini key, without the email service or without the proxy secret. `https://<service>.onrender.com/health` should answer `{"status":"ok"}`.
+3. **Vercel:** import the repository with Root Directory `apps/web`, set `API_BASE_URL` to the Render address (no trailing slash) and `API_PROXY_SECRET` to the same value as the API's `WEB_PROXY_SECRET`.
 4. **Android:** `flutter build apk --release --dart-define=API_BASE_URL=https://<service>.onrender.com` (signed with the template's debug key: fine for sideloading a demo, not for the Play Store).
 
 Pushing to `main` redeploys the API and the web; schema changes ship as Alembic migrations and run on the next API start.
@@ -239,8 +243,9 @@ The **Live site** workflow (`.github/workflows/live-site.yml`) pauses or resumes
 
 - **Free AI tier and personal data.** The default provider is Gemini's free tier. Under Google's terms for unpaid services, submitted content may be used to improve Google's products and may be read by human reviewers. Use fictional or anonymized CVs for demos; a paid tier or a self-hosted model would be needed for real personal data.
 - **Speed depends on the free tier.** An analysis takes from a few seconds to a few minutes, depending on which models in the fallback chain are overloaded or out of quota.
-- **Security is portfolio-grade.** Passwords are hashed with bcrypt (at most 72 bytes, which bcrypt reads), the web client keeps the token in an httpOnly cookie and sends anti-framing and nosniff headers, the API refuses bodies over 6 MB and hides its schema pages in production. Usage limits (10 failed sign-ins per email in 15 minutes; 20 analyses, 20 question sets and 10 AI-written CVs per user a day; 30 link reads per user an hour) are counted in memory, so they reset when the single free instance restarts. There are no refresh tokens or audit logs.
+- **Security is portfolio-grade.** Passwords are hashed with bcrypt (at most 72 bytes, which bcrypt reads), the web client keeps the token in an httpOnly cookie and sends anti-framing and nosniff headers, the API refuses bodies over 6 MB and hides its schema pages in production. Per-account limits (10 failed sign-ins per email in 15 minutes; 20 analyses, 20 question sets and 10 AI-written CVs per user a day; 30 link reads per user an hour) are counted in memory, so they reset when the single free instance restarts; the service-wide AI budget (150 actions a day) and the per-address limits (5 accounts and 40 AI actions a day) are counted in the database. Email verification raises the cost of fake accounts but does not stop them: disposable addresses exist, which is why the daily budget, not verification, is the hard ceiling. There are no refresh tokens or audit logs. The last security pass (pip-audit, npm audit, bandit and a manual review) found no vulnerable runtime dependency; it added a test that every route taking an id answers 404 to another account, and a refusal of Word files whose XML declares entities.
 - **The CV Maker is on the web only.** The Android app covers analyses; CV documents are not on mobile yet.
+- **Verification emails come from a free sender.** Without a domain of its own, Brevo cannot sign the mail for its sender address, so codes may land in the spam folder; the code screen says so.
 - **Mobile is Android only and was verified on an emulator.** iOS would need a Mac to build; PDF picking and gestures still need a pass on a real phone.
 - **Filling a posting from a link depends on the site.** The server reads one public page per request, the way a link preview does: schema.org `JobPosting` data first, then known layouts (LinkedIn jobs and posts, Kariyer.net), then the page's main text. Sites behind bot protection (Indeed, Glassdoor and Yenibiriş behind Cloudflare; Kariyer.net behind PerimeterX, which refuses after a few requests) are not worked around: the user is told so and pastes the text. Private and internal addresses are refused on every redirect hop, and the address actually connected to is checked again before the response is used; the connection is not pinned to the checked address, so under DNS rebinding a request can still reach an internal address, but its answer is discarded.
 - **CV and posting language is not detected.** Only AI-written text is tagged with a language; source text inherits the interface language for screen readers.
