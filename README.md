@@ -218,7 +218,22 @@ Backend tests run against an in-memory SQLite database and a deterministic fake 
 
 ## Deployment
 
-The demo runs on free tiers: Neon (PostgreSQL), Render (API, from `render.yaml`) and Vercel (web), all in Frankfurt.
+The demo runs on three free services in Frankfurt (EU), none of which needs a credit card:
+
+| Part | Host | Free-tier behaviour |
+|---|---|---|
+| PostgreSQL | [Neon](https://neon.com) | 0.5 GB; compute sleeps after 5 minutes idle and wakes on the next query |
+| API (FastAPI) | [Render](https://render.com) web service | sleeps after 15 minutes without requests; the first request then takes about a minute |
+| Web (Next.js) | [Vercel](https://vercel.com) Hobby | personal, non-commercial use |
+
+1. **Neon:** create a project in AWS Europe Central 1 (Frankfurt) and copy the **direct** connection string (connection pooling off; PgBouncer in transaction mode does not suit a long-running server with prepared statements).
+2. **Render:** New → Blueprint, pick this repository; Render reads `render.yaml`. Enter `DATABASE_URL` (the Neon string, unchanged) and `GEMINI_API_KEY` (from [Google AI Studio](https://aistudio.google.com/apikey)); Render generates `JWT_SECRET_KEY`. The start command runs `alembic upgrade head` first, and the API refuses to start in production with a development secret or without a Gemini key. `https://<service>.onrender.com/health` should answer `{"status":"ok"}`.
+3. **Vercel:** import the repository with Root Directory `apps/web` and set `API_BASE_URL` to the Render address (no trailing slash).
+4. **Android:** `flutter build apk --release --dart-define=API_BASE_URL=https://<service>.onrender.com` (signed with the template's debug key: fine for sideloading a demo, not for the Play Store).
+
+Pushing to `main` redeploys the API and the web; schema changes ship as Alembic migrations and run on the next API start.
+
+The **Live site** workflow (`.github/workflows/live-site.yml`) pauses or resumes the web and the API together: Actions → Live site → Run workflow with `pause` or `resume`, or `gh workflow run live-site.yml -f action=pause`. It needs the repository secrets `RENDER_API_KEY` and `VERCEL_TOKEN`. Data in Neon is not touched.
 
 ## Known limitations
 
