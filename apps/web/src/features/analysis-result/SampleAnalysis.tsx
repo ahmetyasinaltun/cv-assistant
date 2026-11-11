@@ -6,6 +6,7 @@
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { AnalysisDetail } from "@/lib/api/types";
 
+import type { QuestionsResult } from "./actions";
 import { AnalysisResultView } from "./AnalysisResultView";
 import { sampleAnalysis, sampleInterviewQuestions } from "./sample-analysis";
 import type { SamplePreview } from "./sample-previews";
@@ -47,12 +48,14 @@ interface SampleAnalysisProps {
 
 export function SampleAnalysis({ preview, labels, locale, createdAtLabel, sampleHref }: SampleAnalysisProps) {
   const generateQuestions = () =>
-    new Promise<typeof sampleInterviewQuestions>((resolve, reject) =>
+    new Promise<QuestionsResult>((resolve) =>
       window.setTimeout(
         () =>
-          preview === "questions-error"
-            ? reject(new Error("Simulated generation failure"))
-            : resolve(sampleInterviewQuestions),
+          resolve(
+            preview === "questions-error"
+              ? { ok: false, error: "generic" }
+              : { ok: true, questions: sampleInterviewQuestions },
+          ),
         SIMULATED_GENERATION_MS,
       ),
     );

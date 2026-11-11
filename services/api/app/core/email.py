@@ -70,10 +70,11 @@ class BrevoEmailSender:
 
 
 class LogEmailSender:
-    """Development only: the configuration guard refuses this provider in production."""
+    """Development only: the configuration guard refuses this provider in production. Logged as a warning
+    because uvicorn shows only warnings from application loggers, and the developer needs the code."""
 
     def send(self, message: EmailMessage) -> None:
-        logger.info(
+        logger.warning(
             "Email (not sent) to %s: %s\n%s", message.to_address, message.subject, message.text
         )
 

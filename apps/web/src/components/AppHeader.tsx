@@ -9,7 +9,7 @@ import type { Dictionary } from "@/i18n/dictionaries";
 
 import { BarMenu } from "./BarMenu";
 import { LocaleSwitch, LocaleSwitchPlaceholder } from "./LocaleSwitch";
-import { AccountControls, SessionNav } from "./SessionNav";
+import { AccountControls, SessionNav, VerifyNotice } from "./SessionNav";
 
 interface AppHeaderProps {
   locale: Locale;
@@ -63,6 +63,9 @@ export function AppHeader({ locale, labels }: AppHeaderProps) {
           </div>
         </BarMenu>
       </div>
+      <Suspense fallback={null}>
+        <VerifyNotice locale={locale} labels={labels} />
+      </Suspense>
     </header>
   );
 }

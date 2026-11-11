@@ -8,11 +8,12 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { onBrandButtonClass, onBrandPrimaryButtonClass } from "@/components/button-styles";
 import type { Dictionary } from "@/i18n/dictionaries";
-import type { AnalysisDetail, InterviewQuestion } from "@/lib/api/types";
+import type { AnalysisDetail } from "@/lib/api/types";
 
 import { AnalysisStatusPanel } from "./AnalysisStatusPanel";
 import { EvidenceSheet } from "./EvidenceSheet";
 import { FixList } from "./FixList";
+import type { QuestionsResult } from "./actions";
 import { InterviewQuestions, type QuestionsState } from "./InterviewQuestions";
 import { MatchSummary } from "./MatchSummary";
 import { PrintableResult } from "./PrintableResult";
@@ -37,7 +38,7 @@ interface AnalysisResultViewProps {
   locale: string;
   createdAtLabel: string;
   isSample?: boolean;
-  generateQuestions?: () => Promise<InterviewQuestion[]>;
+  generateQuestions?: () => Promise<QuestionsResult>;
   retryHref?: string;
   /** Runs the analysis again on the server (real analyses); the sample uses `retryHref` instead. */
   retryAction?: () => Promise<void>;
@@ -148,9 +149,10 @@ export function AnalysisResultView({
     if (!generateQuestions) return;
     setQuestions({ kind: "loading" });
     try {
-      setQuestions({ kind: "ready", questions: await generateQuestions() });
+      const result = await generateQuestions();
+      setQuestions(result.ok ? { kind: "ready", questions: result.questions } : { kind: "error", reason: result.error });
     } catch {
-      setQuestions({ kind: "error" });
+      setQuestions({ kind: "error", reason: "generic" });
     }
   }
 

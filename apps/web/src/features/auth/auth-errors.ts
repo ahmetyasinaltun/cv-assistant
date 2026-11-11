@@ -7,6 +7,7 @@ export type AuthErrorKey =
   | "emailTaken"
   | "passwordTooLong"
   | "tooManyAttempts"
+  | "tooManyAccounts"
   | "invalidInput"
   | "unavailable"
   | "generic";
@@ -20,12 +21,13 @@ export interface AuthFormState {
 
 export const initialAuthFormState: AuthFormState = { error: null, email: "", fullName: "" };
 
-export function authErrorKey(error: unknown): AuthErrorKey {
+export function authErrorKey(error: unknown, mode: "signIn" | "register" = "signIn"): AuthErrorKey {
   if (!(error instanceof ApiError)) return "generic";
   if (error.code === "invalid_credentials") return "invalidCredentials";
   if (error.code === "email_taken") return "emailTaken";
   if (error.code === "password_too_long") return "passwordTooLong";
-  if (error.code === "rate_limited") return "tooManyAttempts";
+  // Sign-in is limited per email (wrong passwords), registration per network (accounts a day).
+  if (error.code === "rate_limited") return mode === "register" ? "tooManyAccounts" : "tooManyAttempts";
   if (error.status === 422) return "invalidInput";
   if (error.status === NETWORK_ERROR_STATUS || error.status >= 500) return "unavailable";
   return "generic";

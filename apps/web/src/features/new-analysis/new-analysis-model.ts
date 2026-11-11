@@ -2,6 +2,7 @@
 // The API stays the authority; these checks only answer obvious mistakes before a round trip.
 
 import type { Dictionary } from "@/i18n/dictionaries";
+import { aiRefusalKey } from "@/lib/api/ai-refusals";
 import { ApiError, NETWORK_ERROR_STATUS } from "@/lib/api/client";
 import type { AnalysisSummary, JobDescriptionDraft, ResumeSummary } from "@/lib/api/types";
 
@@ -29,7 +30,7 @@ export type FieldErrorKey = keyof Dictionary["newAnalysis"]["errors"];
 export type FieldErrors = Partial<Record<FieldName, FieldErrorKey>>;
 
 export interface StartAnalysisResult {
-  formError: "unavailable" | "rateLimited" | "generic" | null;
+  formError: "unavailable" | "rateLimited" | "notVerified" | "dailyBudget" | "generic" | null;
   fieldErrors: FieldErrors;
   /** A CV saved before a later step failed; the form selects it so a retry does not save it twice. */
   savedResumeId: string | null;
@@ -117,6 +118,11 @@ export function submitErrorResult(
   savedResumeId: string | null,
 ): StartAnalysisResult {
   const result: StartAnalysisResult = { formError: null, fieldErrors: {}, savedResumeId };
+  const refusal = aiRefusalKey(error);
+  if (refusal) {
+    result.formError = refusal;
+    return result;
+  }
   if (error instanceof ApiError && error.status === 429) {
     result.formError = "rateLimited";
     return result;

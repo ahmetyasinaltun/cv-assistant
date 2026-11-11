@@ -11,7 +11,8 @@
       "cvs": "CV'lerim",
       "newCv": "Yeni CV",
       "cv": "CV",
-      "tailorCv": "Bu ilan için CV"
+      "tailorCv": "Bu ilan için CV",
+      "verifyEmail": "E-postanı doğrula"
     }
   },
   "shell": {
@@ -27,7 +28,11 @@
     "skipToContent": "İçeriğe geç",
     "accountLabel": "Hesap",
     "signIn": "Giriş yap",
-    "signOut": "Çıkış yap"
+    "signOut": "Çıkış yap",
+    "verifyNotice": {
+      "text": "Analiz başlatmak ve yapay zekâya CV yazdırmak için e-postanı doğrula.",
+      "link": "Kodu gir"
+    }
   },
   "notFound": {
     "title": "Bu sayfa henüz yok",
@@ -114,6 +119,10 @@
         "behavioral": "Davranışsal",
         "project": "Proje",
         "gap": "Eksik alan"
+      },
+      "errors": {
+        "notVerified": "Soru oluşturmak için e-postanı doğrula: sayfanın üstündeki bağlantı seni kod ekranına götürür.",
+        "dailyBudget": "Hizmet bugünkü yapay zekâ kullanım sınırını doldurdu. Yarın tekrar dene."
       }
     },
     "progress": {
@@ -168,7 +177,33 @@
       "tooManyAttempts": "Bu e-posta için çok fazla hatalı deneme yapıldı. 15 dakika bekleyip tekrar dene.",
       "invalidInput": "Alanları kontrol et: geçerli bir e-posta adresi ve en az 8 karakterlik bir şifre gerekiyor.",
       "unavailable": "Servise şu an ulaşılamıyor. Bir dakika sonra tekrar dene.",
-      "generic": "Bir şeyler ters gitti. Tekrar dene."
+      "generic": "Bir şeyler ters gitti. Tekrar dene.",
+      "tooManyAccounts": "Bu ağdan bugün çok fazla hesap açıldı. Yarın tekrar dene."
+    },
+    "verify": {
+      "title": "E-postanı doğrula",
+      "meta": "Bir adım kaldı: e-postana gönderdiğimiz kodu gir.",
+      "sentTo": "{email} adresine 6 haneli bir kod gönderdik. Kod 15 dakika geçerli. Gelen kutunda yoksa spam klasörüne bak.",
+      "codeLabel": "Doğrulama kodu",
+      "submit": "Doğrula",
+      "submitting": "Doğrulanıyor…",
+      "resend": "Yeni kod gönder",
+      "resending": "Gönderiliyor…",
+      "resent": "Yeni kod yolda. Önceki kod artık geçerli değil.",
+      "later": "Şimdilik geç",
+      "laterNote": "Etrafa göz atabilirsin, ama analizler ve yapay zekânın yazdığı CV'ler doğrulamayı bekler.",
+      "wrongAddress": "Adres yanlış mı?",
+      "signOut": "Çıkış yap ve yeniden kayıt ol",
+      "errors": {
+        "codeFormat": "E-postadaki 6 haneli kodu gir.",
+        "codeInvalid": "Bu kod doğru değil. En son gelen e-postayı kontrol edip tekrar dene.",
+        "codeExpired": "Kodun süresi doldu. Yeni kod gönder.",
+        "tooManyAttempts": "Çok fazla yanlış kod girildi. Yeni kod gönder.",
+        "tooSoon": "Az önce bir kod gönderildi. {seconds} saniye sonra yeni kod isteyebilirsin.",
+        "emailUnavailable": "E-posta şu an gönderilemedi. Bir dakika sonra tekrar dene.",
+        "unavailable": "Servise şu an ulaşılamıyor. Bir dakika sonra tekrar dene.",
+        "generic": "Bir şeyler ters gitti. Tekrar dene."
+      }
     }
   },
   "history": {
@@ -289,7 +324,9 @@
       "pdfEncrypted": "Bu PDF şifreli. Şifreyi kaldır ya da metni yapıştır.",
       "unavailable": "Servise şu an ulaşılamıyor. Metnin hâlâ burada; bir dakika sonra tekrar dene.",
       "rateLimited": "Günde 20 analiz sınırına ulaştın. Metnin hâlâ burada; daha sonra tekrar dene.",
-      "generic": "Analiz başlatılamadı. Metnin hâlâ burada; tekrar dene."
+      "generic": "Analiz başlatılamadı. Metnin hâlâ burada; tekrar dene.",
+      "notVerified": "Analiz başlatmadan önce e-postanı doğrula: kod gelen kutunda, sayfanın üstündeki bağlantı seni kod ekranına götürür.",
+      "dailyBudget": "Hizmet bugünkü yapay zekâ kullanım sınırını doldurdu. Metnin burada duruyor; yarın tekrar dene."
     }
   },
   "cvs": {
@@ -348,7 +385,9 @@
         "aiUnavailable": "AI servisi şu an meşgul. Bir dakika sonra tekrar dene ya da boş sayfadan başla.",
         "resumeMissing": "Bu kayıtlı CV artık yok. Başka birini seç.",
         "network": "Servise ulaşılamadı. Bağlantını kontrol edip tekrar dene.",
-        "generic": "CV oluşturulamadı. Tekrar dene."
+        "generic": "CV oluşturulamadı. Tekrar dene.",
+        "notVerified": "Önce e-postanı doğrula: sayfanın üstündeki bağlantı seni kod ekranına götürür.",
+        "dailyBudget": "Hizmet bugünkü yapay zekâ kullanım sınırını doldurdu. Yarın tekrar dene ya da boş sayfadan başla."
       }
     },
     "editor": {
@@ -534,7 +573,9 @@
           "aiUnavailable": "AI servisi şu an meşgul. Bir dakika sonra tekrar dene.",
           "missing": "Bu analiz artık yok.",
           "network": "Servise ulaşılamadı. Bağlantını kontrol edip tekrar dene.",
-          "generic": "CV yazılamadı. Tekrar dene."
+          "generic": "CV yazılamadı. Tekrar dene.",
+          "notVerified": "Önce e-postanı doğrula: sayfanın üstündeki bağlantı seni kod ekranına götürür.",
+          "dailyBudget": "Hizmet bugünkü yapay zekâ kullanım sınırını doldurdu. Yarın tekrar dene."
         }
       },
       "panel": {

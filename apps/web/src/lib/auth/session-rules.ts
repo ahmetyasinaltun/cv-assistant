@@ -36,9 +36,10 @@ export function signInDestination(next: unknown, formLocale: Locale, accountLoca
   return pathForLocale(path, accountLocale);
 }
 
-/** Analyses (except the public sample) and the CVs a user writes need an account. */
+/** Analyses (except the public sample), the CVs a user writes and email verification need an account. */
 export function isPrivatePath(pathAfterLocale: string): boolean {
   return (
+    pathAfterLocale === "/verify-email" ||
     pathAfterLocale === "/analyses" ||
     (pathAfterLocale.startsWith("/analyses/") && pathAfterLocale !== "/analyses/sample") ||
     pathAfterLocale === "/cvs" ||

@@ -100,6 +100,8 @@ export interface User {
   email: string;
   full_name: string;
   preferred_language: Language;
+  /** AI actions (analyses, interview questions, AI-written CVs) wait until this is true. */
+  email_verified: boolean;
   created_at: string;
 }
 

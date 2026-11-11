@@ -11,7 +11,8 @@
       "cvs": "My CVs",
       "newCv": "New CV",
       "cv": "CV",
-      "tailorCv": "A CV for this posting"
+      "tailorCv": "A CV for this posting",
+      "verifyEmail": "Verify your email"
     }
   },
   "shell": {
@@ -27,7 +28,11 @@
     "skipToContent": "Skip to content",
     "accountLabel": "Account",
     "signIn": "Sign in",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "verifyNotice": {
+      "text": "Verify your email to start analyses and AI-written CVs.",
+      "link": "Enter the code"
+    }
   },
   "notFound": {
     "title": "This page does not exist yet",
@@ -114,6 +119,10 @@
         "behavioral": "Behavioral",
         "project": "Project",
         "gap": "Gap"
+      },
+      "errors": {
+        "notVerified": "Verify your email to generate questions: the link at the top of the page takes you to the code screen.",
+        "dailyBudget": "The service has used today's AI budget. Try again tomorrow."
       }
     },
     "progress": {
@@ -168,7 +177,33 @@
       "tooManyAttempts": "Too many failed attempts for this email. Wait 15 minutes and try again.",
       "invalidInput": "Check the fields: a valid email address and a password of at least 8 characters.",
       "unavailable": "The service is not reachable right now. Try again in a minute.",
-      "generic": "Something went wrong. Try again."
+      "generic": "Something went wrong. Try again.",
+      "tooManyAccounts": "Too many accounts were created from this network today. Try again tomorrow."
+    },
+    "verify": {
+      "title": "Verify your email",
+      "meta": "One step left: enter the code we emailed you.",
+      "sentTo": "We sent a 6-digit code to {email}. It works for 15 minutes. If it is not in your inbox, look in the spam folder.",
+      "codeLabel": "Verification code",
+      "submit": "Verify",
+      "submitting": "Verifying…",
+      "resend": "Send a new code",
+      "resending": "Sending…",
+      "resent": "A new code is on its way. The previous one no longer works.",
+      "later": "Skip for now",
+      "laterNote": "You can look around, but analyses and AI-written CVs wait until you verify.",
+      "wrongAddress": "Wrong address?",
+      "signOut": "Sign out and register again",
+      "errors": {
+        "codeFormat": "Enter the 6 digits from the email.",
+        "codeInvalid": "This code is not correct. Check the latest email and try again.",
+        "codeExpired": "This code has expired. Send a new code.",
+        "tooManyAttempts": "Too many wrong codes. Send a new code.",
+        "tooSoon": "A code was sent a moment ago. You can ask for a new one in {seconds} seconds.",
+        "emailUnavailable": "The email could not be sent right now. Try again in a minute.",
+        "unavailable": "The service is not reachable right now. Try again in a minute.",
+        "generic": "Something went wrong. Try again."
+      }
     }
   },
   "history": {
@@ -289,7 +324,9 @@
       "pdfEncrypted": "This PDF is password-protected. Remove the password or paste the text instead.",
       "unavailable": "The service is not reachable right now. Your text is still here; try again in a minute.",
       "rateLimited": "You have reached the limit of 20 analyses a day. Your text is still here; try again later.",
-      "generic": "The analysis could not be started. Your text is still here; try again."
+      "generic": "The analysis could not be started. Your text is still here; try again.",
+      "notVerified": "Verify your email before starting an analysis: the code is in your inbox, and the link at the top of the page takes you to it.",
+      "dailyBudget": "The service has used today's AI budget. Your text is still here; try again tomorrow."
     }
   },
   "cvs": {
@@ -348,7 +385,9 @@
         "aiUnavailable": "The AI service is busy right now. Try again in a minute, or start from a blank page.",
         "resumeMissing": "That saved CV no longer exists. Pick another one.",
         "network": "The service could not be reached. Check your connection and try again.",
-        "generic": "The CV could not be created. Try again."
+        "generic": "The CV could not be created. Try again.",
+        "notVerified": "Verify your email first: the link at the top of the page takes you to the code screen.",
+        "dailyBudget": "The service has used today's AI budget. Try again tomorrow, or start from a blank page."
       }
     },
     "editor": {
@@ -534,7 +573,9 @@
           "aiUnavailable": "The AI service is busy right now. Try again in a minute.",
           "missing": "This analysis no longer exists.",
           "network": "The service could not be reached. Check your connection and try again.",
-          "generic": "The CV could not be written. Try again."
+          "generic": "The CV could not be written. Try again.",
+          "notVerified": "Verify your email first: the link at the top of the page takes you to the code screen.",
+          "dailyBudget": "The service has used today's AI budget. Try again tomorrow."
         }
       },
       "panel": {

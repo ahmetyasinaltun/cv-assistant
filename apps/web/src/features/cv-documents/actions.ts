@@ -18,12 +18,20 @@ import {
   updateCvDocument,
   type CvDocumentChanges,
 } from "@/lib/api/backend";
+import { aiRefusalKey } from "@/lib/api/ai-refusals";
 import { ApiError, NETWORK_ERROR_STATUS } from "@/lib/api/client";
 import type { CvDocument, Language, TailoringMode } from "@/lib/api/types";
 
 import { encodeImportNotice } from "./import-notice";
 
-export type CreateErrorKey = "rateLimited" | "aiUnavailable" | "resumeMissing" | "network" | "generic";
+export type CreateErrorKey =
+  | "rateLimited"
+  | "notVerified"
+  | "dailyBudget"
+  | "aiUnavailable"
+  | "resumeMissing"
+  | "network"
+  | "generic";
 export type SaveErrorKey = "invalid" | "rateLimited" | "network" | "generic";
 
 function toLocale(value: string): Locale {
@@ -38,6 +46,8 @@ function redirectIfSignedOut(error: unknown, locale: Locale, returnPath: string)
 }
 
 function createErrorKey(error: unknown): CreateErrorKey {
+  const refusal = aiRefusalKey(error);
+  if (refusal) return refusal;
   if (!(error instanceof ApiError)) return "generic";
   if (error.status === NETWORK_ERROR_STATUS) return "network";
   if (error.status === 429) return "rateLimited";
@@ -73,6 +83,8 @@ export interface ImportNewCvResult {
 const SAVE_ERRORS: Record<NonNullable<StartAnalysisResult["formError"]>, CreateErrorKey> = {
   unavailable: "network",
   rateLimited: "rateLimited",
+  notVerified: "notVerified",
+  dailyBudget: "dailyBudget",
   generic: "generic",
 };
 
@@ -147,7 +159,14 @@ export async function deleteCv(localeValue: string, documentId: string): Promise
   return { ok: true };
 }
 
-export type TailorErrorKey = "rateLimited" | "aiUnavailable" | "missing" | "network" | "generic";
+export type TailorErrorKey =
+  | "rateLimited"
+  | "notVerified"
+  | "dailyBudget"
+  | "aiUnavailable"
+  | "missing"
+  | "network"
+  | "generic";
 
 /** Writes a CV for the posting of an analysis and opens it in the editor. */
 export async function tailorCv(

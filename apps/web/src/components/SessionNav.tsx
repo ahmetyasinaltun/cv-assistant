@@ -9,6 +9,7 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 import type { User } from "@/lib/api/types";
 
 import { MainNav } from "./MainNav";
+import { VerifyNoticeBar } from "./VerifyNotice";
 
 interface SessionPartProps {
   locale: Locale;
@@ -37,6 +38,13 @@ export async function SessionNav({ locale, labels }: SessionPartProps) {
     : [{ href: "/analyses/sample", label: labels.nav.sample }];
 
   return <MainNav locale={locale} label={labels.navLabel} items={items} />;
+}
+
+/** Shown only while the signed-in account's email address waits for its code. */
+export async function VerifyNotice({ locale, labels }: SessionPartProps) {
+  const user = await userOrNull();
+  if (!user || user.email_verified) return null;
+  return <VerifyNoticeBar locale={locale} text={labels.verifyNotice.text} link={labels.verifyNotice.link} />;
 }
 
 export async function AccountControls({ locale, labels }: SessionPartProps) {

@@ -42,11 +42,20 @@ export function register(fullName: string, email: string, password: string, pref
   return apiRequest<TokenResponse>("/auth/register", {
     method: "POST",
     json: { full_name: fullName, email, password, preferred_language: preferredLanguage },
+    forwardVisitor: true,
   });
 }
 
 export function getMe() {
   return authed<User>("/me");
+}
+
+export function sendVerificationCode() {
+  return authed<{ sent_to: string }>("/me/email-verification", { method: "POST", forwardVisitor: true });
+}
+
+export function confirmEmail(code: string) {
+  return authed<User>("/me/email-verification/confirm", { method: "POST", json: { code } });
 }
 
 export function updatePreferredLanguage(language: Language) {
@@ -99,12 +108,14 @@ export function createAnalysis(resumeId: string, jobDescriptionId: string, outpu
   return authed<AnalysisSummary>("/analyses", {
     method: "POST",
     json: { resume_id: resumeId, job_description_id: jobDescriptionId, output_language: outputLanguage },
+    forwardVisitor: true,
   });
 }
 
 export function generateInterviewQuestions(analysisId: string) {
   return authed<InterviewQuestion[]>(`/analyses/${segment(analysisId)}/interview-questions`, {
     method: "POST",
+    forwardVisitor: true,
   });
 }
 
@@ -124,6 +135,7 @@ export function createCvDocumentFromResume(resumeId: string) {
   return authed<CvDocumentFromResume>(`/resumes/${segment(resumeId)}/cv-documents`, {
     method: "POST",
     json: {},
+    forwardVisitor: true,
   });
 }
 
@@ -139,7 +151,11 @@ export function updateCvDocument(documentId: string, changes: CvDocumentChanges)
 }
 
 export function createTailoredCv(analysisId: string, mode: TailoringMode) {
-  return authed<CvDocument>(`/analyses/${segment(analysisId)}/tailored-cv`, { method: "POST", json: { mode } });
+  return authed<CvDocument>(`/analyses/${segment(analysisId)}/tailored-cv`, {
+    method: "POST",
+    json: { mode },
+    forwardVisitor: true,
+  });
 }
 
 export function answerCvQuestions(documentId: string, answers: { id: string; accepted: boolean }[]) {

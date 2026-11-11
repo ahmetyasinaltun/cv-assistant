@@ -1,16 +1,25 @@
 "use server";
 
-// Server Actions for signing in, registering and signing out; they are the only code that writes the session cookie.
+// Server Actions for signing in, registering, verifying the email address and signing out; they are the only code
+// that writes the session cookie.
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { defaultLocale, isLocale, type Locale } from "@/i18n/config";
-import { login, register } from "@/lib/api/backend";
+import { confirmEmail, login, register, sendVerificationCode } from "@/lib/api/backend";
 import type { TokenResponse } from "@/lib/api/types";
 import { clearSession, saveLocaleChoice, saveSession } from "@/lib/auth/session";
-import { signInDestination } from "@/lib/auth/session-rules";
+import { safeReturnPath, signInDestination } from "@/lib/auth/session-rules";
 
 import { authErrorKey, type AuthFormState } from "./auth-errors";
+import {
+  initialVerifyFormState,
+  isCompleteCode,
+  normalizeCode,
+  verifyErrorState,
+  type VerifyFormState,
+} from "./verification-model";
 
 function readLocale(formData: FormData): Locale {
   const value = formData.get("locale");
@@ -56,10 +65,38 @@ export async function registerAccount(
     token = (await register(fullName, email, typeof password === "string" ? password : "", locale))
       .access_token;
   } catch (error) {
-    return { error: authErrorKey(error), email, fullName };
+    return { error: authErrorKey(error, "register"), email, fullName };
   }
   await saveSession(token);
-  redirect(signInDestination(formData.get("next"), locale, locale));
+  // The first code is already on its way; the verification screen continues to `next` afterwards.
+  const destination = signInDestination(formData.get("next"), locale, locale);
+  redirect(`/${locale}/verify-email?next=${encodeURIComponent(destination)}`);
+}
+
+export async function confirmEmailCode(
+  _previous: VerifyFormState,
+  formData: FormData,
+): Promise<VerifyFormState> {
+  const locale = readLocale(formData);
+  const code = normalizeCode(readText(formData, "code"));
+  if (!isCompleteCode(code)) return { ...initialVerifyFormState, error: "codeFormat" };
+  try {
+    await confirmEmail(code);
+  } catch (error) {
+    return verifyErrorState(error);
+  }
+  // The reminder lives in the shared layout, which a redirect alone would keep as it was.
+  revalidatePath(`/${locale}`, "layout");
+  redirect(safeReturnPath(formData.get("next"), locale) ?? `/${locale}/analyses`);
+}
+
+export async function resendVerificationCode(): Promise<VerifyFormState> {
+  try {
+    await sendVerificationCode();
+  } catch (error) {
+    return verifyErrorState(error);
+  }
+  return { ...initialVerifyFormState, resent: true };
 }
 
 export async function signOut(formData: FormData): Promise<void> {

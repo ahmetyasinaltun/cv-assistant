@@ -11,7 +11,7 @@ import type { SelectionSource } from "./RequirementList";
 export type QuestionsState =
   | { kind: "idle" }
   | { kind: "loading" }
-  | { kind: "error" }
+  | { kind: "error"; reason: "notVerified" | "dailyBudget" | "generic" }
   | { kind: "ready"; questions: InterviewQuestion[] };
 
 interface InterviewQuestionsProps {
@@ -59,7 +59,7 @@ export function InterviewQuestions({
           <span className="mt-0.5">
             <StatusMark status="missing" size={17} />
           </span>
-          {labels.error}
+          {state.reason === "generic" ? labels.error : labels.errors[state.reason]}
         </p>
       )}
 
