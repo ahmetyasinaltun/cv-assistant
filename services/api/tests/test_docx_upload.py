@@ -131,6 +131,19 @@ def test_broken_empty_and_oversized_documents_are_refused(monkeypatch):
     assert error_code(lambda: extract_text_from_docx(too_big)) == "docx_invalid"
 
 
+def test_a_part_that_declares_entities_is_refused_before_parsing():
+    # A small "billion laughs" file: each entity repeats the one before, so it would expand enormously.
+    entities = (
+        '<!DOCTYPE w:document [<!ENTITY a "lol"><!ENTITY b "&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;">]>'
+    )
+    body = paragraph(run("&b;"))
+    document = (
+        f"{entities}<w:document xmlns:w='{W}' xmlns:r='{R}'><w:body>{body}</w:body></w:document>"
+    )
+    bomb = docx("", document=document)
+    assert error_code(lambda: extract_text_from_docx(bomb)) == "docx_invalid"
+
+
 def test_uploading_a_docx_saves_its_text(client, auth_headers):
     response = client.post(
         "/resumes/upload",

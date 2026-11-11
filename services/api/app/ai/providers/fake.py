@@ -362,7 +362,7 @@ class FakeEmbeddings:
     def _embed_one(text: str) -> list[float]:
         vector = [0.0] * FAKE_EMBEDDING_DIMENSIONS
         for token in tokens(text):
-            digest = hashlib.sha1(token.encode("utf-8")).digest()
+            digest = hashlib.sha1(token.encode("utf-8"), usedforsecurity=False).digest()
             vector[digest[0] % FAKE_EMBEDDING_DIMENSIONS] += 1.0
         norm = math.sqrt(sum(v * v for v in vector)) or 1.0
         return [v / norm for v in vector]

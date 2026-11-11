@@ -35,7 +35,7 @@ def is_docx(file_bytes: bytes) -> bool:
 def extract_text_from_docx(file_bytes: bytes) -> str:
     try:
         with zipfile.ZipFile(io.BytesIO(file_bytes)) as archive:
-            body = ElementTree.fromstring(_read_capped(archive, _DOCUMENT)).find(f"{_W}body")
+            body = ElementTree.fromstring(_read_capped(archive, _DOCUMENT)).find(f"{_W}body")  # nosec B314: _read_capped refuses DTDs
             targets = _link_targets(archive)
             list_styles = _list_styles(archive)
     except (zipfile.BadZipFile, KeyError, ElementTree.ParseError) as exc:
@@ -65,6 +65,12 @@ def _read_capped(archive: zipfile.ZipFile, name: str) -> bytes:
         content = part.read(MAX_DOCUMENT_PART_BYTES + 1)
     if len(content) > MAX_DOCUMENT_PART_BYTES:
         raise ValidationFailedError("This Word document is too large to read.", code="docx_invalid")
+    # Word never writes a DTD into its parts. One that declares it can only be there to define entities, which
+    # is how "billion laughs" files blow up in the parser, so it is refused before parsing.
+    if b"<!DOCTYPE" in content:
+        raise ValidationFailedError(
+            "The uploaded file is not a readable Word document.", code="docx_invalid"
+        )
     return content
 
 
@@ -96,7 +102,7 @@ def _list_styles(archive: zipfile.ZipFile) -> set[str]:
         return set()
     numbered: set[str] = set()
     based_on: dict[str, str] = {}
-    for style in ElementTree.fromstring(_read_capped(archive, _STYLES)).iter(f"{_W}style"):
+    for style in ElementTree.fromstring(_read_capped(archive, _STYLES)).iter(f"{_W}style"):  # nosec B314: _read_capped refuses DTDs
         style_id = style.get(f"{_W}styleId", "")
         if style.find(f"{_W}pPr/{_W}numPr") is not None:
             numbered.add(style_id)
@@ -124,7 +130,7 @@ def _link_targets(archive: zipfile.ZipFile) -> dict[str, str]:
     """Relationship id → address for the document's external hyperlinks."""
     if _DOCUMENT_RELS not in archive.namelist():
         return {}
-    relationships = ElementTree.fromstring(_read_capped(archive, _DOCUMENT_RELS))
+    relationships = ElementTree.fromstring(_read_capped(archive, _DOCUMENT_RELS))  # nosec B314: _read_capped refuses DTDs
     return {
         rel.get("Id", ""): rel.get("Target", "")
         for rel in relationships.iter(f"{_RELS}Relationship")
