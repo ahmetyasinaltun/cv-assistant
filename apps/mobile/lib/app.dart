@@ -13,18 +13,18 @@ import 'features/auth/auth_screen.dart';
 import 'features/startup/startup_screen.dart';
 import 'l10n/app_localizations.dart';
 
-class CareerAssistantApp extends StatefulWidget {
-  const CareerAssistantApp({super.key, required this.api, required this.session, this.links});
+class CvAssistantApp extends StatefulWidget {
+  const CvAssistantApp({super.key, required this.api, required this.session, this.links});
 
   final CareerApi api;
   final SessionController session;
   final SharedLinks? links;
 
   @override
-  State<CareerAssistantApp> createState() => _CareerAssistantAppState();
+  State<CvAssistantApp> createState() => _CvAssistantAppState();
 }
 
-class _CareerAssistantAppState extends State<CareerAssistantApp> {
+class _CvAssistantAppState extends State<CvAssistantApp> {
   final _navigatorKey = GlobalKey<NavigatorState>();
   late SessionStatus _lastStatus = widget.session.status;
 

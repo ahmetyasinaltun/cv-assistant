@@ -29,7 +29,7 @@ jobs:
       RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       RENDER_SERVICE: career-assistant-api
-      WEB_DOMAIN: ai-career-assistant-seven-delta.vercel.app
+      WEB_DOMAIN: cvassistant-app.vercel.app
       API_URL: https://career-assistant-api-b0bn.onrender.com
     steps:
       - name: Switch the web and the API

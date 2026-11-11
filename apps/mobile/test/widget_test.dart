@@ -1,12 +1,12 @@
 // Widget tests for the main flows against a scripted fake API: start-up retry, the account language, sign-in errors,
 // the analyses list states, the sample result (fixes first, CV sheet with highlighted words) and form validation.
 
-import 'package:career_assistant/app.dart';
-import 'package:career_assistant/core/session/session_controller.dart';
-import 'package:career_assistant/core/share/shared_links.dart';
-import 'package:career_assistant/core/theme/tokens.dart';
-import 'package:career_assistant/features/analysis/sample_analysis_screen.dart';
-import 'package:career_assistant/widgets/paper.dart';
+import 'package:cv_assistant/app.dart';
+import 'package:cv_assistant/core/session/session_controller.dart';
+import 'package:cv_assistant/core/share/shared_links.dart';
+import 'package:cv_assistant/core/theme/tokens.dart';
+import 'package:cv_assistant/features/analysis/sample_analysis_screen.dart';
+import 'package:cv_assistant/widgets/paper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -37,7 +37,7 @@ Future<FakeApi> pumpApp(
 }) async {
   final api = fake.build();
   final session = SessionController(api: api, tokens: MemoryTokenStore(token), deviceLanguage: device);
-  await tester.pumpWidget(CareerAssistantApp(api: api, session: session, links: links));
+  await tester.pumpWidget(CvAssistantApp(api: api, session: session, links: links));
   await tester.pumpAndSettle();
   return fake;
 }
@@ -206,7 +206,7 @@ void main() {
   });
 
   testWidgets('a link shared from another app opens New analysis and reads the posting', (tester) async {
-    const channel = MethodChannel('career_assistant/share');
+    const channel = MethodChannel('cv_assistant/share');
     final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
     messenger.setMockMethodCallHandler(
       channel,

@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "AI Career Assistant",
+    "title": "CV Assistant",
     "description": "See how your CV matches a job posting, with the evidence behind every judgement.",
     "titles": {
       "signIn": "Sign in",
@@ -15,7 +15,7 @@
     }
   },
   "shell": {
-    "product": "AI Career Assistant",
+    "product": "CV Assistant",
     "navLabel": "Main",
     "menu": "Menu",
     "nav": {
@@ -46,7 +46,7 @@
     "howScored": "How is this scored?",
     "print": {
       "button": "Print or save as PDF",
-      "footer": "Made with AI Career Assistant. The judgements are AI-assisted: check each against your CV before you rely on it."
+      "footer": "Made with CV Assistant. The judgements are AI-assisted: check each against your CV before you rely on it."
     },
     "limitationsTitle": "What this analysis cannot know",
     "status": {

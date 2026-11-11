@@ -1,6 +1,6 @@
 {
   "@@locale": "tr",
-  "appTitle": "AI Career Assistant",
+  "appTitle": "CV Assistant",
   "startupChecking": "Oturumun kontrol ediliyor…",
   "serverUnreachable": "Servise şu an ulaşılamıyor. Bağlantını kontrol edip tekrar dene.",
   "tryAgain": "Tekrar dene",

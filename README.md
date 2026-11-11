@@ -1,10 +1,10 @@
-# AI Career Assistant
+# CV Assistant
 
 A web and Android app that compares a CV with a job posting and shows, requirement by requirement, which CV lines support it, what is missing, and what to change before applying. On the web, a CV Maker turns the CV into an editable document and can write a version of it for the posting. Built for students and early-career candidates, in English and Turkish.
 
 Instead of an unexplained "87% fit", every judgement points at the CV lines it relied on, unsupported claims are marked missing instead of trusted, and the score comes from a stated formula computed by code, not by the model.
 
-**Live demo:** [ai-career-assistant-seven-delta.vercel.app](https://ai-career-assistant-seven-delta.vercel.app) opens the sample result without an account. Register to run the fictional sample CV and posting live. The API runs on a free tier that sleeps when idle, so the first request after a quiet spell can take about a minute, and an analysis can take a couple of minutes when the free AI models are busy.
+**Live demo:** [cvassistant-app.vercel.app](https://cvassistant-app.vercel.app) opens the sample result without an account. Register to run the fictional sample CV and posting live. The API runs on a free tier that sleeps when idle, so the first request after a quiet spell can take about a minute, and an analysis can take a couple of minutes when the free AI models are busy.
 
 ![Web: the sample result. The score with its fit level and a bar of every requirement, a short summary, and what to fix first as priority cards.](docs/screenshots/web-result.png)
 
@@ -141,8 +141,8 @@ Requirements: Git, Python 3.12+, Docker.
 
 ```bash
 # 0. Clone
-git clone https://github.com/ahmetyasinaltun/ai_career_assistant.git
-cd ai_career_assistant
+git clone https://github.com/ahmetyasinaltun/cv-assistant.git
+cd cv-assistant
 
 # 1. Start PostgreSQL (listens on localhost:5434 to avoid clashing with a local install)
 docker compose up -d

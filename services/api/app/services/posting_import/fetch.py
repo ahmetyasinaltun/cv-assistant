@@ -20,7 +20,7 @@ MAX_PAGE_BYTES = 3 * 1024 * 1024
 TIMEOUT = httpx.Timeout(10.0, connect=5.0)
 # The app says who it is instead of posing as a browser; every site tested answered it like a browser.
 HEADERS = {
-    "User-Agent": "AICareerAssistant/0.1 (+https://ai-career-assistant-seven-delta.vercel.app)",
+    "User-Agent": "CVAssistant/0.1 (+https://cvassistant-app.vercel.app)",
     "Accept": "text/html,application/xhtml+xml;q=0.9,*/*;q=0.5",
     "Accept-Language": "tr-TR,tr;q=0.9,en;q=0.8",
 }

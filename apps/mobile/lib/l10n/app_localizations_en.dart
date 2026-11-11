@@ -10,7 +10,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'AI Career Assistant';
+  String get appTitle => 'CV Assistant';
 
   @override
   String get startupChecking => 'Checking your session…';

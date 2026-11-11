@@ -1,6 +1,6 @@
 // Unit tests for the HTTP layer: bearer token, UTF-8 decoding, and the API error envelope as exceptions.
 
-import 'package:career_assistant/core/api/api_client.dart';
+import 'package:cv_assistant/core/api/api_client.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'fake_api.dart';

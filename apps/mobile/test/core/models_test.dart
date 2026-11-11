@@ -1,6 +1,6 @@
 // Unit tests for parsing the API contract, including a completed analysis with its result and questions.
 
-import 'package:career_assistant/core/api/models.dart';
+import 'package:cv_assistant/core/api/models.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Map<String, dynamic> analysisJson({String status = 'completed', Object? result}) => {

@@ -13,7 +13,7 @@ String? firstLink(String? sharedText) {
 }
 
 class SharedLinks extends ChangeNotifier {
-  SharedLinks([this._channel = const MethodChannel('career_assistant/share')]) {
+  SharedLinks([this._channel = const MethodChannel('cv_assistant/share')]) {
     _channel.setMethodCallHandler(_onCall);
   }
 

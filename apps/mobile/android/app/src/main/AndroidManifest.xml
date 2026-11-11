@@ -2,7 +2,7 @@
     <!-- The app calls the shared API. -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <application
-        android:label="AI Career Assistant"
+        android:label="CV Assistant"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:enableOnBackInvokedCallback="true">

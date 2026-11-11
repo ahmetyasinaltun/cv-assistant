@@ -1,7 +1,7 @@
 [project]
-name = "ai-career-assistant-api"
+name = "cv-assistant-api"
 version = "0.1.0"
-description = "FastAPI backend for AI Career Assistant: auth, resume/job ingestion, AI match analysis."
+description = "FastAPI backend for CV Assistant: auth, resume/job ingestion, AI match analysis."
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115",

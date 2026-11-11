@@ -3,8 +3,8 @@
 
 import 'dart:convert';
 
-import 'package:career_assistant/core/api/api_client.dart';
-import 'package:career_assistant/core/session/session_controller.dart';
+import 'package:cv_assistant/core/api/api_client.dart';
+import 'package:cv_assistant/core/session/session_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'fake_api.dart';

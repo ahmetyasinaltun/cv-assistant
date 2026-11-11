@@ -11,7 +11,7 @@ DEV_JWT_SECRET = "dev-only-secret-change-me-before-deploying-0000"
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
-    app_name: str = "AI Career Assistant API"
+    app_name: str = "CV Assistant API"
     environment: str = Field(default="development", pattern="^(development|test|production)$")
     debug: bool = False
 

@@ -1,11 +1,11 @@
 // Tests for links shared from other apps: picking the address out of a share's text, and the method channel that
 // brings the share that started the app and shares that arrive while it runs.
 
-import 'package:career_assistant/core/share/shared_links.dart';
+import 'package:cv_assistant/core/share/shared_links.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const channel = MethodChannel('career_assistant/share');
+const channel = MethodChannel('cv_assistant/share');
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

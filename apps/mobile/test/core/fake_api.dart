@@ -2,9 +2,9 @@
 
 import 'dart:convert';
 
-import 'package:career_assistant/core/api/api_client.dart';
-import 'package:career_assistant/core/api/career_api.dart';
-import 'package:career_assistant/core/session/token_store.dart';
+import 'package:cv_assistant/core/api/api_client.dart';
+import 'package:cv_assistant/core/api/career_api.dart';
+import 'package:cv_assistant/core/session/token_store.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 

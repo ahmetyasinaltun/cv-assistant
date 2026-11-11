@@ -1,11 +1,11 @@
 // Unit tests for the pure presentation rules ported from the web client: form validation and API error mapping,
 // the default CV, result grouping and quote highlighting, auth errors, and Turkish-aware label caps.
 
-import 'package:career_assistant/core/api/api_client.dart';
-import 'package:career_assistant/core/api/models.dart';
-import 'package:career_assistant/features/analysis/result_view_model.dart';
-import 'package:career_assistant/features/auth/auth_errors.dart';
-import 'package:career_assistant/features/new_analysis/new_analysis_model.dart';
+import 'package:cv_assistant/core/api/api_client.dart';
+import 'package:cv_assistant/core/api/models.dart';
+import 'package:cv_assistant/features/analysis/result_view_model.dart';
+import 'package:cv_assistant/features/auth/auth_errors.dart';
+import 'package:cv_assistant/features/new_analysis/new_analysis_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 NewAnalysisDraft draft({

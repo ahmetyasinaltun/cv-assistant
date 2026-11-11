@@ -21,5 +21,5 @@ void main() {
     deviceLanguage: PlatformDispatcher.instance.locale.languageCode,
   );
   final links = SharedLinks()..start();
-  runApp(CareerAssistantApp(api: api, session: session, links: links));
+  runApp(CvAssistantApp(api: api, session: session, links: links));
 }

@@ -10,7 +10,7 @@ class AppLocalizationsTr extends AppLocalizations {
   AppLocalizationsTr([String locale = 'tr']) : super(locale);
 
   @override
-  String get appTitle => 'AI Career Assistant';
+  String get appTitle => 'CV Assistant';
 
   @override
   String get startupChecking => 'Oturumun kontrol ediliyor…';

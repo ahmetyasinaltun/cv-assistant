@@ -1,6 +1,6 @@
 // Hands text shared from another app's share sheet (a job link) to the Flutter side: the share that started the app
 // is picked up once by Flutter, a share that arrives while the app runs is pushed to it.
-package com.ahmetyasinaltun.career_assistant
+package com.ahmetyasinaltun.cvassistant
 
 import android.content.Intent
 import io.flutter.embedding.android.FlutterActivity
@@ -14,7 +14,7 @@ class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         initialText = sharedText(intent)
-        channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "career_assistant/share").apply {
+        channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "cv_assistant/share").apply {
             setMethodCallHandler { call, result ->
                 if (call.method == "takeInitialText") {
                     result.success(initialText)

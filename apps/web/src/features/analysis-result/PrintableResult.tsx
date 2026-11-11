@@ -38,7 +38,7 @@ export function PrintableResult({
     <article className="hidden text-[10.5pt] leading-[1.45] text-ink print:block">
       <header className="border-b-2 border-brand pb-3">
         <p className="text-[9pt] font-semibold tracking-[0.02em] text-brand" translate="no">
-          AI Career Assistant
+          CV Assistant
         </p>
         <h1 className="mt-1 text-[19pt] leading-[1.2] font-bold tracking-[-0.02em]">
           {analysis.job_title}
