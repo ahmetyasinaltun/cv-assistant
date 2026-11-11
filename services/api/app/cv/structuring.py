@@ -22,6 +22,7 @@ from app.cv.content import (
     CvProject,
     CvSkillGroup,
 )
+from app.cv.section_headings import not_carried_over
 from app.cv.source_check import UnsupportedFact, mark_reworded_lines, unsupported_facts
 
 MAX_ATTEMPTS = 2
@@ -59,7 +60,9 @@ class CvStructurer:
         assert best is not None
         removed_dates = {fact.value for fact in best.unsupported if fact.kind == "date"}
         content = mark_reworded_lines(without_dates(best.content, removed_dates), resume_text)
-        return StructuringResult(content, best.unsupported, best.omitted_sections)
+        # The model sometimes lists a heading it did carry over; the content decides.
+        omitted = not_carried_over(best.omitted_sections, content)
+        return StructuringResult(content, best.unsupported, omitted)
 
 
 def to_cv_content(raw: CvStructure, fallback_name: str) -> CvContent:
