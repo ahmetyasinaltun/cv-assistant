@@ -30,7 +30,7 @@ enum FieldProblem {
   docxNoText,
 }
 
-enum FormProblem { unavailable, rateLimited, generic }
+enum FormProblem { unavailable, rateLimited, notVerified, dailyBudget, generic }
 
 enum ResumeSource { paste, upload }
 
@@ -123,6 +123,10 @@ class SubmitFailure {
 }
 
 SubmitFailure submitFailureFor(SubmitStep step, ApiException error) {
+  if (error.statusCode == 403 && error.code == 'email_not_verified') {
+    return const SubmitFailure(formProblem: FormProblem.notVerified);
+  }
+  if (error.code == 'daily_budget_reached') return const SubmitFailure(formProblem: FormProblem.dailyBudget);
   if (error.statusCode == 429) return const SubmitFailure(formProblem: FormProblem.rateLimited);
   if (error.statusCode == 422) {
     return switch (step) {

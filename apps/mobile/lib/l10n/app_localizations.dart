@@ -1249,6 +1249,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The link cannot be read right now. Paste the posting text below instead.'**
   String get linkErrorUnavailable;
+
+  /// No description provided for @authErrorTooManyAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many accounts were created from this network today. Try again tomorrow.'**
+  String get authErrorTooManyAccounts;
+
+  /// No description provided for @verifyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify your email'**
+  String get verifyTitle;
+
+  /// No description provided for @verifyMeta.
+  ///
+  /// In en, this message translates to:
+  /// **'One step left: enter the code we emailed you.'**
+  String get verifyMeta;
+
+  /// No description provided for @verifySentTo.
+  ///
+  /// In en, this message translates to:
+  /// **'We sent a 6-digit code to {email}. It works for 15 minutes. If it is not in your inbox, look in the spam folder.'**
+  String verifySentTo(String email);
+
+  /// No description provided for @verifyCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification code'**
+  String get verifyCodeLabel;
+
+  /// No description provided for @verifySubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify'**
+  String get verifySubmit;
+
+  /// No description provided for @verifySubmitting.
+  ///
+  /// In en, this message translates to:
+  /// **'Verifying…'**
+  String get verifySubmitting;
+
+  /// No description provided for @verifyResend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send a new code'**
+  String get verifyResend;
+
+  /// No description provided for @verifyResending.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending…'**
+  String get verifyResending;
+
+  /// No description provided for @verifyResent.
+  ///
+  /// In en, this message translates to:
+  /// **'A new code is on its way. The previous one no longer works.'**
+  String get verifyResent;
+
+  /// No description provided for @verifyWrongAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong address?'**
+  String get verifyWrongAddress;
+
+  /// No description provided for @verifySignOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out and register again'**
+  String get verifySignOut;
+
+  /// No description provided for @verifyErrorCodeFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the 6 digits from the email.'**
+  String get verifyErrorCodeFormat;
+
+  /// No description provided for @verifyErrorCodeInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'This code is not correct. Check the latest email and try again.'**
+  String get verifyErrorCodeInvalid;
+
+  /// No description provided for @verifyErrorCodeExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'This code has expired. Send a new code.'**
+  String get verifyErrorCodeExpired;
+
+  /// No description provided for @verifyErrorTooManyAttempts.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many wrong codes. Send a new code.'**
+  String get verifyErrorTooManyAttempts;
+
+  /// No description provided for @verifyErrorTooSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'A code was sent a moment ago. Wait a minute before asking for a new one.'**
+  String get verifyErrorTooSoon;
+
+  /// No description provided for @verifyErrorEmailUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'The email could not be sent right now. Try again in a minute.'**
+  String get verifyErrorEmailUnavailable;
+
+  /// No description provided for @errorStartNotVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify your email before starting an analysis.'**
+  String get errorStartNotVerified;
+
+  /// No description provided for @errorStartDailyBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'The service has used today\'s AI budget. Your text is still here; try again tomorrow.'**
+  String get errorStartDailyBudget;
+
+  /// No description provided for @questionsDailyBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'The service has used today\'s AI budget. Try again tomorrow.'**
+  String get questionsDailyBudget;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

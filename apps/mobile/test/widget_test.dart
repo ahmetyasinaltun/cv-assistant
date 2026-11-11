@@ -257,4 +257,52 @@ void main() {
     expect(fake.requests.where((request) => request.method == 'POST'), isEmpty);
     await unmount(tester);
   });
+
+  testWidgets('an unverified account starts at the code screen, and the right code opens the list', (tester) async {
+    final fake = FakeApi()
+      ..on('GET /me', 200, userJson(verified: false))
+      ..on('POST /me/email-verification/confirm', 422, FakeApi.error('code_invalid'))
+      ..on('GET /analyses', 200, []);
+    await pumpApp(tester, fake, token: 'token-1');
+    expect(find.text('Verify your email'), findsOneWidget);
+    expect(find.textContaining('ayse@example.com'), findsOneWidget);
+
+    // Fewer than six digits are named before any request.
+    await tester.enterText(find.byType(TextField), '123');
+    await tester.tap(find.widgetWithText(FilledButton, 'Verify'));
+    await tester.pumpAndSettle();
+    expect(find.text('Enter the 6 digits from the email.'), findsOneWidget);
+    expect(fake.requests.where((request) => request.method == 'POST'), isEmpty);
+
+    await tester.enterText(find.byType(TextField), '111 111');
+    await tester.tap(find.widgetWithText(FilledButton, 'Verify'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('This code is not correct'), findsOneWidget);
+
+    fake.on('POST /me/email-verification/confirm', 200, userJson());
+    await tester.enterText(find.byType(TextField), '123456');
+    await tester.tap(find.widgetWithText(FilledButton, 'Verify'));
+    await tester.pumpAndSettle();
+    expect(find.text('No analyses yet'), findsOneWidget);
+    final confirm = fake.requests.lastWhere((request) => request.url.path == '/me/email-verification/confirm');
+    expect(confirm.body, contains('"code":"123456"'));
+    await unmount(tester);
+  });
+
+  testWidgets('asking for a new code too early says to wait', (tester) async {
+    final fake = FakeApi()
+      ..on('GET /me', 200, userJson(verified: false))
+      ..on('POST /me/email-verification', 429, FakeApi.error('rate_limited'));
+    await pumpApp(tester, fake, token: 'token-1');
+
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Send a new code'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Wait a minute'), findsOneWidget);
+
+    fake.on('POST /me/email-verification', 202, {'sent_to': 'ayse@example.com'});
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Send a new code'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('A new code is on its way'), findsOneWidget);
+    await unmount(tester);
+  });
 }

@@ -36,6 +36,7 @@ class InterviewQuestionsSection extends StatefulWidget {
 class _InterviewQuestionsSectionState extends State<InterviewQuestionsSection> {
   late List<InterviewQuestion>? _questions = widget.initialQuestions;
   late _QuestionsState _state = _questions == null ? _QuestionsState.idle : _QuestionsState.ready;
+  bool _budgetReached = false;
 
   Future<void> _generate() async {
     setState(() => _state = _QuestionsState.writing);
@@ -46,8 +47,12 @@ class _InterviewQuestionsSectionState extends State<InterviewQuestionsSection> {
         _questions = questions;
         _state = _QuestionsState.ready;
       });
-    } on ApiException {
-      if (mounted) setState(() => _state = _QuestionsState.failed);
+    } on ApiException catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _state = _QuestionsState.failed;
+        _budgetReached = error.code == 'daily_budget_reached';
+      });
     }
   }
 
@@ -72,7 +77,7 @@ class _InterviewQuestionsSectionState extends State<InterviewQuestionsSection> {
               const _QuestionSkeleton(),
             ],
             _QuestionsState.failed => [
-              FormAlert(text.questionsError),
+              FormAlert(_budgetReached ? text.questionsDailyBudget : text.questionsError),
               const SizedBox(height: 12),
               FilledButton(onPressed: _generate, child: Text(text.tryAgain)),
             ],

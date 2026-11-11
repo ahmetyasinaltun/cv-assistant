@@ -93,7 +93,7 @@ class _AuthScreenState extends State<AuthScreen> {
       TextInput.finishAutofillContext();
     } on ApiException catch (error) {
       if (!mounted) return;
-      final problem = authProblemFor(error);
+      final problem = authProblemFor(error, register: _isRegister);
       setState(() {
         _submitting = false;
         if (problem == AuthProblem.emailTaken) {
@@ -111,6 +111,7 @@ class _AuthScreenState extends State<AuthScreen> {
     AuthProblem.emailTaken => text.authErrorEmailTaken,
     AuthProblem.passwordTooLong => text.authErrorPasswordTooLong,
     AuthProblem.tooManyAttempts => text.authErrorTooManyAttempts,
+    AuthProblem.tooManyAccounts => text.authErrorTooManyAccounts,
     AuthProblem.invalidInput => text.authErrorInvalidInput,
     AuthProblem.unavailable => text.authErrorUnavailable,
     AuthProblem.generic => text.authErrorGeneric,

@@ -385,6 +385,8 @@ class _NewAnalysisScreenState extends State<NewAnalysisScreen> {
                   FormAlert(switch (_formProblem!) {
                     FormProblem.unavailable => text.errorStartUnavailable,
                     FormProblem.rateLimited => text.errorStartRateLimited,
+                    FormProblem.notVerified => text.errorStartNotVerified,
+                    FormProblem.dailyBudget => text.errorStartDailyBudget,
                     FormProblem.generic => text.errorStartGeneric,
                   }),
                 ],

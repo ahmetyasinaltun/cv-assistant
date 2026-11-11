@@ -655,4 +655,70 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get linkErrorUnavailable => 'Bağlantı şu an okunamıyor. İlanın metnini aşağıya yapıştırabilirsin.';
+
+  @override
+  String get authErrorTooManyAccounts => 'Bu ağdan bugün çok fazla hesap açıldı. Yarın tekrar dene.';
+
+  @override
+  String get verifyTitle => 'E-postanı doğrula';
+
+  @override
+  String get verifyMeta => 'Bir adım kaldı: e-postana gönderdiğimiz kodu gir.';
+
+  @override
+  String verifySentTo(String email) {
+    return '$email adresine 6 haneli bir kod gönderdik. Kod 15 dakika geçerli. Gelen kutunda yoksa spam klasörüne bak.';
+  }
+
+  @override
+  String get verifyCodeLabel => 'Doğrulama kodu';
+
+  @override
+  String get verifySubmit => 'Doğrula';
+
+  @override
+  String get verifySubmitting => 'Doğrulanıyor…';
+
+  @override
+  String get verifyResend => 'Yeni kod gönder';
+
+  @override
+  String get verifyResending => 'Gönderiliyor…';
+
+  @override
+  String get verifyResent => 'Yeni kod yolda. Önceki kod artık geçerli değil.';
+
+  @override
+  String get verifyWrongAddress => 'Adres yanlış mı?';
+
+  @override
+  String get verifySignOut => 'Çıkış yap ve yeniden kayıt ol';
+
+  @override
+  String get verifyErrorCodeFormat => 'E-postadaki 6 haneli kodu gir.';
+
+  @override
+  String get verifyErrorCodeInvalid => 'Bu kod doğru değil. En son gelen e-postayı kontrol edip tekrar dene.';
+
+  @override
+  String get verifyErrorCodeExpired => 'Kodun süresi doldu. Yeni kod gönder.';
+
+  @override
+  String get verifyErrorTooManyAttempts => 'Çok fazla yanlış kod girildi. Yeni kod gönder.';
+
+  @override
+  String get verifyErrorTooSoon => 'Az önce bir kod gönderildi. Yeni kod istemeden önce bir dakika bekle.';
+
+  @override
+  String get verifyErrorEmailUnavailable => 'E-posta şu an gönderilemedi. Bir dakika sonra tekrar dene.';
+
+  @override
+  String get errorStartNotVerified => 'Analiz başlatmadan önce e-postanı doğrula.';
+
+  @override
+  String get errorStartDailyBudget =>
+      'Hizmet bugünkü yapay zekâ kullanım sınırını doldurdu. Metnin burada duruyor; yarın tekrar dene.';
+
+  @override
+  String get questionsDailyBudget => 'Hizmet bugünkü yapay zekâ kullanım sınırını doldurdu. Yarın tekrar dene.';
 }

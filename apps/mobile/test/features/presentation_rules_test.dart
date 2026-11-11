@@ -151,9 +151,37 @@ void main() {
     expect(authProblemFor(const ApiException(409, 'email_taken', '')), AuthProblem.emailTaken);
     expect(authProblemFor(const ApiException(422, 'password_too_long', '')), AuthProblem.passwordTooLong);
     expect(authProblemFor(const ApiException(429, 'rate_limited', '')), AuthProblem.tooManyAttempts);
+    // Registration is limited per network, so the same refusal means too many accounts there.
+    expect(authProblemFor(const ApiException(429, 'rate_limited', ''), register: true), AuthProblem.tooManyAccounts);
     expect(authProblemFor(const ApiException(0, 'network_error', '')), AuthProblem.unavailable);
     expect(looksLikeEmail('ayse@example.com'), isTrue);
     expect(looksLikeEmail('ayse@'), isFalse);
+  });
+
+  test('verification refusals and code input map to what the code screen says', () {
+    expect(verifyProblemFor(const ApiException(422, 'code_invalid', '')), VerifyProblem.codeInvalid);
+    expect(verifyProblemFor(const ApiException(422, 'code_expired', '')), VerifyProblem.codeExpired);
+    expect(verifyProblemFor(const ApiException(429, 'too_many_attempts', '')), VerifyProblem.tooManyAttempts);
+    expect(verifyProblemFor(const ApiException(429, 'rate_limited', '')), VerifyProblem.tooSoon);
+    expect(verifyProblemFor(const ApiException(502, 'email_unavailable', '')), VerifyProblem.emailUnavailable);
+    expect(normalizeCode(' 123 456 '), '123456');
+    expect(isCompleteCode('123456'), isTrue);
+    expect(isCompleteCode('12345'), isFalse);
+  });
+
+  test('an unverified account and the daily AI budget get their own start messages', () {
+    expect(
+      submitFailureFor(SubmitStep.analysis, const ApiException(403, 'email_not_verified', '')).formProblem,
+      FormProblem.notVerified,
+    );
+    expect(
+      submitFailureFor(SubmitStep.analysis, const ApiException(429, 'daily_budget_reached', '')).formProblem,
+      FormProblem.dailyBudget,
+    );
+    expect(
+      submitFailureFor(SubmitStep.analysis, const ApiException(429, 'rate_limited', '')).formProblem,
+      FormProblem.rateLimited,
+    );
   });
 
   test('a supporting line marks the quote, or the whole line when the quote is not in it', () {

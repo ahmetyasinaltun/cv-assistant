@@ -29,6 +29,12 @@ class CareerApi {
 
   Future<User> me() async => User.fromJson(await _client.get('/me'));
 
+  /// Emails a new six-digit code; the earlier one stops working.
+  Future<void> sendVerificationCode() async => _client.post('/me/email-verification');
+
+  Future<User> confirmEmail(String code) async =>
+      User.fromJson(await _client.post('/me/email-verification/confirm', json: {'code': code}));
+
   Future<User> updatePreferredLanguage(String language) async =>
       User.fromJson(await _client.patch('/me', json: {'preferred_language': language}));
 

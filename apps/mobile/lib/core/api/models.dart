@@ -38,13 +38,21 @@ List<T> _list<T>(Object? value, T Function(Json) parse) =>
 List<String> _strings(Object? value) => (value as List? ?? const []).cast<String>();
 
 class User {
-  const User({required this.id, required this.email, required this.fullName, required this.preferredLanguage});
+  const User({
+    required this.id,
+    required this.email,
+    required this.fullName,
+    required this.preferredLanguage,
+    this.emailVerified = true,
+  });
 
   factory User.fromJson(Json json) => User(
     id: json['id'] as String,
     email: json['email'] as String,
     fullName: json['full_name'] as String,
     preferredLanguage: json['preferred_language'] as String,
+    // An API from before email verification sends no flag; its accounts count as verified.
+    emailVerified: json['email_verified'] as bool? ?? true,
   );
 
   final String id;
@@ -53,6 +61,9 @@ class User {
 
   /// Language code the account remembers ("en" or "tr").
   final String preferredLanguage;
+
+  /// AI actions wait until the code emailed at registration is confirmed.
+  final bool emailVerified;
 }
 
 class TokenResponse {

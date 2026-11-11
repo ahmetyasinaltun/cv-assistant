@@ -70,6 +70,14 @@ class SessionController extends ChangeNotifier {
     _becomeSignedIn(session.user);
   }
 
+  /// Confirms the emailed code; the app's gate then opens the analyses list.
+  Future<void> confirmEmail(String code) async {
+    _user = await _api.confirmEmail(code);
+    notifyListeners();
+  }
+
+  Future<void> sendVerificationCode() => _api.sendVerificationCode();
+
   Future<void> signOut() async {
     await _forgetToken();
     _becomeSignedOut();

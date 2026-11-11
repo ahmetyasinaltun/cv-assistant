@@ -56,11 +56,12 @@ class FakeApi {
   static Map<String, Object> error(String code) => _error(code);
 }
 
-Map<String, Object?> userJson({String language = 'en'}) => {
+Map<String, Object?> userJson({String language = 'en', bool verified = true}) => {
   'id': 'u1',
   'email': 'ayse@example.com',
   'full_name': 'Ayşe Yılmaz',
   'preferred_language': language,
+  'email_verified': verified,
   'created_at': '2026-10-27T10:00:00Z',
 };
 

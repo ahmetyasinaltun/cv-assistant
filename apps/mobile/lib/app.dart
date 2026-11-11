@@ -10,6 +10,7 @@ import 'core/share/shared_links.dart';
 import 'core/theme/app_theme.dart';
 import 'features/analyses/analyses_screen.dart';
 import 'features/auth/auth_screen.dart';
+import 'features/auth/verify_email_screen.dart';
 import 'features/startup/startup_screen.dart';
 import 'l10n/app_localizations.dart';
 
@@ -70,7 +71,9 @@ class _CvAssistantAppState extends State<CvAssistantApp> {
           home: switch (session.status) {
             SessionStatus.unknown => StartupScreen(session: session),
             SessionStatus.signedOut => const AuthScreen(),
-            SessionStatus.signedIn => const AnalysesScreen(),
+            // AI actions need a verified address, so an unverified account starts at the code screen.
+            SessionStatus.signedIn =>
+              session.user?.emailVerified == false ? const VerifyEmailScreen() : const AnalysesScreen(),
           },
         ),
       ),

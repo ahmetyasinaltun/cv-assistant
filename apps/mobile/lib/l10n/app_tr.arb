@@ -199,5 +199,27 @@
   "linkErrorUnreachable": "Şu an {site} yanıt vermiyor. Biraz sonra yeniden dene ya da metni aşağıya yapıştır.",
   "linkErrorNoPosting": "Bu sayfada ilan metni bulamadık. İlanın metnini kopyalayıp aşağıya yapıştır.",
   "linkErrorTooMany": "Son bir saatte çok sayıda bağlantı okundu. Biraz sonra yeniden dene ya da metni aşağıya yapıştır.",
-  "linkErrorUnavailable": "Bağlantı şu an okunamıyor. İlanın metnini aşağıya yapıştırabilirsin."
+  "linkErrorUnavailable": "Bağlantı şu an okunamıyor. İlanın metnini aşağıya yapıştırabilirsin.",
+
+  "authErrorTooManyAccounts": "Bu ağdan bugün çok fazla hesap açıldı. Yarın tekrar dene.",
+  "verifyTitle": "E-postanı doğrula",
+  "verifyMeta": "Bir adım kaldı: e-postana gönderdiğimiz kodu gir.",
+  "verifySentTo": "{email} adresine 6 haneli bir kod gönderdik. Kod 15 dakika geçerli. Gelen kutunda yoksa spam klasörüne bak.",
+  "verifyCodeLabel": "Doğrulama kodu",
+  "verifySubmit": "Doğrula",
+  "verifySubmitting": "Doğrulanıyor…",
+  "verifyResend": "Yeni kod gönder",
+  "verifyResending": "Gönderiliyor…",
+  "verifyResent": "Yeni kod yolda. Önceki kod artık geçerli değil.",
+  "verifyWrongAddress": "Adres yanlış mı?",
+  "verifySignOut": "Çıkış yap ve yeniden kayıt ol",
+  "verifyErrorCodeFormat": "E-postadaki 6 haneli kodu gir.",
+  "verifyErrorCodeInvalid": "Bu kod doğru değil. En son gelen e-postayı kontrol edip tekrar dene.",
+  "verifyErrorCodeExpired": "Kodun süresi doldu. Yeni kod gönder.",
+  "verifyErrorTooManyAttempts": "Çok fazla yanlış kod girildi. Yeni kod gönder.",
+  "verifyErrorTooSoon": "Az önce bir kod gönderildi. Yeni kod istemeden önce bir dakika bekle.",
+  "verifyErrorEmailUnavailable": "E-posta şu an gönderilemedi. Bir dakika sonra tekrar dene.",
+  "errorStartNotVerified": "Analiz başlatmadan önce e-postanı doğrula.",
+  "errorStartDailyBudget": "Hizmet bugünkü yapay zekâ kullanım sınırını doldurdu. Metnin burada duruyor; yarın tekrar dene.",
+  "questionsDailyBudget": "Hizmet bugünkü yapay zekâ kullanım sınırını doldurdu. Yarın tekrar dene."
 }

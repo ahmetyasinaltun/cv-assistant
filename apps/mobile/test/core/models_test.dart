@@ -70,6 +70,13 @@ const resultJson = {
 };
 
 void main() {
+  test('reads whether the account email is verified, and trusts an API that does not say', () {
+    final base = {'id': 'u1', 'email': 'a@example.com', 'full_name': 'A', 'preferred_language': 'en'};
+    expect(User.fromJson({...base, 'email_verified': false}).emailVerified, isFalse);
+    expect(User.fromJson({...base, 'email_verified': true}).emailVerified, isTrue);
+    expect(User.fromJson(base).emailVerified, isTrue);
+  });
+
   test('parses a completed analysis with its result and interview questions', () {
     final detail = AnalysisDetail.fromJson(analysisJson(result: resultJson));
 

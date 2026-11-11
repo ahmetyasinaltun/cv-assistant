@@ -669,4 +669,70 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get linkErrorUnavailable => 'The link cannot be read right now. Paste the posting text below instead.';
+
+  @override
+  String get authErrorTooManyAccounts => 'Too many accounts were created from this network today. Try again tomorrow.';
+
+  @override
+  String get verifyTitle => 'Verify your email';
+
+  @override
+  String get verifyMeta => 'One step left: enter the code we emailed you.';
+
+  @override
+  String verifySentTo(String email) {
+    return 'We sent a 6-digit code to $email. It works for 15 minutes. If it is not in your inbox, look in the spam folder.';
+  }
+
+  @override
+  String get verifyCodeLabel => 'Verification code';
+
+  @override
+  String get verifySubmit => 'Verify';
+
+  @override
+  String get verifySubmitting => 'Verifying…';
+
+  @override
+  String get verifyResend => 'Send a new code';
+
+  @override
+  String get verifyResending => 'Sending…';
+
+  @override
+  String get verifyResent => 'A new code is on its way. The previous one no longer works.';
+
+  @override
+  String get verifyWrongAddress => 'Wrong address?';
+
+  @override
+  String get verifySignOut => 'Sign out and register again';
+
+  @override
+  String get verifyErrorCodeFormat => 'Enter the 6 digits from the email.';
+
+  @override
+  String get verifyErrorCodeInvalid => 'This code is not correct. Check the latest email and try again.';
+
+  @override
+  String get verifyErrorCodeExpired => 'This code has expired. Send a new code.';
+
+  @override
+  String get verifyErrorTooManyAttempts => 'Too many wrong codes. Send a new code.';
+
+  @override
+  String get verifyErrorTooSoon => 'A code was sent a moment ago. Wait a minute before asking for a new one.';
+
+  @override
+  String get verifyErrorEmailUnavailable => 'The email could not be sent right now. Try again in a minute.';
+
+  @override
+  String get errorStartNotVerified => 'Verify your email before starting an analysis.';
+
+  @override
+  String get errorStartDailyBudget =>
+      'The service has used today\'s AI budget. Your text is still here; try again tomorrow.';
+
+  @override
+  String get questionsDailyBudget => 'The service has used today\'s AI budget. Try again tomorrow.';
 }
