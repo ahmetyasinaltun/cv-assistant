@@ -18,8 +18,11 @@ def client_address(request: Request, settings: Settings) -> str | None:
 
     1. A request from the web server carries its visitor's address, which counts only with the shared secret;
        anyone else could write any address into that header.
-    2. Otherwise the first X-Forwarded-For entry, which Render's proxy sets to the address that connected.
-    3. Otherwise the socket address (local development, tests).
+    2. Otherwise CF-Connecting-IP: Render's edge is Cloudflare, which sets it to the address that connected and
+       does not keep a value the caller sent.
+    3. Otherwise the first X-Forwarded-For entry (local proxies). Behind Cloudflare it is not used, because the
+       caller's own X-Forwarded-For stays in front of the address Cloudflare adds.
+    4. Otherwise the socket address (local development, tests).
     """
     secret = settings.web_proxy_secret
     sent_secret = request.headers.get(PROXY_SECRET_HEADER, "")
@@ -27,6 +30,9 @@ def client_address(request: Request, settings: Settings) -> str | None:
         forwarded_client = request.headers.get(FORWARDED_CLIENT_HEADER, "").strip()
         if forwarded_client:
             return forwarded_client
+    connecting = request.headers.get("cf-connecting-ip", "").strip()
+    if connecting:
+        return connecting
     forwarded_for = request.headers.get("x-forwarded-for", "")
     first = forwarded_for.split(",")[0].strip()
     if first:

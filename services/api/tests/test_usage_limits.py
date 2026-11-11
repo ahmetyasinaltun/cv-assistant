@@ -113,6 +113,15 @@ def test_a_forwarded_address_counts_only_with_the_web_server_secret(client, limi
     )
 
 
+def test_behind_cloudflare_its_connecting_address_counts_not_a_forwarded_one(client, limits):
+    limits(address_daily_registrations=1)
+    first = {"CF-Connecting-IP": "203.0.113.40", "X-Forwarded-For": "192.0.2.10"}
+    assert client.post("/auth/register", json=_account("a"), headers=first).status_code == 201
+    # A caller who writes a new X-Forwarded-For each time still counts as the same connecting address.
+    second = {"CF-Connecting-IP": "203.0.113.40", "X-Forwarded-For": "192.0.2.11"}
+    assert client.post("/auth/register", json=_account("b"), headers=second).status_code == 429
+
+
 def test_addresses_are_stored_only_as_keyed_hashes(client, engine):
     register_from(client, "a@example.com", "203.0.113.30")
     with Session(engine) as db:
