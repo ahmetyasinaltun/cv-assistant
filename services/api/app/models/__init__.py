@@ -4,6 +4,15 @@ from app.models.analysis import Analysis, AnalysisStatus
 from app.models.cv_document import CvDocument
 from app.models.job_description import JobDescription
 from app.models.resume import Resume
+from app.models.usage_event import UsageEvent
 from app.models.user import User
 
-__all__ = ["Analysis", "AnalysisStatus", "CvDocument", "JobDescription", "Resume", "User"]
+__all__ = [
+    "Analysis",
+    "AnalysisStatus",
+    "CvDocument",
+    "JobDescription",
+    "Resume",
+    "UsageEvent",
+    "User",
+]

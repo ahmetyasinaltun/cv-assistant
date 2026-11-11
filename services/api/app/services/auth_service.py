@@ -1,8 +1,16 @@
-# Registration and login use cases: validates credentials and issues access tokens.
+# Registration and login use cases: validates credentials, issues access tokens and starts email verification.
+
+import logging
 
 from sqlalchemy.orm import Session
 
-from app.core.errors import ConflictError, UnauthorizedError, ValidationFailedError
+from app.core.email import EmailSender
+from app.core.errors import (
+    ConflictError,
+    EmailDeliveryError,
+    UnauthorizedError,
+    ValidationFailedError,
+)
 from app.core.rate_limit import LOGIN_FAILURES
 from app.core.security import (
     MAX_PASSWORD_BYTES,
@@ -15,13 +23,24 @@ from app.core.security import (
 from app.models.user import User
 from app.repositories.user_repository import UserRepository
 from app.schemas.auth import LoginRequest, RegisterRequest, TokenResponse, UserResponse
+from app.services.email_verification_service import EmailVerificationService
+from app.services.usage_service import UsageKind, UsageService
+
+logger = logging.getLogger(__name__)
 
 
 class AuthService:
     def __init__(self, db: Session):
+        self.db = db
         self.users = UserRepository(db)
 
-    def register(self, payload: RegisterRequest) -> TokenResponse:
+    def register(
+        self, payload: RegisterRequest, address_key: str | None, sender: EmailSender
+    ) -> TokenResponse:
+        """Creates the account signed in but unverified, and emails the first code. A failed email does not
+        undo the account: the verification screen can ask for the code again."""
+        usage = UsageService(self.db)
+        usage.check_registration(address_key)
         email = payload.email.lower()
         if not password_fits(payload.password):
             raise ValidationFailedError(
@@ -37,6 +56,14 @@ class AuthService:
             preferred_language=payload.preferred_language,
         )
         self.users.add(user)
+        usage.record(UsageKind.REGISTRATION, user.id, address_key)
+        try:
+            # The registration limit already applies, so the per-account code limits are not checked twice.
+            EmailVerificationService(self.db, sender).send_code(
+                user, address_key, check_limits=False
+            )
+        except EmailDeliveryError:
+            logger.warning("The first verification code could not be sent for a new account.")
         return self._token_for(user)
 
     def login(self, payload: LoginRequest) -> TokenResponse:

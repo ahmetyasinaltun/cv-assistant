@@ -26,6 +26,17 @@ services:
         sync: false
       - key: GEMINI_API_KEY
         sync: false
+      # Verification codes go out through Brevo; the sender address must be verified in Brevo.
+      - key: EMAIL_PROVIDER
+        value: brevo
+      - key: BREVO_API_KEY
+        sync: false
+      - key: EMAIL_SENDER_ADDRESS
+        sync: false
+      # The same random value as the web project's API_PROXY_SECRET: it lets the API trust the visitor address
+      # the web server forwards.
+      - key: WEB_PROXY_SECRET
+        sync: false
       # Browsers never call the API directly: the web client calls it from its server, the app is native.
       - key: CORS_ORIGINS
         value: "[]"

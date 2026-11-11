@@ -1,6 +1,7 @@
 # Shared pytest fixtures: isolated in-memory database, test client and authenticated helpers.
 
 import os
+import re
 
 os.environ.setdefault("ENVIRONMENT", "test")
 os.environ.setdefault("AI_PROVIDER", "fake")
@@ -12,6 +13,7 @@ from sqlalchemy import create_engine, event  # noqa: E402
 from sqlalchemy.orm import sessionmaker  # noqa: E402
 from sqlalchemy.pool import StaticPool  # noqa: E402
 
+from app.core.email import EmailMessage, get_email_sender  # noqa: E402
 from app.core.rate_limit import ALL_LIMITERS  # noqa: E402
 from app.db.base import Base  # noqa: E402
 from app.db.session import get_db, get_session_factory  # noqa: E402
@@ -44,6 +46,30 @@ Requirements
 """
 
 
+class Outbox:
+    """Stands in for the email service: keeps every message so a test can read the code it carries."""
+
+    def __init__(self):
+        self.sent: list[EmailMessage] = []
+
+    def send(self, message: EmailMessage) -> None:
+        self.sent.append(message)
+
+    def to(self, address: str) -> list[EmailMessage]:
+        return [message for message in self.sent if message.to_address == address]
+
+    def last_code(self, address: str) -> str:
+        return CODE.search(self.to(address)[-1].text).group(1)
+
+
+CODE = re.compile(r"\b(\d{6})\b")
+
+
+@pytest.fixture
+def outbox() -> Outbox:
+    return Outbox()
+
+
 @pytest.fixture(autouse=True)
 def fresh_rate_limits():
     """The limiters keep counts in memory for the whole process; every test starts from zero."""
@@ -69,7 +95,7 @@ def engine():
 
 
 @pytest.fixture
-def client(engine):
+def client(engine, outbox):
     TestingSession = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
 
     def override_get_db():
@@ -82,7 +108,9 @@ def client(engine):
     app = create_app()
     app.dependency_overrides[get_db] = override_get_db
     app.dependency_overrides[get_session_factory] = lambda: TestingSession
+    app.dependency_overrides[get_email_sender] = lambda: outbox
     with TestClient(app) as test_client:
+        test_client.outbox = outbox
         yield test_client
 
 
@@ -92,8 +120,12 @@ def register_user(client: TestClient, email: str = "jane@example.com") -> dict:
         json={"email": email, "full_name": "Jane Doe", "password": "correct-horse-battery"},
     )
     assert response.status_code == 201, response.text
-    token = response.json()["access_token"]
-    return {"Authorization": f"Bearer {token}"}
+    headers = {"Authorization": f"Bearer {response.json()['access_token']}"}
+    # Most tests act as a verified user, so they go through the real flow: read the emailed code, confirm it.
+    code = client.outbox.last_code(email)
+    confirmed = client.post("/me/email-verification/confirm", json={"code": code}, headers=headers)
+    assert confirmed.status_code == 200, confirmed.text
+    return headers
 
 
 @pytest.fixture

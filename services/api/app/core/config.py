@@ -53,6 +53,23 @@ class Settings(BaseSettings):
     )
     ai_request_timeout_seconds: float = 60.0
 
+    # Quota protection. The shared free AI quota is the service's only real cost, so all AI actions together
+    # get a daily ceiling that is counted in the database and survives restarts; per-address limits slow down
+    # anyone who creates accounts in bulk.
+    ai_daily_budget: int = Field(default=150, ge=1)
+    address_daily_registrations: int = Field(default=5, ge=1)
+    address_daily_ai_actions: int = Field(default=40, ge=1)
+    # Shared with the web server, which calls the API on its visitors' behalf and passes their address on.
+    # Without it the API cannot tell a forwarded address from one a caller made up.
+    web_proxy_secret: str = ""
+
+    # Email for verification codes: "brevo" sends through Brevo's API, "log" only writes the message to the
+    # log (development and tests).
+    email_provider: str = Field(default="log", pattern="^(brevo|log)$")
+    brevo_api_key: str = ""
+    email_sender_address: str = ""
+    email_sender_name: str = "CV Assistant"
+
     @field_validator("database_url")
     @classmethod
     def name_the_psycopg_driver(cls, value: str) -> str:
@@ -70,6 +87,18 @@ class Settings(BaseSettings):
                 raise ValueError("JWT_SECRET_KEY must be set to a random value in production.")
             if self.ai_provider == "gemini" and not self.gemini_api_key:
                 raise ValueError("GEMINI_API_KEY must be set in production.")
+            if (
+                self.email_provider != "brevo"
+                or not self.brevo_api_key
+                or not self.email_sender_address
+            ):
+                raise ValueError(
+                    "EMAIL_PROVIDER=brevo, BREVO_API_KEY and EMAIL_SENDER_ADDRESS must be set in production."
+                )
+            if len(self.web_proxy_secret) < 32:
+                raise ValueError(
+                    "WEB_PROXY_SECRET must be a random value of at least 32 characters."
+                )
         return self
 
 

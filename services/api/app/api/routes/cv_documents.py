@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, Response, status
 
 from app.ai.providers import get_ai_provider
 from app.ai.providers.base import AIProvider
-from app.api.deps import CurrentUser, DbSession
+from app.api.deps import AddressKey, CurrentUser, DbSession, VerifiedUser
 from app.api.routes.cv_templates import PAGE_COUNT_HEADER
 from app.core.rate_limit import CV_AI_WRITES, CV_RENDERS
 from app.cv.render import CvRenderer, get_cv_renderer
@@ -27,6 +27,7 @@ from app.schemas.cv import (
 )
 from app.services.cv_document_service import CvDocumentService
 from app.services.text_normalization import fold_for_matching
+from app.services.usage_service import UsageKind, UsageService
 
 router = APIRouter(tags=["cv-documents"])
 
@@ -62,17 +63,21 @@ def create_cv_document(
 def create_cv_document_from_resume(
     resume_id: UUID,
     payload: CvDocumentFromResumeRequest,
-    current_user: CurrentUser,
+    current_user: VerifiedUser,
     db: DbSession,
+    address_key: AddressKey,
     provider: Provider,
 ) -> CvDocumentFromResumeResponse:
     """Copies a saved CV into an editable, structured CV with one model call; nothing is reworded."""
     # Checked first and counted only once the model has answered, so a refused request costs nothing.
+    usage = UsageService(db)
+    usage.check_ai_action(address_key)
     CV_AI_WRITES.check(str(current_user.id))
     document, result = CvDocumentService(db).create_from_resume(
         current_user, resume_id, payload.template, provider.llm
     )
     CV_AI_WRITES.record(str(current_user.id))
+    usage.record(UsageKind.CV_AI_WRITE, current_user.id, address_key)
     return CvDocumentFromResumeResponse(
         **_to_response(document).model_dump(),
         unsupported_facts=[
@@ -90,17 +95,21 @@ def create_cv_document_from_resume(
 def create_tailored_cv(
     analysis_id: UUID,
     payload: TailoredCvRequest,
-    current_user: CurrentUser,
+    current_user: VerifiedUser,
     db: DbSession,
+    address_key: AddressKey,
     provider: Provider,
 ) -> CvDocumentResponse:
     """Writes a CV for the analysed posting, in its language. The analysis and its score do not change: they
     always come from the user's own CV."""
+    usage = UsageService(db)
+    usage.check_ai_action(address_key)
     CV_AI_WRITES.check(str(current_user.id))
     document = CvDocumentService(db).create_tailored(
         current_user, analysis_id, payload.mode, payload.template, provider.llm
     )
     CV_AI_WRITES.record(str(current_user.id))
+    usage.record(UsageKind.CV_AI_WRITE, current_user.id, address_key)
     return _to_response(document)
 
 

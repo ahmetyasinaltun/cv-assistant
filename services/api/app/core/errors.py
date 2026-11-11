@@ -36,6 +36,11 @@ class UnauthorizedError(AppError):
     code = "unauthorized"
 
 
+class ForbiddenError(AppError):
+    status_code = 403
+    code = "forbidden"
+
+
 class ValidationFailedError(AppError):
     status_code = 422
     code = "validation_failed"
@@ -47,13 +52,14 @@ class AIProviderError(AppError):
 
 
 class TooManyRequestsError(AppError):
-    """A per-user or per-account limit is used up; clients learn from Retry-After when to try again."""
+    """A limit is used up; clients learn from Retry-After when to try again. The code tells a personal limit
+    ("rate_limited") from the service-wide daily AI budget ("daily_budget_reached")."""
 
     status_code = 429
     code = "rate_limited"
 
-    def __init__(self, message: str, *, retry_after_seconds: int):
-        super().__init__(message)
+    def __init__(self, message: str, *, retry_after_seconds: int, code: str | None = None):
+        super().__init__(message, code=code)
         self.retry_after_seconds = retry_after_seconds
 
 
@@ -62,6 +68,13 @@ class ExternalPageError(AppError):
 
     status_code = 502
     code = "link_unreachable"
+
+
+class EmailDeliveryError(AppError):
+    """The email service refused or did not answer; the user can ask for the code again."""
+
+    status_code = 502
+    code = "email_unavailable"
 
 
 class CvRenderError(AppError):

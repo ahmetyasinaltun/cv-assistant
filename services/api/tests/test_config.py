@@ -33,6 +33,36 @@ def test_production_needs_a_gemini_key():
         settings(environment="production", jwt_secret_key="x" * 48, gemini_api_key="")
 
 
+PRODUCTION = {
+    "environment": "production",
+    "jwt_secret_key": "x" * 48,
+    "gemini_api_key": "key",
+    "email_provider": "brevo",
+    "brevo_api_key": "brevo-key",
+    "email_sender_address": "codes@example.com",
+    "web_proxy_secret": "s" * 40,
+}
+
+
 def test_production_with_real_secrets_starts():
-    production = settings(environment="production", jwt_secret_key="x" * 48, gemini_api_key="key")
-    assert production.environment == "production"
+    assert settings(**PRODUCTION).environment == "production"
+
+
+@pytest.mark.parametrize(
+    "missing",
+    [
+        {"email_provider": "log"},
+        {"brevo_api_key": ""},
+        {"email_sender_address": ""},
+    ],
+)
+def test_production_needs_a_real_email_service(missing):
+    # The log sender would swallow every code, and nobody could verify an account.
+    with pytest.raises(ValidationError, match="BREVO_API_KEY"):
+        settings(**{**PRODUCTION, **missing})
+
+
+@pytest.mark.parametrize("secret", ["", "too-short"])
+def test_production_needs_a_long_web_proxy_secret(secret):
+    with pytest.raises(ValidationError, match="WEB_PROXY_SECRET"):
+        settings(**{**PRODUCTION, "web_proxy_secret": secret})

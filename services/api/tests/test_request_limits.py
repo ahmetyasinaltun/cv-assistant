@@ -35,6 +35,10 @@ def test_the_deployed_api_does_not_publish_its_schema(monkeypatch):
     monkeypatch.setenv("ENVIRONMENT", "production")
     monkeypatch.setenv("JWT_SECRET_KEY", "a-production-like-secret-of-at-least-32-bytes")
     monkeypatch.setenv("GEMINI_API_KEY", "not-used-here")
+    monkeypatch.setenv("EMAIL_PROVIDER", "brevo")
+    monkeypatch.setenv("BREVO_API_KEY", "not-used-here")
+    monkeypatch.setenv("EMAIL_SENDER_ADDRESS", "codes@example.com")
+    monkeypatch.setenv("WEB_PROXY_SECRET", "s" * 40)
     get_settings.cache_clear()
     try:
         with TestClient(create_app()) as production:

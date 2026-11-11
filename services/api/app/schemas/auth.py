@@ -26,7 +26,17 @@ class UserResponse(ORMModel):
     email: EmailStr
     full_name: str
     preferred_language: Language
+    # AI actions (analyses, interview questions, AI-written CVs) wait until this is true.
+    email_verified: bool
     created_at: datetime
+
+
+class VerificationConfirmRequest(BaseModel):
+    code: str = Field(pattern=r"^\d{6}$")
+
+
+class VerificationCodeSent(BaseModel):
+    sent_to: EmailStr
 
 
 class UserPreferencesUpdate(BaseModel):
