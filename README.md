@@ -1,6 +1,6 @@
 # AI Career Assistant
 
-A web and Android app that compares a CV with a job posting and shows, requirement by requirement, which CV lines support it, what is missing, and what to change before applying. Built for students and early-career candidates, in English and Turkish.
+A web and Android app that compares a CV with a job posting and shows, requirement by requirement, which CV lines support it, what is missing, and what to change before applying. On the web, a CV Maker turns the CV into an editable document and can write a version of it for the posting. Built for students and early-career candidates, in English and Turkish.
 
 Instead of an unexplained "87% fit", every judgement points at the CV lines it relied on, unsupported claims are marked missing instead of trusted, and the score comes from a stated formula computed by code, not by the model.
 
@@ -9,6 +9,8 @@ Instead of an unexplained "87% fit", every judgement points at the CV lines it r
 ![Web: the sample result. The score with its fit level and a bar of every requirement, a short summary, and what to fix first as priority cards.](docs/screenshots/web-result.png)
 
 ![Web: every requirement with its status beside the CV. The selected requirement's reason is pinned on the CV and the words that support it are highlighted.](docs/screenshots/web-evidence.png)
+
+![Web: a CV written for the sample posting in the CV Maker. Lines the AI added or embellished are listed as things to be ready to talk about, beside a live preview of the one-page PDF.](docs/screenshots/web-cv-editor.png)
 
 <p>
   <img src="docs/screenshots/mobile-result.png" width="250" alt="Android: the sample result with the score, the summary and the requirement bar">
@@ -32,6 +34,8 @@ Instead of an unexplained "87% fit", every judgement points at the CV lines it r
 5. The result leads with **what to fix**: prioritized changes tied to a requirement and a CV section.
 6. Interview questions are generated on request, aimed at the gaps.
 7. A result can be printed or saved as PDF from the web: a plain document with the score, the fixes and, for every requirement, the reason and the CV lines it relied on.
+8. **CV Maker** (web): a saved CV is copied into an editable CV, or a new one starts from a blank page. Three print templates (Classic, Modern, Standard) render to PDF on the server, with a live preview beside the form.
+9. **A CV for a posting:** from a result, the AI writes a version of the CV for that posting, in the posting's language. Every line it wrote or changed stays marked in the editor, and the analysis score does not change.
 
 AI-written text follows the interface language (English or Turkish); requirement wording and CV quotes stay in their source language. Both clients use the same API, and the account remembers the language across devices.
 
@@ -58,6 +62,27 @@ CV ───────────► extract evidence lines (LLM, copied verb
 - **Provider abstraction:** a Gemini implementation and a deterministic fake for tests. Free-tier quotas are per model, so requests run through a fallback chain ordered by measured reliability.
 - **No vector database:** a CV has 5 to 25 evidence lines and embeddings are only needed during one run, so vectors are compared in memory and never stored.
 
+## How a CV is written for a posting
+
+```text
+saved CV ──► structure into fields (LLM, validated JSON) ──► fact check (code): employers, schools, roles,
+                                                              degrees and years must appear in the CV text
+                                                                       ▼
+                         editable CV document (JSON) ──► live preview and PDF (Typst, three templates)
+
+analysis + CV document ──► tailor (LLM): text only, written into slots referenced by id
+                                                                       ▼
+        assemble (code): employers, schools, dates, links and project names copied from the source CV
+                                                                       ▼
+        origin per line: from your CV / reworded / embellished by AI / added by AI
+```
+
+- **The model writes text, code copies facts.** The tailoring output has no field for an employer, a school or a date, so it cannot invent one; code takes them from the user's CV. A line the model claims to have copied but that is not in the source is relabelled.
+- **Origins stay visible.** Every line the model touched keeps its mark in the editor and appears in a "be ready to talk about" list. The PDF carries no labels.
+- **Two modes.** Flexible (the default) may write the summary and skills freely and lightly embellish projects and experience; strict keeps only the user's own lines and asks yes/no questions instead.
+- **The score does not move.** The analysis is always computed from the user's own CV, never from generated content.
+- **The import is checked too.** Names and years the CV text does not show are reported, and a section the model calls "not carried over" is dropped from that note when the section was in fact filled.
+
 ## Evaluation
 
 Five hand-labelled cases (`services/api/app/ai/eval/cases/`): a good-fit backend intern, a partial-fit mobile developer, a weak-fit ML engineer, a Turkish data-analyst internship with Turkish output, and a Turkish frontend internship that asks for a GitHub link. `python -m app.ai.eval.run_eval --provider gemini` reports:
@@ -74,6 +99,17 @@ Five hand-labelled cases (`services/api/app/ai/eval/cases/`): a good-fit backend
 
 Five cases are a smoke check, not a benchmark, and model output is not deterministic. The set earns its keep by catching regressions: the Turkish case exposed the retrieval miss above (status accuracy 0.83 on that case) before hybrid retrieval fixed it, and the GitHub case guards a fix for links: a real CV's GitHub link was judged missing because the prompt had no "link" evidence type and the project links sat behind PDF icons that text extraction does not return.
 
+Tailoring has its own run (`python -m app.ai.eval.run_tailor_eval --provider gemini`): each case is structured, analysed and tailored in both modes, and the Turkish CVs are also written for English postings, 12 runs in all.
+
+| Metric | What it checks | Latest real run |
+|---|---|---|
+| Validity | the answer fit the schema and could be assembled into a CV | 1.0 |
+| Invented entities | employers, schools, dates, project or certificate names that are not in the source CV | 0 |
+| Posting keywords | share of the posting's keywords the CV contains, before → after | 0.563 → 0.647 |
+| Added share | lines the model added or embellished, flexible / strict | 0.345 / 0 |
+| Language match | the CV is written in the posting's language | 1.0 |
+| One page | the PDF fits on one page | 12 / 12 |
+
 ## Architecture
 
 One shared backend, two independent clients; domain rules live only in the API.
@@ -87,6 +123,7 @@ services/api    FastAPI backend: auth, documents, AI pipeline, persistence
 - **Backend:** Python 3.12+, FastAPI, SQLAlchemy 2, Alembic, PostgreSQL. Analyses run as background tasks; clients poll until they finish (the mobile app pauses polling in the background).
 - **AI:** Google Gemini free tier for structured LLM output and embeddings, behind a provider interface.
 - **Auth:** email/password with bcrypt and JWT bearer tokens; every query is scoped to the signed-in user.
+- **CV documents:** stored as validated JSON on one row per CV. PDFs, page previews and list thumbnails are typeset on the server with Typst: one cached compiler per template and bundled open fonts only, so the output does not depend on the machine.
 - **Design:** one visual system for both clients (a deep teal brand band, white cards on a pale teal ground, green / amber / red for matched / partial / missing). Status is also carried by the icon's shape (check, half disc, cross), never by colour alone.
 
 ## Key decisions
@@ -96,6 +133,7 @@ services/api    FastAPI backend: auth, documents, AI pipeline, persistence
 - **Background task + polling** instead of a queue or websockets: one instance on a free tier does not need more.
 - **Output language stored per analysis,** so a result never changes language after a settings switch and one page never mixes languages.
 - **No shared demo account:** a public pre-computed sample result, and after registering one tap fills the form with a fictional sample CV and posting.
+- **Typst for PDFs:** a small native Python wheel with no TeX installation; the CV goes in as JSON, and the same renderer draws the PDF, the live preview and the list thumbnails.
 
 ## Local setup (backend)
 
@@ -141,6 +179,7 @@ The web client is a Next.js 16 app (App Router, TypeScript, Tailwind CSS 4). The
 
 - Register at `/en/register`, then start an analysis from **New analysis**. "Fill with the sample CV and posting" runs the fictional sample live.
 - The session token lives in an httpOnly cookie and every API call is made by the Next.js server, so the browser never sees the token. Set `API_BASE_URL` in `apps/web/.env.local` if the API is not on `http://localhost:8000` (see `.env.example`).
+- The CV Maker is at `/en/cvs`. A completed analysis offers **Write a CV for this posting** in its header.
 - Without an account, the pre-computed sample result is at `/en/analyses/sample`. Add `?preview=running`, `failed`, `no-questions` or `questions-error` to see the other states.
 
 ## Local setup (mobile)
@@ -185,7 +224,8 @@ The demo runs on free tiers: Neon (PostgreSQL), Render (API, from `render.yaml`)
 
 - **Free AI tier and personal data.** The default provider is Gemini's free tier. Under Google's terms for unpaid services, submitted content may be used to improve Google's products and may be read by human reviewers. Use fictional or anonymized CVs for demos; a paid tier or a self-hosted model would be needed for real personal data.
 - **Speed depends on the free tier.** An analysis takes from a few seconds to a few minutes, depending on which models in the fallback chain are overloaded or out of quota.
-- **Security is portfolio-grade.** Passwords are hashed with bcrypt (at most 72 bytes, which bcrypt reads), the web client keeps the token in an httpOnly cookie and sends anti-framing and nosniff headers, the API refuses bodies over 6 MB and hides its schema pages in production. Usage limits (10 failed sign-ins per email in 15 minutes; 20 analyses and 20 question sets per user a day; 30 link reads per user an hour) are counted in memory, so they reset when the single free instance restarts. There are no refresh tokens or audit logs.
+- **Security is portfolio-grade.** Passwords are hashed with bcrypt (at most 72 bytes, which bcrypt reads), the web client keeps the token in an httpOnly cookie and sends anti-framing and nosniff headers, the API refuses bodies over 6 MB and hides its schema pages in production. Usage limits (10 failed sign-ins per email in 15 minutes; 20 analyses, 20 question sets and 10 AI-written CVs per user a day; 30 link reads per user an hour) are counted in memory, so they reset when the single free instance restarts. There are no refresh tokens or audit logs.
+- **The CV Maker is on the web only.** The Android app covers analyses; CV documents are not on mobile yet.
 - **Mobile is Android only and was verified on an emulator.** iOS would need a Mac to build; PDF picking and gestures still need a pass on a real phone.
 - **Filling a posting from a link depends on the site.** The server reads one public page per request, the way a link preview does: schema.org `JobPosting` data first, then known layouts (LinkedIn jobs and posts, Kariyer.net), then the page's main text. Sites behind bot protection (Indeed, Glassdoor and Yenibiriş behind Cloudflare; Kariyer.net behind PerimeterX, which refuses after a few requests) are not worked around: the user is told so and pastes the text. Private and internal addresses are refused on every redirect hop, and the address actually connected to is checked again before the response is used; the connection is not pinned to the checked address, so under DNS rebinding a request can still reach an internal address, but its answer is discarded.
 - **CV and posting language is not detected.** Only AI-written text is tagged with a language; source text inherits the interface language for screen readers.
