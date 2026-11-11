@@ -4,7 +4,7 @@ A web and Android app that compares a CV with a job posting and shows, requireme
 
 Instead of an unexplained "87% fit", every judgement points at the CV lines it relied on, unsupported claims are marked missing instead of trusted, and the score comes from a stated formula computed by code, not by the model.
 
-**Live demo:** [cvassistant-app.vercel.app](https://cvassistant-app.vercel.app) opens the sample result without an account. Register to run the fictional sample CV and posting live. The API runs on a free tier that sleeps when idle, so the first request after a quiet spell can take about a minute, and an analysis can take a couple of minutes when the free AI models are busy.
+**Live demo:** [cvassistant-app.vercel.app](https://cvassistant-app.vercel.app) opens the sample result without an account. Register (a six-digit code sent by email confirms the address) to run the fictional sample CV and posting live. The API runs on a free tier that sleeps when idle, so the first request after a quiet spell can take about a minute, and an analysis can take a couple of minutes when the free AI models are busy.
 
 ![Web: the sample result. The score with its fit level and a bar of every requirement, a short summary, and what to fix first as priority cards.](docs/screenshots/web-result.png)
 
@@ -181,7 +181,7 @@ npm run dev            # http://localhost:3000 → redirects to /en or /tr
 
 The web client is a Next.js 16 app (App Router, TypeScript, Tailwind CSS 4). The interface is bilingual (English/Turkish): the language lives in the URL (`/en/...`, `/tr/...`) and the first visit picks it from the browser.
 
-- Register at `/en/register`, then start an analysis from **New analysis**. "Fill with the sample CV and posting" runs the fictional sample live.
+- Register at `/en/register`; with `EMAIL_PROVIDER=log` the verification code appears in the API's log. Then start an analysis from **New analysis**. "Fill with the sample CV and posting" runs the fictional sample live.
 - The session token lives in an httpOnly cookie and every API call is made by the Next.js server, so the browser never sees the token. Set `API_BASE_URL` in `apps/web/.env.local` if the API is not on `http://localhost:8000` (see `.env.example`).
 - The CV Maker is at `/en/cvs`. A completed analysis offers **Write a CV for this posting** in its header.
 - Without an account, the pre-computed sample result is at `/en/analyses/sample`. Add `?preview=running`, `failed`, `no-questions` or `questions-error` to see the other states.
