@@ -12,6 +12,7 @@ import { safeReturnPath } from "@/lib/auth/session-rules";
 
 import { signOut } from "./actions";
 import { VerifyEmailForm } from "./VerifyEmailForm";
+import { needsVerification } from "./verification-model";
 
 interface VerifyEmailPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -23,7 +24,7 @@ export async function VerifyEmailPage({ searchParams }: VerifyEmailPageProps) {
   const here = `/${locale}/verify-email${next ? `?next=${encodeURIComponent(next)}` : ""}`;
   const user = await requireUser(locale, here);
   const destination = next ?? `/${locale}/analyses`;
-  if (user.email_verified) redirect(destination);
+  if (!needsVerification(user)) redirect(destination);
 
   const copy = dictionary.auth.verify;
   const [beforeEmail, afterEmail] = copy.sentTo.split("{email}");

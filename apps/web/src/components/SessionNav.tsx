@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { signOut } from "@/features/auth/actions";
+import { needsVerification } from "@/features/auth/verification-model";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { getCurrentUser } from "@/lib/auth/current-user";
@@ -43,7 +44,7 @@ export async function SessionNav({ locale, labels }: SessionPartProps) {
 /** Shown only while the signed-in account's email address waits for its code. */
 export async function VerifyNotice({ locale, labels }: SessionPartProps) {
   const user = await userOrNull();
-  if (!user || user.email_verified) return null;
+  if (!user || !needsVerification(user)) return null;
   return <VerifyNoticeBar locale={locale} text={labels.verifyNotice.text} link={labels.verifyNotice.link} />;
 }
 

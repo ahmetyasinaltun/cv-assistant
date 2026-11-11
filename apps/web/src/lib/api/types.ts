@@ -100,8 +100,11 @@ export interface User {
   email: string;
   full_name: string;
   preferred_language: Language;
-  /** AI actions (analyses, interview questions, AI-written CVs) wait until this is true. */
-  email_verified: boolean;
+  /**
+   * AI actions (analyses, interview questions, AI-written CVs) wait until this is true. An API from before email
+   * verification does not send it, so only `false` means unverified (see `needsVerification`).
+   */
+  email_verified?: boolean;
   created_at: string;
 }
 

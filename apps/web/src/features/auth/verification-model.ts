@@ -22,6 +22,11 @@ export interface VerifyFormState {
 
 export const initialVerifyFormState: VerifyFormState = { error: null, resent: false, waitSeconds: null };
 
+/** Only an explicit `false` locks the account: while the web runs ahead of an older API, nobody is locked out. */
+export function needsVerification(user: { email_verified?: boolean }): boolean {
+  return user.email_verified === false;
+}
+
 /** Digits only, whatever the email client copied around them ("123 456", "Code: 123456"). */
 export function normalizeCode(value: string): string {
   return value.replace(/\D/g, "");

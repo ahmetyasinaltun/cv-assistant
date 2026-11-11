@@ -8,7 +8,7 @@ import { ApiError, NETWORK_ERROR_STATUS } from "@/lib/api/client";
 import { isPrivatePath } from "@/lib/auth/session-rules";
 
 import { authErrorKey } from "./auth-errors";
-import { isCompleteCode, normalizeCode, verifyErrorState } from "./verification-model";
+import { isCompleteCode, needsVerification, normalizeCode, verifyErrorState } from "./verification-model";
 
 describe("verification code input", () => {
   it("keeps only the digits an email client may copy with the code", () => {
@@ -20,6 +20,15 @@ describe("verification code input", () => {
     expect(isCompleteCode("123456")).toBe(true);
     expect(isCompleteCode("12345")).toBe(false);
     expect(isCompleteCode("1234567")).toBe(false);
+  });
+});
+
+describe("needsVerification", () => {
+  it("locks only an account the API marks unverified", () => {
+    expect(needsVerification({ email_verified: false })).toBe(true);
+    expect(needsVerification({ email_verified: true })).toBe(false);
+    // An API from before verification sends no flag; its accounts must not be locked out.
+    expect(needsVerification({})).toBe(false);
   });
 });
 
